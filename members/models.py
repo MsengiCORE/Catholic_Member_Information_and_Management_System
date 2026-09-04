@@ -155,6 +155,262 @@ class MemberSacrament(models.Model):
     def __str__(self):
         return f"{self.member} - {self.sacrament}"
 
+class Diocese(models.Model):
+
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False
+    )
+
+    name = models.CharField(
+        max_length=150,
+        unique=True
+    )
+
+    description = models.TextField(
+        blank=True
+    )
+
+    is_active = models.BooleanField(
+        default=True
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
+
+    def __str__(self):
+        return self.name
+
+class Deanery(models.Model):
+
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False
+    )
+
+    diocese = models.ForeignKey(
+        Diocese,
+        on_delete=models.PROTECT,
+        related_name="deaneries"
+    )
+
+    name = models.CharField(
+        max_length=150
+    )
+
+    description = models.TextField(
+        blank=True
+    )
+
+    is_active = models.BooleanField(
+        default=True
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["diocese", "name"],
+                name="unique_deanery_per_diocese"
+            )
+        ]
+
+    def __str__(self):
+        return self.name
+
+class Parish(models.Model):
+
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False
+    )
+
+    deanery = models.ForeignKey(
+        Deanery,
+        on_delete=models.PROTECT,
+        related_name="parishes"
+    )
+
+    name = models.CharField(
+        max_length=150
+    )
+
+    description = models.TextField(
+        blank=True
+    )
+
+    is_active = models.BooleanField(
+        default=True
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["deanery", "name"],
+                name="unique_parish_per_deanery"
+            )
+        ]
+
+    def __str__(self):
+        return self.name
+
+class Zone(models.Model):
+
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False
+    )
+
+    parish = models.ForeignKey(
+        Parish,
+        on_delete=models.PROTECT,
+        related_name="zones"
+    )
+
+    name = models.CharField(
+        max_length=150
+    )
+
+    description = models.TextField(
+        blank=True
+    )
+
+    is_active = models.BooleanField(
+        default=True
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["parish", "name"],
+                name="unique_zone_per_parish"
+            )
+        ]
+
+    def __str__(self):
+        return self.name
+
+class SmallChristianCommunity(models.Model):
+
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False
+    )
+
+    zone = models.ForeignKey(
+        Zone,
+        on_delete=models.PROTECT,
+        related_name="small_christian_communities"
+    )
+
+    name = models.CharField(
+        max_length=150
+    )
+
+    description = models.TextField(
+        blank=True
+    )
+
+    is_active = models.BooleanField(
+        default=True
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["zone", "name"],
+                name="unique_scc_per_zone"
+            )
+        ]
+
+    def __str__(self):
+        return self.name
+
+class Family(models.Model):
+
+    id = models.UUIDField(
+        primary_key=True,
+        default=uuid.uuid4,
+        editable=False
+    )
+
+    small_christian_community = models.ForeignKey(
+        SmallChristianCommunity,
+        on_delete=models.PROTECT,
+        related_name="families"
+    )
+
+    name = models.CharField(
+        max_length=150
+    )
+
+    description = models.TextField(
+        blank=True
+    )
+
+    is_active = models.BooleanField(
+        default=True
+    )
+
+    created_at = models.DateTimeField(
+        auto_now_add=True
+    )
+
+    updated_at = models.DateTimeField(
+        auto_now=True
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=["small_christian_community", "name"],
+                name="unique_family_per_scc"
+            )
+        ]
+
+    def __str__(self):
+        return self.name
 
 class ChurchMember(models.Model):
 
@@ -189,6 +445,9 @@ class ChurchMember(models.Model):
     MARITAL_STATUS_CHOICES = [
         ("single", "Single"),
         ("married", "Married"),
+        ("divorced", "Divorced"),
+        ("widow", "Widow"),
+        ("widower", "Widower"),
     ]
 
     marital_status = models.CharField(
@@ -254,6 +513,14 @@ class ChurchMember(models.Model):
         LeadershipPosition,
         blank=True,
         related_name="members"
+    )
+
+    family = models.ForeignKey(
+        Family,
+        on_delete=models.PROTECT,
+        related_name="members",
+        null=True,
+        blank=True
     )
 
     # System Timestamps

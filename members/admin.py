@@ -3,9 +3,15 @@ from django.contrib import admin
 from .models import (
     ChurchAssociation,
     ChurchMember,
+    Deanery,
+    Diocese,
+    Family,
     LeadershipPosition,
     MemberSacrament,
+    Parish,
     Sacrament,
+    SmallChristianCommunity,
+    Zone,
 )
 
 
@@ -27,6 +33,134 @@ class ChurchAssociationAdmin(admin.ModelAdmin):
         "description",
     )
 
+
+@admin.register(Diocese)
+class DioceseAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+        "is_active",
+        "created_at",
+        "updated_at",
+    )
+
+    list_filter = (
+        "is_active",
+    )
+
+    search_fields = (
+        "name",
+        "description",
+    )
+
+
+@admin.register(Deanery)
+class DeaneryAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+        "diocese",
+        "is_active",
+        "created_at",
+        "updated_at",
+    )
+
+    list_filter = (
+        "diocese",
+        "is_active",
+    )
+
+    search_fields = (
+        "name",
+        "diocese__name",
+        "description",
+    )
+
+
+@admin.register(Parish)
+class ParishAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+        "deanery",
+        "is_active",
+        "created_at",
+        "updated_at",
+    )
+
+    list_filter = (
+        "deanery",
+        "is_active",
+    )
+
+    search_fields = (
+        "name",
+        "deanery__name",
+        "description",
+    )
+
+
+@admin.register(Zone)
+class ZoneAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+        "parish",
+        "is_active",
+        "created_at",
+        "updated_at",
+    )
+
+    list_filter = (
+        "parish",
+        "is_active",
+    )
+
+    search_fields = (
+        "name",
+        "parish__name",
+        "description",
+    )
+
+
+@admin.register(SmallChristianCommunity)
+class SmallChristianCommunityAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+        "zone",
+        "is_active",
+        "created_at",
+        "updated_at",
+    )
+
+    list_filter = (
+        "zone",
+        "is_active",
+    )
+
+    search_fields = (
+        "name",
+        "zone__name",
+        "description",
+    )
+
+
+@admin.register(Family)
+class FamilyAdmin(admin.ModelAdmin):
+    list_display = (
+        "name",
+        "small_christian_community",
+        "is_active",
+        "created_at",
+        "updated_at",
+    )
+
+    list_filter = (
+        "small_christian_community",
+        "is_active",
+    )
+
+    search_fields = (
+        "name",
+        "small_christian_community__name",
+        "description",
+    )
 
 @admin.register(LeadershipPosition)
 class LeadershipPositionAdmin(admin.ModelAdmin):
@@ -98,6 +232,7 @@ class ChurchMemberAdmin(admin.ModelAdmin):
         "first_name",
         "middle_name",
         "last_name",
+        "family",
         "phone_number",
         "marital_status",
         "baptism_status",
@@ -111,9 +246,11 @@ class ChurchMemberAdmin(admin.ModelAdmin):
         "last_name",
         "phone_number",
         "email",
+        "family__name",
     )
 
     list_filter = (
+        "family",
         "marital_status",
         "baptism_status",
         "church_associations",

@@ -229,6 +229,25 @@
                                 {% endfor %}
                             </div>
 
+                            <!-- Family -->
+                            <div class="form-control">
+                                <label class="label">
+                                    <span class="label-text font-medium">
+                                        Family
+                                    </span>
+                                </label>
+
+                                {{ form.family }}
+
+                                {% if form.family.errors %}
+                                    <div class="mt-1 text-sm text-error">
+                                        {% for error in form.family.errors %}
+                                            <p>{{ error }}</p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+
                         </div>
 
                     </section>
