@@ -42,6 +42,10 @@ INSTALLED_APPS = [
     # Third-Party apps
     'tailwind',
     'theme',
+
+    # Local apps
+    "base",
+    "members"
 ]
 
 TAILWIND_APP_NAME = "theme"
@@ -87,6 +91,7 @@ DATABASES = {
         'USER': 'postgres',
         'PASSWORD': '0000',
         'NAME': 'catholic_mims_db',
+        'DISABLE_SERVER_SIDE_CURSORS': True,
     }
 }
 

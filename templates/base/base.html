@@ -22,5 +22,37 @@
 
     {% block extra_js %}{% endblock %}
 
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    {% if messages %}
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+
+                {% for message in messages %}
+
+                    Swal.fire({
+                        icon: "{% if message.tags == 'success' %}success{% elif message.tags == 'error' %}error{% elif message.tags == 'warning' %}warning{% else %}info{% endif %}",
+
+                        title: "{% if message.tags == 'success' %}Success{% elif message.tags == 'error' %}Error{% elif message.tags == 'warning' %}Warning{% else %}Information{% endif %}",
+
+                        text: "{{ message|escapejs }}",
+
+                        confirmButtonText: "OK",
+
+                        confirmButtonColor:
+                            "{% if message.tags == 'success' %}#16a34a{% else %}#7c3aed{% endif %}",
+
+                        background: "#ffffff",
+
+                        color: "#1f2937"
+                    });
+
+                {% endfor %}
+
+            });
+        </script>
+    {% endif %}
+
 </body>
 </html>

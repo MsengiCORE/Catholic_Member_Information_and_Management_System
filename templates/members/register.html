@@ -1,0 +1,535 @@
+{% extends "base/base.html" %}
+
+{% block title %}Register Member{% endblock %}
+
+{% block content %}
+
+<div class="min-h-screen bg-slate-50 px-4 py-10">
+
+    <div class="mx-auto max-w-5xl">
+
+        <!-- Page Header -->
+        <div class="mb-8">
+            <div class="mb-2 text-sm font-medium text-primary">
+                Church Member Management
+            </div>
+
+            <h1 class="text-3xl font-bold text-slate-900">
+                Register Church Member
+            </h1>
+
+            <p class="mt-2 text-slate-600">
+                Enter the member's information below to create a new
+                Church member record.
+            </p>
+        </div>
+
+
+        <!-- Form Card -->
+        <div class="rounded-2xl border border-slate-200 bg-white shadow-sm">
+
+            <!-- Card Header -->
+            <div class="border-b border-slate-200 px-6 py-5">
+                <h2 class="text-lg font-semibold text-slate-900">
+                    Member Information
+                </h2>
+
+                <p class="mt-1 text-sm text-slate-500">
+                    Fields marked with
+                    <span class="text-red-500">*</span>
+                    are required.
+                </p>
+            </div>
+
+
+            <form method="post" novalidate>
+
+                {% csrf_token %}
+
+                <div class="space-y-8 p-6">
+
+                    <!-- Non-field Errors -->
+                    {% if form.non_field_errors %}
+                        <div class="rounded-lg border border-red-200 bg-red-50 p-4">
+                            {% for error in form.non_field_errors %}
+                                <p class="text-sm text-red-700">
+                                    {{ error }}
+                                </p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+
+                    <!-- Identification -->
+                    <section>
+
+                        <div class="mb-5">
+                            <h3 class="text-base font-semibold text-slate-900">
+                                Identification
+                            </h3>
+
+                            <p class="mt-1 text-sm text-slate-500">
+                                Enter the member's unique digital offering number.
+                            </p>
+                        </div>
+
+                        <div class="max-w-md">
+
+                            <label
+                                for="{{ form.digital_offering_number.id_for_label }}"
+                                class="mb-2 block text-sm font-medium text-slate-700"
+                            >
+                                Digital Offering Number
+                                <span class="text-red-500">*</span>
+                            </label>
+
+                            {{ form.digital_offering_number }}
+
+                            {% for error in form.digital_offering_number.errors %}
+                                <p class="mt-1 text-sm text-red-600">
+                                    {{ error }}
+                                </p>
+                            {% endfor %}
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- Personal Information -->
+                    <section>
+
+                        <div class="mb-5">
+                            <h3 class="text-base font-semibold text-slate-900">
+                                Personal Information
+                            </h3>
+
+                            <p class="mt-1 text-sm text-slate-500">
+                                Provide the member's basic personal information.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
+
+                            <!-- First Name -->
+                            <div>
+                                <label
+                                    for="{{ form.first_name.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    First Name
+                                    <span class="text-red-500">*</span>
+                                </label>
+
+                                {{ form.first_name }}
+
+                                {% for error in form.first_name.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+
+                            <!-- Middle Name -->
+                            <div>
+                                <label
+                                    for="{{ form.middle_name.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    Middle Name
+                                </label>
+
+                                {{ form.middle_name }}
+
+                                {% for error in form.middle_name.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+
+                            <!-- Last Name -->
+                            <div>
+                                <label
+                                    for="{{ form.last_name.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    Last Name
+                                    <span class="text-red-500">*</span>
+                                </label>
+
+                                {{ form.last_name }}
+
+                                {% for error in form.last_name.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+
+                            <!-- Date of Birth -->
+                            <div>
+                                <label
+                                    for="{{ form.date_of_birth.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    Date of Birth
+                                    <span class="text-red-500">*</span>
+                                </label>
+
+                                {{ form.date_of_birth }}
+
+                                {% for error in form.date_of_birth.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+
+                            <!-- Marital Status -->
+                            <div>
+                                <label
+                                    for="{{ form.marital_status.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    Marital Status
+                                    <span class="text-red-500">*</span>
+                                </label>
+
+                                {{ form.marital_status }}
+
+                                {% for error in form.marital_status.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+
+                            <!-- Baptism Status -->
+                            <div>
+                                <label
+                                    for="{{ form.baptism_status.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    Baptism Status
+                                    <span class="text-red-500">*</span>
+                                </label>
+
+                                {{ form.baptism_status }}
+
+                                {% for error in form.baptism_status.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- Contact Information -->
+                    <section>
+
+                        <div class="mb-5">
+                            <h3 class="text-base font-semibold text-slate-900">
+                                Contact Information
+                            </h3>
+
+                            <p class="mt-1 text-sm text-slate-500">
+                                Provide the member's contact details.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+
+                            <!-- Phone -->
+                            <div>
+                                <label
+                                    for="{{ form.phone_number.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    Phone Number
+                                    <span class="text-red-500">*</span>
+                                </label>
+
+                                {{ form.phone_number }}
+
+                                {% for error in form.phone_number.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+
+                            <!-- Email -->
+                            <div>
+                                <label
+                                    for="{{ form.email.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    Email Address
+                                </label>
+
+                                {{ form.email }}
+
+                                {% for error in form.email.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- Residence Information -->
+                    <section>
+
+                        <div class="mb-5">
+                            <h3 class="text-base font-semibold text-slate-900">
+                                Residence Information
+                            </h3>
+
+                            <p class="mt-1 text-sm text-slate-500">
+                                Provide the member's current residence details.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+
+                            <!-- House Number -->
+                            <div>
+                                <label
+                                    for="{{ form.house_number.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    House Number
+                                </label>
+
+                                {{ form.house_number }}
+
+                                {% for error in form.house_number.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+
+                            <!-- Street -->
+                            <div>
+                                <label
+                                    for="{{ form.street.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    Street
+                                </label>
+
+                                {{ form.street }}
+
+                                {% for error in form.street.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+
+                            <!-- Ward -->
+                            <div>
+                                <label
+                                    for="{{ form.ward.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    Ward
+                                </label>
+
+                                {{ form.ward }}
+
+                                {% for error in form.ward.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+
+                            <!-- District -->
+                            <div>
+                                <label
+                                    for="{{ form.district.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    District
+                                </label>
+
+                                {{ form.district }}
+
+                                {% for error in form.district.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+
+                            <!-- Region -->
+                            <div class="md:col-span-2">
+                                <label
+                                    for="{{ form.region.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    Region
+                                </label>
+
+                                {{ form.region }}
+
+                                {% for error in form.region.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- Church Information -->
+                    <section>
+
+                        <div class="mb-5">
+                            <h3 class="text-base font-semibold text-slate-900">
+                                Church Information
+                            </h3>
+
+                            <p class="mt-1 text-sm text-slate-500">
+                                Select the member's church associations and
+                                leadership positions.
+                            </p>
+                        </div>
+
+
+                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+
+                            <!-- Church Associations -->
+                            <div>
+
+                                <label
+                                    class="mb-3 block text-sm font-medium text-slate-700"
+                                >
+                                    Church Associations
+                                </label>
+
+                                <div class="space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
+
+                                    {% for checkbox in form.church_associations %}
+                                        <label class="flex cursor-pointer items-center gap-3 rounded-lg p-2 hover:bg-white">
+
+                                            {{ checkbox.tag }}
+
+                                            <span class="text-sm text-slate-700">
+                                                {{ checkbox.choice_label }}
+                                            </span>
+
+                                        </label>
+                                    {% empty %}
+                                        <p class="text-sm text-slate-500">
+                                            No church associations are currently available.
+                                        </p>
+                                    {% endfor %}
+
+                                </div>
+
+                                {% for error in form.church_associations.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+
+                            </div>
+
+
+                            <!-- Leadership Positions -->
+                            <div>
+
+                                <label
+                                    class="mb-3 block text-sm font-medium text-slate-700"
+                                >
+                                    Leadership Positions
+                                </label>
+
+                                <div class="space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
+
+                                    {% for checkbox in form.leadership_positions %}
+                                        <label class="flex cursor-pointer items-center gap-3 rounded-lg p-2 hover:bg-white">
+
+                                            {{ checkbox.tag }}
+
+                                            <span class="text-sm text-slate-700">
+                                                {{ checkbox.choice_label }}
+                                            </span>
+
+                                        </label>
+                                    {% empty %}
+                                        <p class="text-sm text-slate-500">
+                                            No leadership positions are currently available.
+                                        </p>
+                                    {% endfor %}
+
+                                </div>
+
+                                {% for error in form.leadership_positions.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+                </div>
+
+
+                <!-- Form Actions -->
+                <div class="flex flex-col-reverse gap-3 border-t border-slate-200 bg-slate-50 px-6 py-5 sm:flex-row sm:justify-end">
+
+                    <a
+                        href="{% url 'base:home' %}"
+                        class="btn btn-ghost"
+                    >
+                        Cancel
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        Register Member
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

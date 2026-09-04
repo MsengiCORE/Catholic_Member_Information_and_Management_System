@@ -1,11 +1,56 @@
 @import "tailwindcss";
-@plugin "daisyui";
 
-/**
-  * A catch-all path to Django template files, JavaScript, and Python files
-  * that contain Tailwind CSS classes and will be scanned by Tailwind to generate the final CSS file.
-  *
-  * If your final CSS file is not being updated after code changes, you may want to broaden or narrow
-  * the scope of this path.
-  */
+@plugin "daisyui" {
+    themes: ccmims --default;
+}
+
+@plugin "daisyui/theme" {
+    name: "ccmims";
+    default: true;
+    prefersdark: false;
+    color-scheme: light;
+
+    /* Brand Colors */
+    --color-primary: #7c3aed;
+    --color-primary-content: #ffffff;
+
+    --color-secondary: #16a34a;
+    --color-secondary-content: #ffffff;
+
+    --color-accent: #22c55e;
+    --color-accent-content: #ffffff;
+
+    /* Neutral */
+    --color-neutral: #374151;
+    --color-neutral-content: #ffffff;
+
+    /* Light Theme */
+    --color-base-100: #ffffff;
+    --color-base-200: #f8fafc;
+    --color-base-300: #e5e7eb;
+    --color-base-content: #1f2937;
+
+    /* Status Colors */
+    --color-info: #0284c7;
+    --color-info-content: #ffffff;
+
+    --color-success: #16a34a;
+    --color-success-content: #ffffff;
+
+    --color-warning: #d97706;
+    --color-warning-content: #ffffff;
+
+    --color-error: #dc2626;
+    --color-error-content: #ffffff;
+
+    /* Component Shape */
+    --radius-selector: 0.5rem;
+    --radius-field: 0.5rem;
+    --radius-box: 0.75rem;
+
+    --border: 1px;
+    --depth: 0;
+    --noise: 0;
+}
+
 @source "../../../**/*.{html,py,js}";
