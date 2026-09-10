@@ -1,4 +1,4 @@
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.db import transaction
@@ -145,3 +145,16 @@ def complete_registration(request):
 @login_required
 def dashboard_redirect(request):
     return redirect("members:dashboard")
+
+def logout_view(request):
+    """
+    Log the current user out of CCMIMS.
+    """
+    logout(request)
+
+    messages.success(
+        request,
+        "You have been logged out successfully."
+    )
+
+    return redirect("accounts:login")

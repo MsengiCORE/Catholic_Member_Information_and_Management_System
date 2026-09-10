@@ -77,14 +77,19 @@ class CompleteRegistrationForm(forms.Form):
     def clean_phone_number(self):
         phone_number = self.cleaned_data["phone_number"].strip()
 
-        allowed_characters = "0123456789+ -()"
-
-        if any(
-            char not in allowed_characters
-            for char in phone_number
-        ):
+        if not phone_number.isdigit():
             raise forms.ValidationError(
-                "Phone number contains invalid characters."
+                "Phone number must contain digits only."
+            )
+
+        if len(phone_number) != 10:
+            raise forms.ValidationError(
+                "Phone number must contain exactly 10 digits."
+            )
+
+        if not phone_number.startswith("0"):
+            raise forms.ValidationError(
+                "Phone number must start with 0."
             )
 
         if User.objects.filter(username=phone_number).exists():

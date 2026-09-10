@@ -392,26 +392,6 @@
 
                         <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
 
-                            <!-- Phone -->
-                            <div>
-                                <label
-                                    for="{{ form.phone_number.id_for_label }}"
-                                    class="mb-2 block text-sm font-medium text-slate-700"
-                                >
-                                    Phone Number
-                                    <span class="text-red-500">*</span>
-                                </label>
-
-                                {{ form.phone_number }}
-
-                                {% for error in form.phone_number.errors %}
-                                    <p class="mt-1 text-sm text-red-600">
-                                        {{ error }}
-                                    </p>
-                                {% endfor %}
-                            </div>
-
-
                             <!-- Email -->
                             <div>
                                 <label

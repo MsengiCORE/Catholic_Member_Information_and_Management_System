@@ -344,7 +344,6 @@ class ChurchMemberForm(forms.ModelForm):
             "last_name": "Last Name",
             "date_of_birth": "Date of Birth",
             "marital_status": "Marital Status",
-            "phone_number": "Phone Number",
             "email": "Email Address",
             "house_number": "House Number",
             "street": "Street",
@@ -401,13 +400,6 @@ class ChurchMemberForm(forms.ModelForm):
             "marital_status": forms.Select(
                 attrs={
                     "class": "select select-bordered w-full bg-white",
-                }
-            ),
-
-            "phone_number": forms.TextInput(
-                attrs={
-                    "class": "input input-bordered w-full bg-white",
-                    "placeholder": "Enter phone number",
                 }
             ),
 
@@ -654,21 +646,6 @@ class ChurchMemberForm(forms.ModelForm):
             )
 
         return last_name
-
-    def clean_phone_number(self):
-        phone_number = self.cleaned_data["phone_number"].strip()
-
-        allowed_characters = "0123456789+ -()"
-
-        if any(
-            char not in allowed_characters
-            for char in phone_number
-        ):
-            raise forms.ValidationError(
-                "Phone number contains invalid characters."
-            )
-
-        return phone_number
 
     def clean_date_of_birth(self):
         date_of_birth = self.cleaned_data["date_of_birth"]
