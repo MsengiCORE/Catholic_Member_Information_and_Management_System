@@ -1,3 +1,4 @@
+from django.db import transaction
 from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
@@ -8,6 +9,7 @@ from .models import (
     Parish,
     SmallChristianCommunity,
     Zone,
+    Family,
 )
 
 
@@ -147,6 +149,8 @@ def register_family(request):
         context
     )
 
+@transaction.atomic
+@transaction.atomic
 def register_member(request):
     if request.method == "POST":
         form = ChurchMemberForm(request.POST)

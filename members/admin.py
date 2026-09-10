@@ -232,7 +232,7 @@ class ChurchMemberAdmin(admin.ModelAdmin):
         "first_name",
         "middle_name",
         "last_name",
-        "family",
+        "family_name",
         "phone_number",
         "marital_status",
         "baptism_status",
@@ -246,11 +246,10 @@ class ChurchMemberAdmin(admin.ModelAdmin):
         "last_name",
         "phone_number",
         "email",
-        "family__name",
+        "family_name",
     )
 
     list_filter = (
-        "family",
         "marital_status",
         "baptism_status",
         "church_associations",

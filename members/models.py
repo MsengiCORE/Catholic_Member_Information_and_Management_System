@@ -515,14 +515,10 @@ class ChurchMember(models.Model):
         related_name="members"
     )
 
-    family = models.ForeignKey(
-        Family,
-        on_delete=models.PROTECT,
-        related_name="members",
-        null=True,
-        blank=True
+    family_name = models.CharField(
+        max_length=150,
+        blank=True,
     )
-
     # System Timestamps
     created_at = models.DateTimeField(
         auto_now_add=True

@@ -222,6 +222,17 @@ class FamilyForm(forms.ModelForm):
         return self.cleaned_data["description"].strip()
 
 class ChurchMemberForm(forms.ModelForm):
+    family_name = forms.CharField(
+        label="Family",
+        max_length=150,
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                "class": "input input-bordered w-full bg-white",
+                "placeholder": "Enter family name",
+            }
+        ),
+    )
 
     class Meta:
         model = ChurchMember
@@ -241,7 +252,6 @@ class ChurchMemberForm(forms.ModelForm):
             "district",
             "region",
             "baptism_status",
-            "family",
             "church_associations",
             "leadership_positions",
         ]
@@ -363,9 +373,10 @@ class ChurchMemberForm(forms.ModelForm):
                 }
             ),
 
-            "family": forms.Select(
+            "family": forms.TextInput(
                 attrs={
-                    "class": "select select-bordered w-full bg-white",
+                    "class": "input input-bordered w-full bg-white",
+                    "placeholder": "Enter family name",
                 }
             ),
 
@@ -385,15 +396,6 @@ class ChurchMemberForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        self.fields["family"].queryset = (
-            Family.objects
-            .filter(is_active=True)
-            .select_related(
-                "small_christian_community__zone__parish__deanery__diocese"
-            )
-            .order_by("name")
-        )
-
         self.fields["church_associations"].queryset = (
             ChurchAssociation.objects
             .filter(is_active=True)
@@ -405,8 +407,6 @@ class ChurchMemberForm(forms.ModelForm):
             .filter(is_active=True)
             .order_by("name")
         )
-
-        self.fields["family"].empty_label = "Select Family"
 
     def clean_digital_offering_number(self):
         digital_offering_number = self.cleaned_data["digital_offering_number"].strip()
@@ -475,3 +475,16 @@ class ChurchMemberForm(forms.ModelForm):
             )
 
         return date_of_birth
+
+    def clean_family_name(self):
+        family_name = self.cleaned_data.get("family_name", "").strip()
+
+        if not family_name:
+            return ""
+
+        if any(char.isdigit() for char in family_name):
+            raise forms.ValidationError(
+                "Family name cannot contain numbers."
+            )
+
+        return family_name

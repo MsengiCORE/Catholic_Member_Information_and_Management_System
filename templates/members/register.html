@@ -237,15 +237,21 @@
                                     </span>
                                 </label>
 
-                                {{ form.family }}
+                                {{ form.family_name }}
 
-                                {% if form.family.errors %}
+                                {% if form.family_name.errors %}
                                     <div class="mt-1 text-sm text-error">
-                                        {% for error in form.family.errors %}
+                                        {% for error in form.family_name.errors %}
                                             <p>{{ error }}</p>
                                         {% endfor %}
                                     </div>
                                 {% endif %}
+
+                                <label class="label">
+                                    <span class="label-text-alt text-slate-500">
+                                        Enter the registered family name.
+                                    </span>
+                                </label>
                             </div>
 
                         </div>
