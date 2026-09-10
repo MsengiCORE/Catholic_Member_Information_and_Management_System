@@ -2,14 +2,18 @@ from django.db import transaction
 from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import redirect, render
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
 
 from .forms import ChurchMemberForm, FamilyForm
 from .models import (
+    Diocese,
     Deanery,
     Parish,
     SmallChristianCommunity,
     Zone,
     Family,
+    ChurchMember,
 )
 
 
@@ -149,31 +153,108 @@ def register_family(request):
         context
     )
 
-@transaction.atomic
+
 @transaction.atomic
 def register_member(request):
+
     if request.method == "POST":
+
         form = ChurchMemberForm(request.POST)
 
         if form.is_valid():
-            form.save()
+
+            member = form.save(commit=False)
+
+            scc = form.cleaned_data[
+                "small_christian_community"
+            ]
+
+            family_name = (
+                form.cleaned_data
+                .get("family", "")
+                .strip()
+            )
+
+            if family_name:
+
+                family = Family.objects.filter(
+                    small_christian_community=scc,
+                    name__iexact=family_name,
+                    is_active=True,
+                ).first()
+
+                if family is None:
+                    family = Family.objects.create(
+                        small_christian_community=scc,
+                        name=family_name,
+                        is_active=True,
+                    )
+
+                member.family = family.name
+
+            member.save()
+
+            form.save_m2m()
+
+            request.session["pending_member_id"] = str(
+                member.pk
+            )
 
             messages.success(
                 request,
-                "Church member registered successfully."
+                "Member registered successfully. "
+                "Please complete your account registration.",
             )
 
-            return redirect("members:register")
+            return redirect(
+                "accounts:complete_registration"
+            )
 
     else:
         form = ChurchMemberForm()
 
+    return render(
+        request,
+        "members/register.html",
+        {
+            "form": form,
+        },
+    )
+
+
+@login_required
+@never_cache
+def dashboard(request):
     context = {
-        "form": form,
+        "diocese_count": Diocese.objects.filter(
+            is_active=True
+        ).count(),
+
+        "deanery_count": Deanery.objects.filter(
+            is_active=True
+        ).count(),
+
+        "parish_count": Parish.objects.filter(
+            is_active=True
+        ).count(),
+
+        "zone_count": Zone.objects.filter(
+            is_active=True
+        ).count(),
+
+        "scc_count": SmallChristianCommunity.objects.filter(
+            is_active=True
+        ).count(),
+
+        "family_count": Family.objects.filter(
+            is_active=True
+        ).count(),
+
+        "member_count": ChurchMember.objects.count(),
     }
 
     return render(
         request,
-        "members/register.html",
-        context
+        "members/dashboard.html",
+        context,
     )

@@ -1,6 +1,7 @@
 import uuid
 
 from django.db import models
+from django.contrib.auth.models import User
 
 
 class ChurchAssociation(models.Model):
@@ -420,6 +421,14 @@ class ChurchMember(models.Model):
         editable=False
     )
 
+    user = models.OneToOneField(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="church_member",
+    )
+
     # Identification
     digital_offering_number = models.CharField(
         max_length=50,
@@ -515,7 +524,7 @@ class ChurchMember(models.Model):
         related_name="members"
     )
 
-    family_name = models.CharField(
+    family = models.CharField(
         max_length=150,
         blank=True,
     )

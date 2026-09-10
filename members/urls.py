@@ -1,5 +1,4 @@
 from django.urls import path
-
 from . import views
 
 app_name = "members"
@@ -12,12 +11,11 @@ urlpatterns = [
     ),
 
     path(
-        "families/register/",
+        "register-family/",
         views.register_family,
         name="register_family",
     ),
 
-    # Hierarchy API endpoints
     path(
         "api/deaneries/",
         views.get_deaneries,
@@ -40,5 +38,11 @@ urlpatterns = [
         "api/small-christian-communities/",
         views.get_small_christian_communities,
         name="get_small_christian_communities",
+    ),
+
+    path(
+        "dashoard/",
+        views.dashboard,
+        name="dashboard",
     ),
 ]

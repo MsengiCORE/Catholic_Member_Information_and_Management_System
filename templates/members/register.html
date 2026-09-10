@@ -229,29 +229,147 @@
                                 {% endfor %}
                             </div>
 
+                        </div>
+
+                    </section>
+
+                    <!-- Church Organizational Information -->
+                    <section>
+
+                        <div class="mb-5">
+                            <h3 class="text-base font-semibold text-slate-900">
+                                Church Organizational Information
+                            </h3>
+
+                            <p class="mt-1 text-sm text-slate-500">
+                                Select the member's position within the church organizational
+                                hierarchy.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+
+                            <!-- Diocese -->
+                            <div>
+                                <label
+                                    for="{{ form.diocese.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    Diocese
+                                    <span class="text-red-500">*</span>
+                                </label>
+
+                                {{ form.diocese }}
+
+                                {% for error in form.diocese.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+
+                            <!-- Deanery -->
+                            <div>
+                                <label
+                                    for="{{ form.deanery.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    Deanery
+                                    <span class="text-red-500">*</span>
+                                </label>
+
+                                {{ form.deanery }}
+
+                                {% for error in form.deanery.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+
+                            <!-- Parish -->
+                            <div>
+                                <label
+                                    for="{{ form.parish.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    Parish
+                                    <span class="text-red-500">*</span>
+                                </label>
+
+                                {{ form.parish }}
+
+                                {% for error in form.parish.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+
+                            <!-- Zone -->
+                            <div>
+                                <label
+                                    for="{{ form.zone.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    Zone
+                                    <span class="text-red-500">*</span>
+                                </label>
+
+                                {{ form.zone }}
+
+                                {% for error in form.zone.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+
+                            <!-- Small Christian Community -->
+                            <div>
+                                <label
+                                    for="{{ form.small_christian_community.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    Small Christian Community
+                                    <span class="text-red-500">*</span>
+                                </label>
+
+                                {{ form.small_christian_community }}
+
+                                {% for error in form.small_christian_community.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+
                             <!-- Family -->
-                            <div class="form-control">
-                                <label class="label">
-                                    <span class="label-text font-medium">
-                                        Family
-                                    </span>
+                            <div>
+                                <label
+                                    for="{{ form.family.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    Family
                                 </label>
 
-                                {{ form.family_name }}
+                                {{ form.family }}
 
-                                {% if form.family_name.errors %}
-                                    <div class="mt-1 text-sm text-error">
-                                        {% for error in form.family_name.errors %}
-                                            <p>{{ error }}</p>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
+                                <p class="mt-1 text-xs text-slate-500">
+                                    Enter the family name. If it does not already exist under
+                                    the selected Small Christian Community, it will be created.
+                                </p>
 
-                                <label class="label">
-                                    <span class="label-text-alt text-slate-500">
-                                        Enter the registered family name.
-                                    </span>
-                                </label>
+                                {% for error in form.family.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
                             </div>
 
                         </div>
@@ -539,6 +657,13 @@
                     >
                         Cancel
                     </a>
+                                        
+                    <a
+                        href="{% url 'accounts:login' %}"
+                        class="btn btn-secondary"
+                    >
+                        Login
+                    </a>
 
                     <button
                         type="submit"
@@ -556,5 +681,269 @@
     </div>
 
 </div>
+
+{% block extra_js %}
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const dioceseSelect = document.getElementById("id_diocese");
+    const deanerySelect = document.getElementById("id_deanery");
+    const parishSelect = document.getElementById("id_parish");
+    const zoneSelect = document.getElementById("id_zone");
+    const sccSelect = document.getElementById(
+        "id_small_christian_community"
+    );
+
+
+    function resetSelect(select, placeholder) {
+        select.innerHTML = "";
+
+        const option = document.createElement("option");
+        option.value = "";
+        option.textContent = placeholder;
+
+        select.appendChild(option);
+        select.disabled = true;
+    }
+
+
+    function populateSelect(select, data, placeholder) {
+        select.innerHTML = "";
+
+        const defaultOption = document.createElement("option");
+        defaultOption.value = "";
+        defaultOption.textContent = placeholder;
+
+        select.appendChild(defaultOption);
+
+        data.forEach(function (item) {
+            const option = document.createElement("option");
+
+            option.value = item.id;
+            option.textContent = item.name;
+
+            select.appendChild(option);
+        });
+
+        select.disabled = false;
+    }
+
+
+    // Initial state
+    resetSelect(
+        deanerySelect,
+        "Select Deanery"
+    );
+
+    resetSelect(
+        parishSelect,
+        "Select Parish"
+    );
+
+    resetSelect(
+        zoneSelect,
+        "Select Zone"
+    );
+
+    resetSelect(
+        sccSelect,
+        "Select Small Christian Community"
+    );
+
+
+    // ---------------------------------------------------------
+    // Diocese → Deanery
+    // ---------------------------------------------------------
+
+    dioceseSelect.addEventListener("change", function () {
+
+        const dioceseId = this.value;
+
+        resetSelect(
+            deanerySelect,
+            "Select Deanery"
+        );
+
+        resetSelect(
+            parishSelect,
+            "Select Parish"
+        );
+
+        resetSelect(
+            zoneSelect,
+            "Select Zone"
+        );
+
+        resetSelect(
+            sccSelect,
+            "Select Small Christian Community"
+        );
+
+        if (!dioceseId) {
+            return;
+        }
+
+        fetch(
+            "{% url 'members:get_deaneries' %}?diocese="
+            + encodeURIComponent(dioceseId)
+        )
+        .then(response => response.json())
+        .then(data => {
+
+            populateSelect(
+                deanerySelect,
+                data,
+                "Select Deanery"
+            );
+
+        })
+        .catch(error => {
+            console.error(
+                "Error loading deaneries:",
+                error
+            );
+        });
+    });
+
+
+    // ---------------------------------------------------------
+    // Deanery → Parish
+    // ---------------------------------------------------------
+
+    deanerySelect.addEventListener("change", function () {
+
+        const deaneryId = this.value;
+
+        resetSelect(
+            parishSelect,
+            "Select Parish"
+        );
+
+        resetSelect(
+            zoneSelect,
+            "Select Zone"
+        );
+
+        resetSelect(
+            sccSelect,
+            "Select Small Christian Community"
+        );
+
+        if (!deaneryId) {
+            return;
+        }
+
+        fetch(
+            "{% url 'members:get_parishes' %}?deanery="
+            + encodeURIComponent(deaneryId)
+        )
+        .then(response => response.json())
+        .then(data => {
+
+            populateSelect(
+                parishSelect,
+                data,
+                "Select Parish"
+            );
+
+        })
+        .catch(error => {
+            console.error(
+                "Error loading parishes:",
+                error
+            );
+        });
+    });
+
+
+    // ---------------------------------------------------------
+    // Parish → Zone
+    // ---------------------------------------------------------
+
+    parishSelect.addEventListener("change", function () {
+
+        const parishId = this.value;
+
+        resetSelect(
+            zoneSelect,
+            "Select Zone"
+        );
+
+        resetSelect(
+            sccSelect,
+            "Select Small Christian Community"
+        );
+
+        if (!parishId) {
+            return;
+        }
+
+        fetch(
+            "{% url 'members:get_zones' %}?parish="
+            + encodeURIComponent(parishId)
+        )
+        .then(response => response.json())
+        .then(data => {
+
+            populateSelect(
+                zoneSelect,
+                data,
+                "Select Zone"
+            );
+
+        })
+        .catch(error => {
+            console.error(
+                "Error loading zones:",
+                error
+            );
+        });
+    });
+
+
+    // ---------------------------------------------------------
+    // Zone → Small Christian Community
+    // ---------------------------------------------------------
+
+    zoneSelect.addEventListener("change", function () {
+
+        const zoneId = this.value;
+
+        resetSelect(
+            sccSelect,
+            "Select Small Christian Community"
+        );
+
+        if (!zoneId) {
+            return;
+        }
+
+        fetch(
+            "{% url 'members:get_small_christian_communities' %}?zone="
+            + encodeURIComponent(zoneId)
+        )
+        .then(response => response.json())
+        .then(data => {
+
+            populateSelect(
+                sccSelect,
+                data,
+                "Select Small Christian Community"
+            );
+
+        })
+        .catch(error => {
+            console.error(
+                "Error loading Small Christian Communities:",
+                error
+            );
+        });
+    });
+
+});
+</script>
+
+{% endblock %}
 
 {% endblock %}
