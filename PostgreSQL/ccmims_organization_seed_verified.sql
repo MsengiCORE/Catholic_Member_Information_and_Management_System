@@ -2692,61 +2692,6 @@ WHERE d.name = 'Diocese of Tanga'
   AND de.name = 'Lushoto'
 ON CONFLICT (deanery_id, name) DO NOTHING;
 
--- Verification
-SELECT
-    d.name AS diocese,
-    de.name AS deanery,
-    COUNT(p.id) AS parish_count
-FROM members_parish p
-JOIN members_deanery de ON p.deanery_id = de.id
-JOIN members_diocese d ON de.diocese_id = d.id
-GROUP BY d.name, de.name
-ORDER BY d.name, de.name;
-
-COMMIT;
-
--- =========================================================
--- VERIFICATION
--- =========================================================
-
--- 1. Counts
-SELECT 'Dioceses' AS entity, COUNT(*) AS total FROM members_diocese
-UNION ALL
-SELECT 'Deaneries', COUNT(*) FROM members_deanery
-UNION ALL
-SELECT 'Parishes', COUNT(*) FROM members_parish;
-
--- 2. Deaneries grouped by diocese
-SELECT
-    d.name AS diocese,
-    COUNT(de.id) AS deanery_count
-FROM members_diocese d
-LEFT JOIN members_deanery de ON de.diocese_id = d.id
-GROUP BY d.id, d.name
-ORDER BY d.name;
-
--- 3. Parishes grouped by diocese/deanery
-SELECT
-    d.name AS diocese,
-    de.name AS deanery,
-    COUNT(p.id) AS parish_count
-FROM members_deanery de
-JOIN members_diocese d ON d.id = de.diocese_id
-LEFT JOIN members_parish p ON p.deanery_id = de.id
-GROUP BY d.name, de.name
-ORDER BY d.name, de.name;
-
--- 4. Check for orphan records
-SELECT COUNT(*) AS orphan_deaneries
-FROM members_deanery de
-LEFT JOIN members_diocese d ON d.id = de.diocese_id
-WHERE d.id IS NULL;
-
-SELECT COUNT(*) AS orphan_parishes
-FROM members_parish p
-LEFT JOIN members_deanery de ON de.id = p.deanery_id
-WHERE de.id IS NULL;
-
 -- ============================================================
 -- ZONES
 -- Create 40 zones for every parish
@@ -2803,55 +2748,149 @@ CROSS JOIN generate_series(1, 40) AS scc_number
 ON CONFLICT (zone_id, name) DO NOTHING;
 
 -- ============================================================
--- VERIFICATION
+-- CHURCH ASSOCIATIONS / VYAMA VYA KITUME
 -- ============================================================
 
--- 1. Total Zones
-SELECT COUNT(*) AS total_zones
-FROM members_zone;
+INSERT INTO members_churchassociation
+(
+    id,
+    name,
+    description,
+    is_active,
+    created_at,
+    updated_at
+)
+VALUES
+(
+    gen_random_uuid(),
+    'UWAKA',
+    'Umoja wa Wanawake wa Kanisa.',
+    TRUE,
+    NOW(),
+    NOW()
+),
+(
+    gen_random_uuid(),
+    'WAWAKA',
+    'Women association within the Catholic Church.',
+    TRUE,
+    NOW(),
+    NOW()
+),
+(
+    gen_random_uuid(),
+    'TCMS',
+    'Tanzania Catholic Men association.',
+    TRUE,
+    NOW(),
+    NOW()
+),
+(
+    gen_random_uuid(),
+    'UKWAKATA',
+    'Umoja wa vijana wa Kanisa Katoliki.',
+    TRUE,
+    NOW(),
+    NOW()
+)
+ON CONFLICT (name) DO NOTHING;
 
+-- ============================================================
+-- LEADERSHIP POSITIONS / WADHIFA
+-- ============================================================
 
--- 2. Verify every Parish has exactly 40 Zones
-SELECT
-    p.name AS parish,
-    COUNT(z.id) AS zone_count
-FROM members_parish p
-LEFT JOIN members_zone z
-    ON z.parish_id = p.id
-GROUP BY p.id, p.name
-HAVING COUNT(z.id) <> 40
-ORDER BY p.name;
+INSERT INTO members_leadershipposition
+(
+    id,
+    name,
+    description,
+    is_active,
+    created_at,
+    updated_at
+)
+VALUES
+(
+    gen_random_uuid(),
+    'Shemasi',
+    'Deacon serving in the Catholic Church.',
+    TRUE,
+    NOW(),
+    NOW()
+),
+(
+    gen_random_uuid(),
+    'Padri',
+    'Priest serving the Catholic Church community.',
+    TRUE,
+    NOW(),
+    NOW()
+),
+(
+    gen_random_uuid(),
+    'Katekista',
+    'Catechist responsible for supporting catechesis and Christian formation.',
+    TRUE,
+    NOW(),
+    NOW()
+),
+(
+    gen_random_uuid(),
+    'Mzee wa Jumuiya',
+    'Leader responsible for supporting and coordinating the Small Christian Community.',
+    TRUE,
+    NOW(),
+    NOW()
+),
+(
+    gen_random_uuid(),
+    'Mwenyekiti wa Chama cha Kitume',
+    'Chairperson of a Catholic Church association.',
+    TRUE,
+    NOW(),
+    NOW()
+)
+ON CONFLICT (name) DO NOTHING;
 
+-- ============================================================
+-- FINAL CCMIMS ORGANIZATION DATA VERIFICATION
+-- ============================================================
 
--- 3. Total Small Christian Communities
-SELECT COUNT(*) AS total_small_christian_communities
-FROM members_smallchristiancommunity;
+SELECT 'Dioceses' AS entity, COUNT(*) AS total
+FROM members_diocese
 
+UNION ALL
 
--- 4. Verify every Zone has exactly 40 SCCs
-SELECT
-    p.name AS parish,
-    z.name AS zone,
-    COUNT(s.id) AS scc_count
-FROM members_zone z
-JOIN members_parish p
-    ON p.id = z.parish_id
-LEFT JOIN members_smallchristiancommunity s
-    ON s.zone_id = z.id
-GROUP BY z.id, z.name, p.name
-HAVING COUNT(s.id) <> 40
-ORDER BY p.name, z.name;
+SELECT 'Deaneries', COUNT(*)
+FROM members_deanery
 
+UNION ALL
 
--- 5. Verify complete Parish → Zone → SCC hierarchy
-SELECT
-    p.name AS parish,
-    COUNT(DISTINCT z.id) AS zones,
-    COUNT(s.id) AS total_sccs
-FROM members_parish p
-LEFT JOIN members_zone z
-    ON z.parish_id = p.id
-LEFT JOIN members_smallchristiancommunity s
-    ON s.zone_id = z.id
-GROUP BY p.id, p.name
-ORDER BY p.name;
+SELECT 'Parishes', COUNT(*)
+FROM members_parish
+
+UNION ALL
+
+SELECT 'Zones', COUNT(*)
+FROM members_zone
+
+UNION ALL
+
+SELECT 'Small Christian Communities', COUNT(*)
+FROM members_smallchristiancommunity
+
+UNION ALL
+
+SELECT 'Church Associations', COUNT(*)
+FROM members_churchassociation
+
+UNION ALL
+
+SELECT 'Leadership Positions', COUNT(*)
+FROM members_leadershipposition
+
+UNION ALL
+
+SELECT 'Families', COUNT(*)
+FROM members_family
+
+ORDER BY entity;
