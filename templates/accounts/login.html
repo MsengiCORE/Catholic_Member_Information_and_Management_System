@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<div class="min-h-[calc(100vh-8rem)] flex items-center justify-center px-4 py-10">
+<div class="min-h-[calc(100vh-8rem)] flex items-center justify-center px-4 py-10 bg-gray-200">
 
     <div class="w-full max-w-md">
 
@@ -38,7 +38,7 @@
 
 
         <!-- Login Card -->
-        <div class="card bg-base-100 border border-base-300 shadow-xl">
+        <div class="card bg-gray-200 border border-base-300 shadow-xl">
 
             <div class="card-body p-6 sm:p-8">
 
@@ -209,23 +209,16 @@
 
                     </button>
 
+                    <div class="text-center mt-3">
+                        <a href="{% url 'members:register' %}"
+                            class="text-sm text-primary hover:underline">
+                            Don't have account?
+                        </a>
+                    </div>
+
                 </form>
 
             </div>
-
-        </div>
-
-
-        <!-- Footer -->
-        <div class="text-center mt-6">
-
-            <p class="text-xs text-base-content/50">
-                © {% now "Y" %} CCMIMS
-            </p>
-
-            <p class="text-xs text-base-content/40 mt-1">
-                Catholic Church Member Information and Management System
-            </p>
 
         </div>
 

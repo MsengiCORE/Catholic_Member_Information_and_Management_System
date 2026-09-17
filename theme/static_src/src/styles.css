@@ -53,4 +53,30 @@
     --noise: 0;
 }
 
+@theme {
+    --color-navy: #000080;
+    --color-royal-blue: #4169E1;
+    --color-cobalt-blue: #0047AB;
+    --color-azure: #007FFF;
+    --color-sky-blue: #87CEEB;
+    --color-baby-blue: #89CFF0;
+    --color-turquoise: #40E0D0;
+    --color-teal: #008080;
+    --color-cerulean: #1DACD6;
+    --color-powder-blue: #B0E0E6;
+    --color-indigo: #4B0082;
+    --color-cornflower-blue: #6495ED;
+    --color-steel-blue: #4682B4;
+    --color-denim-blue: #1560BD;
+    --color-sapphire: #0F52BA;
+    --color-electric-blue: #7DF9FF;
+    --color-midnight-blue: #191970;
+    --color-ocean-blue: #0077BE;
+    --color-periwinkle: #CCCCFF;
+    --color-light-blue: #ADD8E6;
+    --color-green-mint: #D4F2E6;
+    --color-blue-mint: #D4ECF2;
+    --color-purple-mint: #E9D5FF;
+}
+
 @source "../../../**/*.{html,py,js}";

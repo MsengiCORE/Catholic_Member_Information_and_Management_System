@@ -225,6 +225,12 @@ def register_member(request):
 @login_required
 @never_cache
 def dashboard(request):
+
+    try:
+        member = request.user.church_member
+    except ChurchMember.DoesNotExist:
+        member = None
+
     context = {
         "diocese_count": Diocese.objects.filter(
             is_active=True
@@ -251,6 +257,9 @@ def dashboard(request):
         ).count(),
 
         "member_count": ChurchMember.objects.count(),
+
+        # Logged-in user's Church Member profile
+        "member": member,
     }
 
     return render(

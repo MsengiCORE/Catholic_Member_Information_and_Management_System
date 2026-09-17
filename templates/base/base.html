@@ -11,12 +11,13 @@
     </title>
 
     <!-- Tailwind CSS v4 + DaisyUI -->
-    <link rel="stylesheet" href="{% static 'css/dist/styles.css' %}">
+    {% load tailwind_tags %}
+    {% tailwind_css %}
 
     {% block extra_css %}{% endblock %}
 </head>
 
-<body>
+<body class="bg-gray-200">
 
     {% block content %}{% endblock %}
 
@@ -53,6 +54,19 @@
             });
         </script>
     {% endif %}
+
+    <!-- Footer -->
+    <div class="text-center bg-gray-200 m-4">
+
+        <p class="text-xs text-gray-800">
+            © {% now "Y" %} CCMIMS
+        </p>
+
+        <p class="text-xs text-gray-800 mt-1">
+            Catholic Church Member Information and Management System
+        </p>
+
+    </div>
 
 </body>
 </html>

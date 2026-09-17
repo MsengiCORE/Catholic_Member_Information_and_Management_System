@@ -4,7 +4,7 @@
 
 {% block content %}
 
-<div class="space-y-8 bg-gray-200">
+<div class="space-y-8">
 
     <!-- Page Header -->
     <div class="flex items-start justify-between">
@@ -33,7 +33,7 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
 
         <!-- Dioceses -->
-        <div class="stat bg-purple-mint border border-primary/20 rounded-2xl shadow-md transition duration-300 hover:-translate-y-1 hover:shadow-lg">
+        <div class="stat bg-base-100 border border-base-300 rounded-2xl shadow-sm">
             <div class="stat-figure text-primary">
                 <svg xmlns="http://www.w3.org/2000/svg"
                      class="w-9 h-9"
@@ -54,7 +54,7 @@
 
 
         <!-- Deaneries -->
-        <div class="stat bg-blue-mint border border-info/20 rounded-2xl shadow-md transition duration-300 hover:-translate-y-1 hover:shadow-lg">
+        <div class="stat bg-base-100 border border-base-300 rounded-2xl shadow-sm">
             <div class="stat-figure text-secondary">
                 <svg xmlns="http://www.w3.org/2000/svg"
                      class="w-9 h-9"
@@ -75,7 +75,7 @@
 
 
         <!-- Parishes -->
-        <div class="stat bg-green-mint border border-success/20 rounded-2xl shadow-md transition duration-300 hover:-translate-y-1 hover:shadow-lg">
+        <div class="stat bg-base-100 border border-base-300 rounded-2xl shadow-sm">
             <div class="stat-figure text-accent">
                 <svg xmlns="http://www.w3.org/2000/svg"
                      class="w-9 h-9"
@@ -96,7 +96,7 @@
 
 
         <!-- Zones -->
-        <div class="stat bg-blue-mint border border-info/20 rounded-2xl shadow-md transition duration-300 hover:-translate-y-1 hover:shadow-lg">
+        <div class="stat bg-base-100 border border-base-300 rounded-2xl shadow-sm">
             <div class="stat-figure text-info">
                 <svg xmlns="http://www.w3.org/2000/svg"
                      class="w-9 h-9"
@@ -118,7 +118,7 @@
 
 
         <!-- SCCs -->
-        <div class="stat bg-green-mint border border-success/20 rounded-2xl shadow-md transition duration-300 hover:-translate-y-1 hover:shadow-lg">
+        <div class="stat bg-base-100 border border-base-300 rounded-2xl shadow-sm">
             <div class="stat-figure text-success">
                 <svg xmlns="http://www.w3.org/2000/svg"
                      class="w-9 h-9"
@@ -139,7 +139,7 @@
 
 
         <!-- Families -->
-        <div class="stat bg-green-mint border border-success/20 rounded-2xl shadow-md transition duration-300 hover:-translate-y-1 hover:shadow-lg">
+        <div class="stat bg-base-100 border border-base-300 rounded-2xl shadow-sm">
             <div class="stat-figure text-warning">
                 <svg xmlns="http://www.w3.org/2000/svg"
                      class="w-9 h-9"
@@ -160,7 +160,7 @@
 
 
         <!-- Members -->
-        <div class="stat bg-purple-mint border border-primary/20 rounded-2xl shadow-md transition duration-300 hover:-translate-y-1 hover:shadow-lg">
+        <div class="stat bg-base-100 border border-base-300 rounded-2xl shadow-sm">
             <div class="stat-figure text-error">
                 <svg xmlns="http://www.w3.org/2000/svg"
                      class="w-9 h-9"
@@ -183,7 +183,7 @@
 
 
     <!-- Organization Structure -->
-    <div class="card border border-base-300 shadow-sm bg-gray-200">
+    <div class="card bg-base-100 border border-base-300 shadow-sm">
         <div class="card-body">
 
             <h2 class="card-title text-xl">
@@ -196,43 +196,43 @@
 
             <div class="flex flex-col lg:flex-row items-center justify-between gap-3">
 
-                <div class="badge badge-primary badge-lg bg-purple-mint px-5 py-5 font-semibold text-primary shadow-sm">
+                <div class="badge badge-primary badge-lg p-5">
                     Diocese
                 </div>
 
-                <span class="text-gray-950"> &rarr; </span>
+                <span class="text-base-content/40">→</span>
 
-                <div class="badge badge-info badge-lg bg-blue-mint px-5 py-5 font-semibold text-info shadow-sm">
+                <div class="badge badge-secondary badge-lg p-5">
                     Deanery
                 </div>
 
-                <span class="text-gray-950"> &rarr; </span>
+                <span class="text-base-content/40">→</span>
 
-                <div class="badge badge-accent badge-lg bg-green-mint px-5 py-5 font-semibold text-success shadow-sm">
+                <div class="badge badge-accent badge-lg p-5">
                     Parish
                 </div>
 
-                <span class="text-gray-950"> &rarr; </span>
+                <span class="text-base-content/40">→</span>
 
-                <div class="badge badge-info badge-lg bg-blue-mint px-5 py-5 font-semibold text-info shadow-sm">
+                <div class="badge badge-info badge-lg p-5">
                     Zone
                 </div>
 
-                <span class="text-gray-950"> &rarr; </span>
+                <span class="text-base-content/40">→</span>
 
-                <div class="badge badge-success badge-lg bg-green-mint px-5 py-5 font-semibold text-success shadow-sm">
+                <div class="badge badge-success badge-lg p-5">
                     SCC
                 </div>
 
-                <span class="text-gray-950"> &rarr; </span>
+                <span class="text-base-content/40">→</span>
 
-                <div class="badge badge-primary badge-lg bg-purple-mint px-5 py-5 font-semibold text-primary shadow-sm">
+                <div class="badge badge-warning badge-lg p-5">
                     Family
                 </div>
 
-                <span class="text-gray-950"> &rarr; </span>
+                <span class="text-base-content/40">→</span>
 
-                <div class="badge badge-success badge-lg bg-green-mint px-5 py-5 font-semibold text-success shadow-sm">
+                <div class="badge badge-error badge-lg p-5">
                     Church Member
                 </div>
 
@@ -242,7 +242,7 @@
     </div>
 
     <!-- My Profile -->
-    <div class="card bg-gray-200 border border-base-300 shadow-sm">
+    <div class="card bg-base-100 border border-base-300 shadow-sm">
         <div class="card-body">
 
             <div class="flex items-center justify-between mb-6">
@@ -265,7 +265,7 @@
 
                 <!-- Personal Information -->
                 <div class="mb-6">
-                    <h3 class="mb-4 border-b border-primary/15 pb-2 text-base font-bold text-primary">
+                    <h3 class="text-base font-semibold mb-4">
                         Personal Information
                     </h3>
 
@@ -275,7 +275,7 @@
                             <div class="text-sm text-base-content/60">
                                 First Name
                             </div>
-                            <div class="mt-1 rounded-xl bg-purple-mint/70 px-3 py-2 font-semibold">
+                            <div class="font-medium">
                                 {{ member.first_name }}
                             </div>
                         </div>
@@ -284,7 +284,7 @@
                             <div class="text-sm text-base-content/60">
                                 Middle Name
                             </div>
-                            <div class="mt-1 rounded-xl bg-purple-mint/70 px-3 py-2 font-semibold">
+                            <div class="font-medium">
                                 {{ member.middle_name|default:"—" }}
                             </div>
                         </div>
@@ -293,7 +293,7 @@
                             <div class="text-sm text-base-content/60">
                                 Last Name
                             </div>
-                            <div class="mt-1 rounded-xl bg-purple-mint/70 px-3 py-2 font-semibold">
+                            <div class="font-medium">
                                 {{ member.last_name }}
                             </div>
                         </div>
@@ -302,7 +302,7 @@
                             <div class="text-sm text-base-content/60">
                                 Date of Birth
                             </div>
-                            <div class="mt-1 rounded-xl bg-purple-mint/70 px-3 py-2 font-semibold">
+                            <div class="font-medium">
                                 {{ member.date_of_birth|date:"d M Y" }}
                             </div>
                         </div>
@@ -311,7 +311,7 @@
                             <div class="text-sm text-base-content/60">
                                 Marital Status
                             </div>
-                            <div class="mt-1 rounded-xl bg-purple-mint/70 px-3 py-2 font-semibold">
+                            <div class="font-medium">
                                 {{ member.get_marital_status_display }}
                             </div>
                         </div>
@@ -320,7 +320,7 @@
                             <div class="text-sm text-base-content/60">
                                 Baptism Status
                             </div>
-                            <div class="mt-1 rounded-xl bg-purple-mint/70 px-3 py-2 font-semibold">
+                            <div class="font-medium">
                                 {{ member.get_baptism_status_display }}
                             </div>
                         </div>
@@ -330,8 +330,8 @@
 
 
                 <!-- Contact Information -->
-                <div class="mb-6 rounded-2xl bg-blue-mint/45 p-5">
-                    <h3 class="mb-4 border-b border-info/15 pb-2 text-base font-bold text-info">
+                <div class="mb-6">
+                    <h3 class="text-base font-semibold mb-4">
                         Contact Information
                     </h3>
 
@@ -341,7 +341,7 @@
                             <div class="text-sm text-base-content/60">
                                 Phone Number
                             </div>
-                            <div class="mt-1 rounded-xl bg-purple-mint/70 px-3 py-2 font-semibold">
+                            <div class="font-medium">
                                 {{ member.phone_number|default:"—" }}
                             </div>
                         </div>
@@ -350,7 +350,7 @@
                             <div class="text-sm text-base-content/60">
                                 Email Address
                             </div>
-                            <div class="mt-1 rounded-xl bg-purple-mint/70 px-3 py-2 font-semibold">
+                            <div class="font-medium">
                                 {{ member.email|default:"—" }}
                             </div>
                         </div>
@@ -360,8 +360,8 @@
 
 
                 <!-- Residence Information -->
-                <div class="mb-6 rounded-2xl bg-green-mint/45 p-5">
-                    <h3 class="mb-4 border-b border-success/15 pb-2 text-base font-bold text-success">
+                <div class="mb-6">
+                    <h3 class="text-base font-semibold mb-4">
                         Residence Information
                     </h3>
 
@@ -371,7 +371,7 @@
                             <div class="text-sm text-base-content/60">
                                 House Number
                             </div>
-                            <div class="mt-1 rounded-xl bg-purple-mint/70 px-3 py-2 font-semibold">
+                            <div class="font-medium">
                                 {{ member.house_number|default:"—" }}
                             </div>
                         </div>
@@ -380,7 +380,7 @@
                             <div class="text-sm text-base-content/60">
                                 Street
                             </div>
-                            <div class="mt-1 rounded-xl bg-purple-mint/70 px-3 py-2 font-semibold">
+                            <div class="font-medium">
                                 {{ member.street|default:"—" }}
                             </div>
                         </div>
@@ -389,7 +389,7 @@
                             <div class="text-sm text-base-content/60">
                                 Ward
                             </div>
-                            <div class="mt-1 rounded-xl bg-purple-mint/70 px-3 py-2 font-semibold">
+                            <div class="font-medium">
                                 {{ member.ward|default:"—" }}
                             </div>
                         </div>
@@ -398,7 +398,7 @@
                             <div class="text-sm text-base-content/60">
                                 District
                             </div>
-                            <div class="mt-1 rounded-xl bg-purple-mint/70 px-3 py-2 font-semibold">
+                            <div class="font-medium">
                                 {{ member.district|default:"—" }}
                             </div>
                         </div>
@@ -407,7 +407,7 @@
                             <div class="text-sm text-base-content/60">
                                 Region
                             </div>
-                            <div class="mt-1 rounded-xl bg-purple-mint/70 px-3 py-2 font-semibold">
+                            <div class="font-medium">
                                 {{ member.region|default:"—" }}
                             </div>
                         </div>
@@ -417,8 +417,8 @@
 
 
                 <!-- Church Information -->
-                <div class="rounded-2xl bg-purple-mint/40 p-5">
-                    <h3 class="mb-4 border-b border-primary/15 pb-2 text-base font-bold text-primary">
+                <div>
+                    <h3 class="text-base font-semibold mb-4">
                         Church Information
                     </h3>
 
@@ -428,7 +428,7 @@
                             <div class="text-sm text-base-content/60">
                                 Digital Offering Number
                             </div>
-                            <div class="mt-1 rounded-xl bg-purple-mint/70 px-3 py-2 font-semibold">
+                            <div class="font-medium">
                                 {{ member.digital_offering_number }}
                             </div>
                         </div>
@@ -437,7 +437,7 @@
                             <div class="text-sm text-base-content/60">
                                 Family
                             </div>
-                            <div class="mt-1 rounded-xl bg-purple-mint/70 px-3 py-2 font-semibold">
+                            <div class="font-medium">
                                 {{ member.family|default:"—" }}
                             </div>
                         </div>
@@ -454,7 +454,7 @@
                         <div class="flex flex-wrap gap-2">
 
                             {% for association in member.church_associations.all %}
-                                <span class="badge badge-primary badge-outline bg-purple-mint px-3 py-3 font-medium">
+                                <span class="badge badge-primary">
                                     {{ association.name }}
                                 </span>
                             {% empty %}
@@ -476,7 +476,7 @@
                         <div class="flex flex-wrap gap-2">
 
                             {% for position in member.leadership_positions.all %}
-                                <span class="badge badge-secondary badge-outline bg-green-mint px-3 py-3 font-medium">
+                                <span class="badge badge-secondary">
                                     {{ position.name }}
                                 </span>
                             {% empty %}
