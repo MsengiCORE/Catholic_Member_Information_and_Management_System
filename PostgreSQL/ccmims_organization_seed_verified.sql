@@ -2746,3 +2746,112 @@ SELECT COUNT(*) AS orphan_parishes
 FROM members_parish p
 LEFT JOIN members_deanery de ON de.id = p.deanery_id
 WHERE de.id IS NULL;
+
+-- ============================================================
+-- ZONES
+-- Create 40 zones for every parish
+-- ============================================================
+
+INSERT INTO members_zone
+(
+    id,
+    parish_id,
+    name,
+    description,
+    is_active,
+    created_at,
+    updated_at
+)
+SELECT
+    gen_random_uuid(),
+    p.id,
+    'Zone ' || z.zone_number,
+    'Zone ' || z.zone_number || ' of ' || p.name,
+    TRUE,
+    NOW(),
+    NOW()
+FROM members_parish p
+CROSS JOIN generate_series(1, 40) AS z(zone_number)
+ON CONFLICT (parish_id, name) DO NOTHING;
+
+
+-- ============================================================
+-- SMALL CHRISTIAN COMMUNITIES
+-- Create 40 SCCs for every zone
+-- ============================================================
+
+INSERT INTO members_smallchristiancommunity
+(
+    id,
+    zone_id,
+    name,
+    description,
+    is_active,
+    created_at,
+    updated_at
+)
+SELECT
+    gen_random_uuid(),
+    z.id,
+    'Small Christian Community ' || scc_number,
+    'Small Christian Community ' || scc_number || ' of ' || z.name,
+    TRUE,
+    NOW(),
+    NOW()
+FROM members_zone z
+CROSS JOIN generate_series(1, 40) AS scc_number
+ON CONFLICT (zone_id, name) DO NOTHING;
+
+-- ============================================================
+-- VERIFICATION
+-- ============================================================
+
+-- 1. Total Zones
+SELECT COUNT(*) AS total_zones
+FROM members_zone;
+
+
+-- 2. Verify every Parish has exactly 40 Zones
+SELECT
+    p.name AS parish,
+    COUNT(z.id) AS zone_count
+FROM members_parish p
+LEFT JOIN members_zone z
+    ON z.parish_id = p.id
+GROUP BY p.id, p.name
+HAVING COUNT(z.id) <> 40
+ORDER BY p.name;
+
+
+-- 3. Total Small Christian Communities
+SELECT COUNT(*) AS total_small_christian_communities
+FROM members_smallchristiancommunity;
+
+
+-- 4. Verify every Zone has exactly 40 SCCs
+SELECT
+    p.name AS parish,
+    z.name AS zone,
+    COUNT(s.id) AS scc_count
+FROM members_zone z
+JOIN members_parish p
+    ON p.id = z.parish_id
+LEFT JOIN members_smallchristiancommunity s
+    ON s.zone_id = z.id
+GROUP BY z.id, z.name, p.name
+HAVING COUNT(s.id) <> 40
+ORDER BY p.name, z.name;
+
+
+-- 5. Verify complete Parish → Zone → SCC hierarchy
+SELECT
+    p.name AS parish,
+    COUNT(DISTINCT z.id) AS zones,
+    COUNT(s.id) AS total_sccs
+FROM members_parish p
+LEFT JOIN members_zone z
+    ON z.parish_id = p.id
+LEFT JOIN members_smallchristiancommunity s
+    ON s.zone_id = z.id
+GROUP BY p.id, p.name
+ORDER BY p.name;
