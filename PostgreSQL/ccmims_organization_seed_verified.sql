@@ -2843,6 +2843,14 @@ VALUES
 ),
 (
     gen_random_uuid(),
+    'Mzee wa Kanisa',
+    'Leader responsible for supporting and coordinating the Holy Masses and Parish.',
+    TRUE,
+    NOW(),
+    NOW()
+),
+(
+    gen_random_uuid(),
     'Mwenyekiti wa Chama cha Kitume',
     'Chairperson of a Catholic Church association.',
     TRUE,
