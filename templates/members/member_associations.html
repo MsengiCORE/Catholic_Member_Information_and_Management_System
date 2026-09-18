@@ -1,0 +1,120 @@
+{% extends "base/base_with_menu.html" %}
+
+{% block content %}
+
+<div class="max-w-4xl mx-auto p-6">
+
+    <!-- Header -->
+    <div class="mb-6">
+
+        <h1 class="text-3xl font-bold text-gray-800">
+            Member Church Associations
+        </h1>
+
+        <p class="text-gray-500 mt-1">
+            Manage church associations for this member.
+        </p>
+
+    </div>
+
+
+    <!-- Member Information -->
+    <div class="card bg-purple-mint shadow-md mb-6">
+
+        <div class="card-body">
+
+            <h2 class="text-xl font-bold text-gray-800">
+                {{ member.first_name }}
+                {{ member.middle_name }}
+                {{ member.last_name }}
+            </h2>
+
+            <p class="text-gray-600">
+                Digital Offering Number:
+                <span class="font-semibold">
+                    {{ member.digital_offering_number }}
+                </span>
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- Association Form -->
+    <div class="card bg-base-100 shadow-md">
+
+        <div class="card-body">
+
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">
+                Church Associations
+            </h2>
+
+            <form method="post">
+
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-error mb-4">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+
+                <div class="space-y-3">
+
+                    {% for checkbox in form.church_associations %}
+
+                        <label
+                            class="flex items-center gap-3 p-3
+                                   rounded-lg bg-green-mint
+                                   cursor-pointer hover:shadow-sm"
+                        >
+
+                            {{ checkbox.tag }}
+
+                            <span class="text-gray-800 font-medium">
+                                {{ checkbox.choice_label }}
+                            </span>
+
+                        </label>
+
+                    {% empty %}
+
+                        <div class="alert alert-info">
+                            No active church associations are available.
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+
+                <!-- Buttons -->
+                <div class="flex justify-end gap-3 mt-6">
+
+                    <a
+                        href="{% url 'members:dashboard' %}"
+                        class="btn btn-ghost"
+                    >
+                        Cancel
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        Save Associations
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

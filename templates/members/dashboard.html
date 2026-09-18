@@ -1,4 +1,4 @@
-{% extends "base/base.html" %}
+{% extends "base/base_with_menu.html" %}
 
 {% block title %}Dashboard | CCMIMS{% endblock %}
 
@@ -11,20 +11,13 @@
         
         <div>
             <h1 class="text-3xl font-bold text-base-content">
-                Dashboard
+                Catholic Church Overview
             </h1>
 
             <p class="mt-1 text-base-content/60">
-                Catholic Church Member Information and Management System
+                Overview of Catholic Church dioceses
             </p>
         </div>
-
-        <a
-            href="{% url 'accounts:logout' %}"
-            class="btn btn-error btn-sm"
-        >
-            Logout
-        </a>
 
     </div>
 

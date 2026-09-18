@@ -45,4 +45,28 @@ urlpatterns = [
         views.dashboard,
         name="dashboard",
     ),
+    
+    path(
+        "associations/",
+        views.association_list,
+        name="association_list",
+    ),
+
+    path(
+        "associations/create/",
+        views.association_create,
+        name="association_create",
+    ),
+
+    path(
+        "associations/<uuid:pk>/edit/",
+        views.association_update,
+        name="association_update",
+    ),
+
+    path(
+        "members/<uuid:pk>/associations/",
+        views.member_associations,
+        name="member_associations",
+    ),
 ]

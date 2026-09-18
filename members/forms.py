@@ -669,3 +669,53 @@ class ChurchMemberForm(forms.ModelForm):
             )
 
         return family
+
+class ChurchAssociationForm(forms.ModelForm):
+
+    class Meta:
+        model = ChurchAssociation
+
+        fields = [
+            "name",
+            "description",
+            "is_active",
+        ]
+
+        widgets = {
+            "name": forms.TextInput(attrs={
+                "class": "input input-bordered w-full",
+                "placeholder": "Enter association name",
+            }),
+
+            "description": forms.Textarea(attrs={
+                "class": "textarea textarea-bordered w-full",
+                "placeholder": "Enter association description",
+                "rows": 4,
+            }),
+
+            "is_active": forms.CheckboxInput(attrs={
+                "class": "checkbox checkbox-primary",
+            }),
+        }
+
+class MemberAssociationForm(forms.ModelForm):
+
+    class Meta:
+        model = ChurchMember
+        fields = ["church_associations"]
+        widgets = {
+            "church_associations": forms.CheckboxSelectMultiple(
+                attrs={
+                    "class": "space-y-2"
+                }
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["church_associations"].queryset = (
+            ChurchAssociation.objects
+            .filter(is_active=True)
+            .order_by("name")
+        )

@@ -1,0 +1,137 @@
+{% extends "base/base_with_menu.html" %}
+
+{% block title %}
+    {% if association %}
+        Edit Church Association
+    {% else %}
+        Add Church Association
+    {% endif %}
+{% endblock %}
+
+{% block content %}
+
+<div class="min-h-screen bg-gray-200 p-6">
+
+    <div class="max-w-3xl mx-auto">
+
+        <div class="card bg-gray-200 shadow">
+
+            <div class="card-body">
+
+                <h1 class="text-2xl font-bold">
+                    {% if association %}
+                        Edit Church Association
+                    {% else %}
+                        Add Church Association
+                    {% endif %}
+                </h1>
+
+                <p class="text-base-content/70 mb-6">
+                    {% if association %}
+                        Update the Church association information.
+                    {% else %}
+                        Register a new Church association.
+                    {% endif %}
+                </p>
+
+
+                <form method="post">
+
+                    {% csrf_token %}
+
+
+                    {% if form.non_field_errors %}
+
+                        <div class="alert alert-error mb-4">
+                            {{ form.non_field_errors }}
+                        </div>
+
+                    {% endif %}
+
+
+                    <div class="form-control mb-5">
+
+                        <label class="label">
+                            <span class="label-text font-semibold">
+                                Association Name
+                            </span>
+                        </label>
+
+                        {{ form.name }}
+
+                        {% if form.name.errors %}
+                            <div class="text-error text-sm mt-1">
+                                {{ form.name.errors }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="form-control mb-5">
+
+                        <label class="label">
+                            <span class="label-text font-semibold">
+                                Description
+                            </span>
+                        </label>
+
+                        {{ form.description }}
+
+                        {% if form.description.errors %}
+                            <div class="text-error text-sm mt-1">
+                                {{ form.description.errors }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+
+                    <div class="form-control mb-6">
+
+                        <label class="label cursor-pointer justify-start gap-3">
+
+                            {{ form.is_active }}
+
+                            <span class="label-text font-semibold">
+                                Active Association
+                            </span>
+
+                        </label>
+
+                    </div>
+
+
+                    <div class="flex justify-between">
+
+                        <a
+                            href="{% url 'members:association_list' %}"
+                            class="btn btn-outline"
+                        >
+                            Cancel
+                        </a>
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                        >
+                            {% if association %}
+                                Update Association
+                            {% else %}
+                                Save Association
+                            {% endif %}
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,312 @@
+{% load static %}
+
+<aside
+    class="w-64 bg-gray-200 border-r border-gray-300
+           flex flex-col fixed inset-y-0 left-0 z-40
+           lg:flex"
+>
+
+    <!-- Brand -->
+    <div class="h-20 flex items-center px-6 border-b border-gray-200">
+
+        <div>
+            <h1 class="text-xl font-bold text-purple-700">
+                CCMIMS
+            </h1>
+
+            <p class="text-xs text-gray-500">
+                Church Management System
+            </p>
+        </div>
+
+    </div>
+
+
+    <!-- Navigation -->
+    <nav class="flex-1 overflow-y-auto px-4 py-6">
+
+
+        <!-- DASHBOARD -->
+        <div class="mb-6">
+
+            <a
+                href="{% url 'members:dashboard' %}"
+                class="flex items-center gap-3 px-4 py-3
+                       rounded-lg text-gray-700
+                       hover:bg-purple-50
+                       hover:text-purple-700
+                       transition"
+            >
+
+                <span class="text-lg">▣</span>
+
+                <span class="font-medium">
+                    Dashboard
+                </span>
+
+            </a>
+
+        </div>
+
+
+        <!-- ORGANIZATION -->
+        <div class="mb-6">
+
+            <p class="px-4 mb-2 text-xs font-bold
+                      uppercase tracking-wider text-gray-400">
+                Organization
+            </p>
+
+            <div class="space-y-1">
+
+                <a
+                    href="#"
+                    class="flex items-center gap-3 px-4 py-2.5
+                           rounded-lg text-gray-600
+                           hover:bg-green-mint
+                           hover:text-green-700
+                           transition"
+                >
+                    <span>▦</span>
+                    <span>Dioceses</span>
+                </a>
+
+
+                <a
+                    href="#"
+                    class="flex items-center gap-3 px-4 py-2.5
+                           rounded-lg text-gray-600
+                           hover:bg-green-mint
+                           hover:text-green-700
+                           transition"
+                >
+                    <span>▦</span>
+                    <span>Deaneries</span>
+                </a>
+
+
+                <a
+                    href="#"
+                    class="flex items-center gap-3 px-4 py-2.5
+                           rounded-lg text-gray-600
+                           hover:bg-green-mint
+                           hover:text-green-700
+                           transition"
+                >
+                    <span>▦</span>
+                    <span>Parishes</span>
+                </a>
+
+
+                <a
+                    href="#"
+                    class="flex items-center gap-3 px-4 py-2.5
+                           rounded-lg text-gray-600
+                           hover:bg-green-mint
+                           hover:text-green-700
+                           transition"
+                >
+                    <span>▦</span>
+                    <span>Zones</span>
+                </a>
+
+
+                <a
+                    href="#"
+                    class="flex items-center gap-3 px-4 py-2.5
+                           rounded-lg text-gray-600
+                           hover:bg-green-mint
+                           hover:text-green-700
+                           transition"
+                >
+                    <span>▦</span>
+                    <span>Small Christian Communities</span>
+                </a>
+
+
+                <a
+                    href="#"
+                    class="flex items-center gap-3 px-4 py-2.5
+                           rounded-lg text-gray-600
+                           hover:bg-green-mint
+                           hover:text-green-700
+                           transition"
+                >
+                    <span>▦</span>
+                    <span>Families</span>
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- MEMBERS -->
+        <div class="mb-6">
+
+            <p class="px-4 mb-2 text-xs font-bold
+                      uppercase tracking-wider text-gray-400">
+                Members
+            </p>
+
+            <div class="space-y-1">
+
+                <a
+                    href="#"
+                    class="flex items-center gap-3 px-4 py-2.5
+                           rounded-lg text-gray-600
+                           hover:bg-purple-50
+                           hover:text-purple-700
+                           transition"
+                >
+                    <span>♙</span>
+                    <span>Church Members</span>
+                </a>
+
+
+                <a
+                    href="{% url 'members:register' %}"
+                    class="flex items-center gap-3 px-4 py-2.5
+                           rounded-lg text-gray-600
+                           hover:bg-purple-50
+                           hover:text-purple-700
+                           transition"
+                >
+                    <span>＋</span>
+                    <span>Register Member</span>
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- MANAGEMENT -->
+        <div class="mb-6">
+
+            <p class="px-4 mb-2 text-xs font-bold
+                      uppercase tracking-wider text-gray-400">
+                Management
+            </p>
+
+            <div class="space-y-1">
+
+
+                <!-- Church Associations -->
+                {% if user.is_superuser or user.profile.role == "diocese_admin" %}
+
+                    <a
+                        href="{% url 'members:association_list' %}"
+                        class="flex items-center gap-3 px-4 py-2.5
+                               rounded-lg text-gray-600
+                               hover:bg-blue-mint
+                               hover:text-blue-700
+                               transition"
+                    >
+                        <span>♧</span>
+
+                        <span>
+                            Church Associations
+                        </span>
+                    </a>
+
+                {% endif %}
+
+
+                <!-- Leadership Positions -->
+                {% if user.is_superuser or user.profile.role == "diocese_admin" %}
+
+                    <a
+                        href="#"
+                        class="flex items-center gap-3 px-4 py-2.5
+                               rounded-lg text-gray-600
+                               hover:bg-blue-mint
+                               hover:text-blue-700
+                               transition"
+                    >
+                        <span>★</span>
+
+                        <span>
+                            Leadership Positions
+                        </span>
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+
+    </nav>
+
+
+    <!-- ACCOUNT -->
+    <div class="border-t border-gray-200 p-4">
+
+        <div class="mb-3 px-3">
+
+            <p class="text-sm font-semibold text-gray-700">
+                {{ user.username }}
+            </p>
+
+            {% if user.profile %}
+
+                <p class="text-xs text-gray-500">
+                    {{ user.profile.get_role_display }}
+                </p>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- My Profile -->
+        <a
+            href="#"
+            class="flex items-center gap-3 px-4 py-2.5
+                   rounded-lg text-gray-600
+                   hover:bg-purple-mint
+                   hover:text-purple-700
+                   transition"
+        >
+
+            <span></span>
+
+            <span>
+                My Profile
+            </span>
+
+        </a>
+
+
+        <!-- Logout -->
+        <form
+            method="post"
+            action="{% url 'accounts:logout' %}"
+        >
+
+            {% csrf_token %}
+
+            <button
+                type="submit"
+                class="w-full flex items-center gap-3
+                       px-4 py-2.5 rounded-lg
+                       text-red-600
+                       hover:bg-red-100
+                       transition"
+            >
+
+                <span></span>
+
+                <span>
+                    Logout
+                </span>
+
+            </button>
+
+        </form>
+
+    </div>
+
+</aside>

@@ -1,11 +1,24 @@
 from django.db import transaction
 from django.contrib import messages
 from django.http import JsonResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import (
+    get_object_or_404,
+    redirect,
+    render,
+)
+from accounts.permissions import require_role
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
+from django.core.exceptions import PermissionDenied
+from accounts.permissions import can_manage_members
 
-from .forms import ChurchMemberForm, FamilyForm
+from .forms import (
+    ChurchAssociationForm,
+    ChurchMemberForm,
+    FamilyForm,
+    MemberAssociationForm,
+)
+
 from .models import (
     Diocese,
     Deanery,
@@ -14,6 +27,7 @@ from .models import (
     Zone,
     Family,
     ChurchMember,
+    ChurchAssociation,
 )
 
 
@@ -266,4 +280,134 @@ def dashboard(request):
         request,
         "members/dashboard.html",
         context,
+    )
+
+@login_required
+@never_cache
+def association_list(request):
+    associations = ChurchAssociation.objects.all().order_by("name")
+
+    context = {
+        "associations": associations,
+    }
+
+    return render(
+        request,
+        "members/associations/list.html",
+        context,
+    )
+
+
+@login_required
+@never_cache
+@require_role("diocese_admin")
+def association_create(request):
+    if request.method == "POST":
+        form = ChurchAssociationForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+
+            messages.success(
+                request,
+                "Church association created successfully."
+            )
+
+            return redirect("members:association_list")
+
+    else:
+        form = ChurchAssociationForm()
+
+    context = {
+        "form": form,
+    }
+
+    return render(
+        request,
+        "members/associations/form.html",
+        context,
+    )
+
+
+@login_required
+@never_cache
+@require_role("diocese_admin")
+def association_update(request, pk):
+    association = get_object_or_404(ChurchAssociation, pk=pk)
+    if request.method == "POST":
+        form = ChurchAssociationForm(
+            request.POST,
+            instance=association,
+        )
+
+        if form.is_valid():
+            form.save()
+
+            messages.success(
+                request,
+                "Church association updated successfully."
+            )
+
+            return redirect("members:association_list")
+
+    else:
+        form = ChurchAssociationForm(instance=association)
+
+    context = {
+        "form": form,
+        "association": association,
+    }
+
+    return render(
+        request,
+        "members/associations/form.html",
+        context,
+    )
+
+@login_required
+@never_cache
+def member_associations(request, pk):
+
+    if not can_manage_members(request.user):
+        raise PermissionDenied
+
+    member = get_object_or_404(
+        ChurchMember,
+        pk=pk
+    )
+
+    if request.method == "POST":
+
+        form = MemberAssociationForm(
+            request.POST,
+            instance=member
+        )
+
+        if form.is_valid():
+
+            form.save()
+
+            messages.success(
+                request,
+                "Member associations updated successfully."
+            )
+
+            return redirect(
+                "members:member_associations",
+                pk=member.pk
+            )
+
+    else:
+
+        form = MemberAssociationForm(
+            instance=member
+        )
+
+    return render(
+        request,
+        "members/member_associations.html",
+        {
+            "member": member,
+            "form": form,
+        }
     )

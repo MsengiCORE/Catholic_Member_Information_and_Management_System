@@ -1,0 +1,144 @@
+{% extends "base/base_with_menu.html" %}
+
+{% block content %}
+
+<div class="max-w-6xl mx-auto p-6">
+
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+
+        <div>
+            <h1 class="text-3xl font-bold text-gray-800">
+                Church Associations
+            </h1>
+
+            <p class="text-gray-500 mt-1">
+                View and maintain supported church associations.
+            </p>
+        </div>
+
+        {% if user.is_superuser or user.profile.role == "diocese_admin" %}
+            <a href="{% url 'members:association_create' %}"
+            class="btn btn-primary">
+                + Add Association
+            </a>
+        {% endif %}
+
+    </div>
+
+
+    <!-- Table -->
+    <div class="card bg-gray-200 shadow-md">
+
+        <div class="card-body">
+
+            <div class="overflow-x-auto">
+
+                <table id="associationsTable"
+                       class="display w-full">
+
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Association Name</th>
+                            <th>Description</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for association in associations %}
+
+                        <tr>
+
+                            <td>
+                                {{ forloop.counter }}
+                            </td>
+
+                            <td>
+                                <span class="font-semibold">
+                                    {{ association.name }}
+                                </span>
+                            </td>
+
+                            <td>
+                                {% if association.description %}
+                                    {{ association.description }}
+                                {% else %}
+                                    <span class="text-gray-400">
+                                        No description
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if association.is_active %}
+                                    <span class="badge badge-success">
+                                        Active
+                                    </span>
+                                {% else %}
+                                    <span class="badge badge-error">
+                                        Inactive
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if user.is_superuser or user.profile.role == "diocese_admin" %}
+
+                                    <a href="{% url 'members:association_update' association.id %}"
+                                    class="btn btn-sm btn-outline bg-blue-mint badge badge-info">
+                                        Edit
+                                    </a>
+
+                                {% else %}
+
+                                    <span class="text-gray-400 text-sm">
+                                        View only
+                                    </span>
+
+                                {% endif %}
+                            </td>
+
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+
+{% block extra_js %}
+
+<script>
+    $(document).ready(function () {
+
+        new DataTable('#associationsTable', {
+            pageLength: 10,
+            lengthMenu: [10, 25, 50, 100],
+            order: [[1, 'asc']],
+            columnDefs: [
+                {
+                    orderable: false,
+                    targets: [4]
+                }
+            ]
+        });
+
+    });
+</script>
+
+{% endblock %}
