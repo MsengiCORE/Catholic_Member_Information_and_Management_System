@@ -87,4 +87,10 @@ urlpatterns = [
         views.leadership_update,
         name="leadership_update",
     ),
+
+    path(
+        "members/<uuid:pk>/leadership/",
+        views.member_leadership,
+        name="member_leadership",
+    ),
 ]

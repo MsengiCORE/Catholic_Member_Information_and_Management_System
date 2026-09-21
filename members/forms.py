@@ -760,3 +760,26 @@ class LeadershipPositionForm(forms.ModelForm):
 
     def clean_description(self):
         return self.cleaned_data["description"].strip()
+
+class MemberLeadershipForm(forms.ModelForm):
+
+    class Meta:
+        model = ChurchMember
+        fields = ["leadership_positions"]
+
+        widgets = {
+            "leadership_positions": forms.CheckboxSelectMultiple(
+                attrs={
+                    "class": "space-y-2"
+                }
+            ),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        self.fields["leadership_positions"].queryset = (
+            LeadershipPosition.objects
+            .filter(is_active=True)
+            .order_by("name")
+        )

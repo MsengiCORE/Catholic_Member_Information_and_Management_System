@@ -18,6 +18,7 @@ from .forms import (
     FamilyForm,
     MemberAssociationForm,
     LeadershipPositionForm,
+    MemberLeadershipForm,
 )
 
 from .models import (
@@ -502,4 +503,52 @@ def leadership_update(request, pk):
         request,
         "members/leadership/form.html",
         context,
+    )
+
+@login_required
+@never_cache
+def member_leadership(request, pk):
+
+    if not can_manage_members(request.user):
+        raise PermissionDenied
+
+    member = get_object_or_404(
+        ChurchMember,
+        pk=pk
+    )
+
+    if request.method == "POST":
+
+        form = MemberLeadershipForm(
+            request.POST,
+            instance=member
+        )
+
+        if form.is_valid():
+
+            form.save()
+
+            messages.success(
+                request,
+                "Member leadership positions updated successfully."
+            )
+
+            return redirect(
+                "members:member_leadership",
+                pk=member.pk
+            )
+
+    else:
+
+        form = MemberLeadershipForm(
+            instance=member
+        )
+
+    return render(
+        request,
+        "members/member_leadership.html",
+        {
+            "member": member,
+            "form": form,
+        }
     )
