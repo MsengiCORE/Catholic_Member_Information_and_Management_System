@@ -31,11 +31,12 @@
 
             <a
                 href="{% url 'members:dashboard' %}"
-                class="flex items-center gap-3 px-4 py-3
-                       rounded-lg text-gray-700
-                       hover:bg-purple-50
-                       hover:text-purple-700
-                       transition"
+                class="flex items-center gap-3 px-4 py-3 rounded-lg transition
+                       {% if request.resolver_match.url_name == 'dashboard' %}
+                           bg-purple-600 text-white
+                       {% else %}
+                           text-gray-700 hover:bg-purple-50 hover:text-purple-700
+                       {% endif %}"
             >
 
                 <span class="text-lg">▣</span>
@@ -61,78 +62,102 @@
 
                 <a
                     href="#"
-                    class="flex items-center gap-3 px-4 py-2.5
-                           rounded-lg text-gray-600
-                           hover:bg-green-mint
-                           hover:text-green-700
-                           transition"
+                    class="flex items-center gap-3 px-4 py-2.5 rounded-lg transition
+                           {% if request.resolver_match.url_name == 'diocese_list' or request.resolver_match.url_name == 'diocese_create' or request.resolver_match.url_name == 'diocese_update' %}
+                               bg-purple-600 text-white
+                           {% else %}
+                               text-gray-600 hover:bg-green-mint hover:text-green-700
+                           {% endif %}"
                 >
-                    <span>▦</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="4" y="4" width="16" height="16" rx="2"/>
+                        <path d="M4 10h16M10 4v16"/>
+                    </svg>
                     <span>Dioceses</span>
                 </a>
 
 
                 <a
                     href="#"
-                    class="flex items-center gap-3 px-4 py-2.5
-                           rounded-lg text-gray-600
-                           hover:bg-green-mint
-                           hover:text-green-700
-                           transition"
+                    class="flex items-center gap-3 px-4 py-2.5 rounded-lg transition
+                           {% if request.resolver_match.url_name == 'deanery_list' or request.resolver_match.url_name == 'deanery_create' or request.resolver_match.url_name == 'deanery_update' %}
+                               bg-purple-600 text-white
+                           {% else %}
+                               text-gray-600 hover:bg-green-mint hover:text-green-700
+                           {% endif %}"
                 >
-                    <span>▦</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="4" y="4" width="16" height="16" rx="2"/>
+                        <path d="M4 10h16M10 4v16"/>
+                    </svg>
                     <span>Deaneries</span>
                 </a>
 
 
                 <a
                     href="#"
-                    class="flex items-center gap-3 px-4 py-2.5
-                           rounded-lg text-gray-600
-                           hover:bg-green-mint
-                           hover:text-green-700
-                           transition"
+                    class="flex items-center gap-3 px-4 py-2.5 rounded-lg transition
+                           {% if request.resolver_match.url_name == 'parish_list' or request.resolver_match.url_name == 'parish_create' or request.resolver_match.url_name == 'parish_update' %}
+                               bg-purple-600 text-white
+                           {% else %}
+                               text-gray-600 hover:bg-green-mint hover:text-green-700
+                           {% endif %}"
                 >
-                    <span>▦</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="4" y="4" width="16" height="16" rx="2"/>
+                        <path d="M4 10h16M10 4v16"/>
+                    </svg>
                     <span>Parishes</span>
                 </a>
 
 
                 <a
                     href="#"
-                    class="flex items-center gap-3 px-4 py-2.5
-                           rounded-lg text-gray-600
-                           hover:bg-green-mint
-                           hover:text-green-700
-                           transition"
+                    class="flex items-center gap-3 px-4 py-2.5 rounded-lg transition
+                           {% if request.resolver_match.url_name == 'zone_list' or request.resolver_match.url_name == 'zone_create' or request.resolver_match.url_name == 'zone_update' %}
+                               bg-purple-600 text-white
+                           {% else %}
+                               text-gray-600 hover:bg-green-mint hover:text-green-700
+                           {% endif %}"
                 >
-                    <span>▦</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="4" y="4" width="16" height="16" rx="2"/>
+                        <path d="M4 10h16M10 4v16"/>
+                    </svg>
                     <span>Zones</span>
                 </a>
 
 
                 <a
                     href="#"
-                    class="flex items-center gap-3 px-4 py-2.5
-                           rounded-lg text-gray-600
-                           hover:bg-green-mint
-                           hover:text-green-700
-                           transition"
+                    class="flex items-center gap-3 px-4 py-2.5 rounded-lg transition
+                           {% if request.resolver_match.url_name == 'scc_list' or request.resolver_match.url_name == 'scc_create' or request.resolver_match.url_name == 'scc_update' %}
+                               bg-purple-600 text-white
+                           {% else %}
+                               text-gray-600 hover:bg-green-mint hover:text-green-700
+                           {% endif %}"
                 >
-                    <span>▦</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="4" y="4" width="16" height="16" rx="2"/>
+                        <path d="M4 10h16M10 4v16"/>
+                    </svg>
                     <span>Small Christian Communities</span>
                 </a>
 
 
                 <a
                     href="#"
-                    class="flex items-center gap-3 px-4 py-2.5
-                           rounded-lg text-gray-600
-                           hover:bg-green-mint
-                           hover:text-green-700
-                           transition"
+                    class="flex items-center gap-3 px-4 py-2.5 rounded-lg transition
+                           {% if request.resolver_match.url_name == 'family_list' or request.resolver_match.url_name == 'family_create' or request.resolver_match.url_name == 'family_update' %}
+                               bg-purple-600 text-white
+                           {% else %}
+                               text-gray-600 hover:bg-green-mint hover:text-green-700
+                           {% endif %}"
                 >
-                    <span>▦</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <rect x="4" y="4" width="16" height="16" rx="2"/>
+                        <path d="M4 10h16M10 4v16"/>
+                    </svg>
                     <span>Families</span>
                 </a>
 
@@ -153,26 +178,34 @@
 
                 <a
                     href="#"
-                    class="flex items-center gap-3 px-4 py-2.5
-                           rounded-lg text-gray-600
-                           hover:bg-purple-50
-                           hover:text-purple-700
-                           transition"
+                    class="flex items-center gap-3 px-4 py-2.5 rounded-lg transition
+                           {% if request.resolver_match.url_name == 'member_list' or request.resolver_match.url_name == 'member_create' or request.resolver_match.url_name == 'member_update' %}
+                               bg-purple-600 text-white
+                           {% else %}
+                               text-gray-600 hover:bg-purple-50 hover:text-purple-700
+                           {% endif %}"
                 >
-                    <span>♙</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="8" r="3.5"/>
+                        <path d="M5 21a7 7 0 0 1 14 0"/>
+                    </svg>
                     <span>Church Members</span>
                 </a>
 
 
                 <a
                     href="{% url 'members:register' %}"
-                    class="flex items-center gap-3 px-4 py-2.5
-                           rounded-lg text-gray-600
-                           hover:bg-purple-50
-                           hover:text-purple-700
-                           transition"
+                    class="flex items-center gap-3 px-4 py-2.5 rounded-lg transition
+                           {% if request.resolver_match.url_name == 'register' %}
+                               bg-purple-600 text-white
+                           {% else %}
+                               text-gray-600 hover:bg-purple-50 hover:text-purple-700
+                           {% endif %}"
                 >
-                    <span>＋</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="9"/>
+                        <path d="M12 8v8M8 12h8"/>
+                    </svg>
                     <span>Register Member</span>
                 </a>
 
@@ -197,13 +230,19 @@
 
                     <a
                         href="{% url 'members:association_list' %}"
-                        class="flex items-center gap-3 px-4 py-2.5
-                               rounded-lg text-gray-600
-                               hover:bg-blue-mint
-                               hover:text-blue-700
-                               transition"
+                        class="flex items-center gap-3 px-4 py-2.5 rounded-lg transition
+                           {% if request.resolver_match.url_name == 'association_list' or request.resolver_match.url_name == 'association_create' or request.resolver_match.url_name == 'association_update' %}
+                               bg-purple-600 text-white
+                           {% else %}
+                               text-gray-600 hover:bg-blue-mint hover:text-blue-700
+                           {% endif %}"
                     >
-                        <span>♧</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <circle cx="8" cy="8" r="3"/>
+                            <circle cx="16" cy="8" r="3"/>
+                            <circle cx="12" cy="16" r="3"/>
+                            <path d="M10.5 10.5 12 13M13.5 10.5 12 13M8.5 10.5 10.5 14M15.5 10.5 13.5 14"/>
+                        </svg>
 
                         <span>
                             Church Associations
@@ -217,14 +256,17 @@
                 {% if user.is_superuser or user.profile.role == "diocese_admin" %}
 
                     <a
-                        href="#"
-                        class="flex items-center gap-3 px-4 py-2.5
-                               rounded-lg text-gray-600
-                               hover:bg-blue-mint
-                               hover:text-blue-700
-                               transition"
+                        href="{% url 'members:leadership_list' %}"
+                        class="flex items-center gap-3 px-4 py-2.5 rounded-lg transition
+                           {% if request.resolver_match.url_name == 'leadership_list' or request.resolver_match.url_name == 'leadership_create' or request.resolver_match.url_name == 'leadership_update' %}
+                               bg-purple-600 text-white
+                           {% else %}
+                               text-gray-600 hover:bg-blue-mint hover:text-blue-700
+                           {% endif %}"
                     >
-                        <span>★</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                            <path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z"/>
+                        </svg>
 
                         <span>
                             Leadership Positions
@@ -271,7 +313,10 @@
                    transition"
         >
 
-            <span></span>
+            <span><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="12" cy="8" r="3.5"/>
+                <path d="M5 21a7 7 0 0 1 14 0"/>
+            </svg>
 
             <span>
                 My Profile
@@ -297,7 +342,11 @@
                        transition"
             >
 
-                <span></span>
+                <span><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M10 17l5-5-5-5"/>
+                <path d="M15 12H3"/>
+                <path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/>
+            </svg>
 
                 <span>
                     Logout

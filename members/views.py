@@ -17,6 +17,7 @@ from .forms import (
     ChurchMemberForm,
     FamilyForm,
     MemberAssociationForm,
+    LeadershipPositionForm,
 )
 
 from .models import (
@@ -28,6 +29,7 @@ from .models import (
     Family,
     ChurchMember,
     ChurchAssociation,
+    LeadershipPosition,
 )
 
 
@@ -410,4 +412,94 @@ def member_associations(request, pk):
             "member": member,
             "form": form,
         }
+    )
+
+@login_required
+@never_cache
+def leadership_list(request):
+    positions = LeadershipPosition.objects.all().order_by("name")
+
+    context = {
+        "positions": positions,
+    }
+
+    return render(
+        request,
+        "members/leadership/list.html",
+        context,
+    )
+
+
+@login_required
+@never_cache
+@require_role("diocese_admin")
+def leadership_create(request):
+
+    if request.method == "POST":
+        form = LeadershipPositionForm(request.POST)
+
+        if form.is_valid():
+            form.save()
+
+            messages.success(
+                request,
+                "Leadership position created successfully."
+            )
+
+            return redirect("members:leadership_list")
+
+    else:
+        form = LeadershipPositionForm()
+
+    context = {
+        "form": form,
+    }
+
+    return render(
+        request,
+        "members/leadership/form.html",
+        context,
+    )
+
+
+@login_required
+@never_cache
+@require_role("diocese_admin")
+def leadership_update(request, pk):
+
+    position = get_object_or_404(
+        LeadershipPosition,
+        pk=pk
+    )
+
+    if request.method == "POST":
+        form = LeadershipPositionForm(
+            request.POST,
+            instance=position,
+        )
+
+        if form.is_valid():
+            form.save()
+
+            messages.success(
+                request,
+                "Leadership position updated successfully."
+            )
+
+            return redirect("members:leadership_list")
+
+    else:
+        form = LeadershipPositionForm(
+            instance=position
+        )
+
+    context = {
+        "form": form,
+        "position": position,
+    }
+
+    return render(
+        request,
+        "members/leadership/form.html",
+        context,
     )

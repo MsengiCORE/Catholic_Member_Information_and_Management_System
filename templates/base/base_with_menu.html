@@ -17,6 +17,9 @@
 
     <script src="https://cdn.datatables.net/2.3.3/js/dataTables.min.js"></script>
 
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
     <!-- Tailwind CSS v4 + DaisyUI -->
     {% load tailwind_tags %}
     {% tailwind_css %}
@@ -101,5 +104,48 @@
 
     {% block extra_js %}
     {% endblock %}
+
+    <!-- SweetAlert2 -->
+    {% if messages %}
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+
+                {% for message in messages %}
+
+                    Swal.fire({
+                        icon: "{% if message.tags == 'success' %}success{% elif message.tags == 'error' %}error{% elif message.tags == 'warning' %}warning{% else %}info{% endif %}",
+
+                        title: "{% if message.tags == 'success' %}Success{% elif message.tags == 'error' %}Error{% elif message.tags == 'warning' %}Warning{% else %}Information{% endif %}",
+
+                        text: "{{ message|escapejs }}",
+
+                        confirmButtonText: "OK",
+
+                        confirmButtonColor:
+                            "{% if message.tags == 'success' %}#16a34a{% else %}#7c3aed{% endif %}",
+
+                        background: "#e5e7eb",
+
+                        color: "#1f2937"
+                    });
+
+                {% endfor %}
+
+            });
+        </script>
+    {% endif %}
+
+    <!-- Footer -->
+    <div class="text-center bg-gray-200 m-4">
+
+        <p class="text-xs text-gray-800">
+            © {% now "Y" %} CCMIMS
+        </p>
+
+        <p class="text-xs text-gray-800 mt-1">
+            Catholic Church Member Information and Management System
+        </p>
+
+    </div>
 
 </body>

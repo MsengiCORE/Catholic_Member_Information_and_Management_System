@@ -1,0 +1,157 @@
+{% extends "base/base_with_menu.html" %}
+
+{% block content %}
+
+<div class="p-6">
+
+    <div class="flex items-center justify-between mb-6">
+
+        <div>
+            <h1 class="text-2xl font-bold text-gray-800">
+                Leadership Positions
+            </h1>
+
+            <p class="text-gray-500 mt-1">
+                Manage church leadership positions.
+            </p>
+        </div>
+
+        {% if user.is_superuser or user.profile.role == "diocese_admin" %}
+            <a href="{% url 'members:leadership_create' %}"
+               class="btn bg-purple-600 hover:bg-purple-700 text-white">
+                + Add Leadership Position
+            </a>
+        {% endif %}
+
+    </div>
+
+
+    <div class="bg-gray-200 rounded-xl shadow-sm p-5">
+
+        <div class="overflow-x-auto">
+
+            <table id="leadershipTable"
+                   class="display w-full">
+
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    {% for position in positions %}
+
+                    <tr>
+
+                        <td>{{ forloop.counter }}</td>
+
+                        <td>
+                            <span class="font-medium">
+                                {{ position.name }}
+                            </span>
+                        </td>
+
+                        <td>
+                            {{ position.description|default:"—" }}
+                        </td>
+
+                        <td>
+
+                            {% if position.is_active %}
+
+                                <span class="badge badge-success">
+                                    Active
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge badge-error">
+                                    Inactive
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            {% if user.is_superuser or user.profile.role == "diocese_admin" %}
+
+                                <a href="{% url 'members:leadership_update' position.pk %}"
+                                   class="btn btn-sm btn-outline">
+                                    Edit
+                                </a>
+
+                            {% else %}
+
+                                <span class="text-gray-400">
+                                    View only
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+                    </tr>
+
+                    {% empty %}
+
+                    <tr>
+                        <td colspan="5"
+                            class="text-center py-8 text-gray-500">
+                            No leadership positions found.
+                        </td>
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<link rel="stylesheet"
+      href="https://cdn.datatables.net/2.3.3/css/dataTables.dataTables.min.css">
+
+<script src="https://cdn.datatables.net/2.3.3/js/dataTables.min.js"></script>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    new DataTable("#leadershipTable", {
+
+        pageLength: 10,
+
+        lengthMenu: [10, 25, 50, 100],
+
+        order: [[1, "asc"]],
+
+        columnDefs: [
+            {
+                orderable: false,
+                targets: [4]
+            }
+        ]
+
+    });
+
+});
+
+</script>
+
+{% endblock %}

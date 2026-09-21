@@ -69,4 +69,22 @@ urlpatterns = [
         views.member_associations,
         name="member_associations",
     ),
+
+    path(
+        "leadership/",
+        views.leadership_list,
+        name="leadership_list",
+    ),
+
+    path(
+        "leadership/create/",
+        views.leadership_create,
+        name="leadership_create",
+    ),
+
+    path(
+        "leadership/<uuid:pk>/edit/",
+        views.leadership_update,
+        name="leadership_update",
+    ),
 ]

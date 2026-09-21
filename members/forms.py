@@ -719,3 +719,44 @@ class MemberAssociationForm(forms.ModelForm):
             .filter(is_active=True)
             .order_by("name")
         )
+
+class LeadershipPositionForm(forms.ModelForm):
+
+    class Meta:
+        model = LeadershipPosition
+
+        fields = [
+            "name",
+            "description",
+            "is_active",
+        ]
+
+        widgets = {
+            "name": forms.TextInput(attrs={
+                "class": "input input-bordered w-full",
+                "placeholder": "Enter leadership position",
+            }),
+
+            "description": forms.Textarea(attrs={
+                "class": "textarea textarea-bordered w-full",
+                "placeholder": "Enter leadership position description",
+                "rows": 4,
+            }),
+
+            "is_active": forms.CheckboxInput(attrs={
+                "class": "checkbox checkbox-primary",
+            }),
+        }
+
+    def clean_name(self):
+        name = self.cleaned_data["name"].strip()
+
+        if not name:
+            raise forms.ValidationError(
+                "Leadership position name is required."
+            )
+
+        return name
+
+    def clean_description(self):
+        return self.cleaned_data["description"].strip()
