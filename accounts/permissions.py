@@ -2,15 +2,22 @@ from functools import wraps
 
 from django.core.exceptions import PermissionDenied
 
+from .models import UserProfile
 
 def get_user_profile(user):
     """
     Return the CCMIMS UserProfile for an authenticated user.
+
+    The profile is retrieved directly from the database instead of
+    relying on Django's reverse OneToOne relation cache.
     """
+
     if not user.is_authenticated:
         return None
 
-    return getattr(user, "profile", None)
+    return UserProfile.objects.filter(
+        user_id=user.id
+    ).first()
 
 
 def is_superuser(user):
@@ -204,3 +211,119 @@ def can_access_scc(user, scc):
         return profile.small_christian_community_id == scc.id
 
     return False
+
+def can_access_member(user, member):
+    """
+    Determine whether a user is allowed to access
+    a specific ChurchMember record.
+    """
+
+    if not user.is_authenticated:
+        return False
+
+    if user.is_superuser:
+        return True
+
+    profile = get_user_profile(user)
+
+    if profile is None:
+        return False
+
+    # Church Member:
+    # can access only their own ChurchMember profile.
+    if profile.role == UserProfile.Role.CHURCH_MEMBER:
+        return member.user_id == user.id
+
+    # Diocese Administrator:
+    if profile.role == UserProfile.Role.DIOCESE_ADMIN:
+        if profile.diocese_id is None:
+            return False
+
+        return (
+            member.small_christian_community_id is not None
+            and
+            member.small_christian_community.zone.parish.deanery.diocese_id
+            == profile.diocese_id
+        )
+
+    # Parish Administrator:
+    if profile.role == UserProfile.Role.PARISH_ADMIN:
+        if profile.parish_id is None:
+            return False
+
+        return (
+            member.small_christian_community_id is not None
+            and
+            member.small_christian_community.zone.parish_id
+            == profile.parish_id
+        )
+
+    # SCC / Community Leader:
+    if profile.role == UserProfile.Role.SCC_LEADER:
+        if profile.small_christian_community_id is None:
+            return False
+
+        return (
+            member.small_christian_community_id
+            == profile.small_christian_community_id
+        )
+
+    return False
+
+def get_accessible_members(user, queryset):
+    """
+    Return only ChurchMember records that the user
+    is authorized to access.
+    """
+
+    if not user.is_authenticated:
+        return queryset.none()
+
+    if user.is_superuser:
+        return queryset
+
+    profile = get_user_profile(user)
+
+    if profile is None:
+        return queryset.none()
+
+    # Diocese Administrator
+    if profile.role == UserProfile.Role.DIOCESE_ADMIN:
+
+        if profile.diocese_id is None:
+            return queryset.none()
+
+        return queryset.filter(
+            small_christian_community__zone__parish__deanery__diocese_id=
+            profile.diocese_id
+        )
+
+    # Parish Administrator
+    if profile.role == UserProfile.Role.PARISH_ADMIN:
+
+        if profile.parish_id is None:
+            return queryset.none()
+
+        return queryset.filter(
+            small_christian_community__zone__parish_id=
+            profile.parish_id
+        )
+
+    # SCC / Community Leader
+    if profile.role == UserProfile.Role.SCC_LEADER:
+
+        if profile.small_christian_community_id is None:
+            return queryset.none()
+
+        return queryset.filter(
+            small_christian_community_id=
+            profile.small_christian_community_id
+        )
+
+    # Church Member
+    if profile.role == UserProfile.Role.CHURCH_MEMBER:
+        return queryset.filter(
+            user_id=user.id
+        )
+
+    return queryset.none()

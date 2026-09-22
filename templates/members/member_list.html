@@ -82,6 +82,224 @@
 
     </div>
 
+    <!-- Organizational Filters -->
+    <div class="bg-gray-200 rounded-xl shadow-sm border border-gray-200 p-5 mb-6">
+
+        <div class="flex items-center justify-between mb-5">
+            <div>
+                <h2 class="text-lg font-semibold text-gray-800">
+                    Filter Church Members
+                </h2>
+                <p class="text-sm text-gray-500 mt-1">
+                    Filter members by their church organizational unit.
+                </p>
+            </div>
+
+            <a
+                href="{% url 'members:member_list' %}"
+                class="btn btn-sm btn-outline"
+            >
+                Clear Filters
+            </a>
+        </div>
+
+        <form method="get" id="memberFilterForm">
+
+            <!-- Keep text search -->
+            <input
+                type="hidden"
+                name="q"
+                value="{{ query }}"
+            >
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+                <!-- Diocese -->
+                <div>
+                    <label class="label">
+                        <span class="label-text font-medium">
+                            Diocese
+                        </span>
+                    </label>
+
+                    <select
+                        name="diocese"
+                        id="dioceseFilter"
+                        class="select select-bordered w-full"
+                    >
+                        <option value="">All Dioceses</option>
+
+                        {% for diocese in dioceses %}
+                            <option
+                                value="{{ diocese.id }}"
+                                {% if selected_diocese == diocese.id|stringformat:"s" %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ diocese.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Deanery -->
+                <div>
+                    <label class="label">
+                        <span class="label-text font-medium">
+                            Deanery
+                        </span>
+                    </label>
+
+                    <select
+                        name="deanery"
+                        id="deaneryFilter"
+                        class="select select-bordered w-full"
+                        {% if not selected_diocese %}disabled{% endif %}
+                    >
+                        <option value="">All Deaneries</option>
+
+                        {% for deanery in deaneries %}
+                            <option
+                                value="{{ deanery.id }}"
+                                {% if selected_deanery == deanery.id|stringformat:"s" %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ deanery.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Parish -->
+                <div>
+                    <label class="label">
+                        <span class="label-text font-medium">
+                            Parish
+                        </span>
+                    </label>
+
+                    <select
+                        name="parish"
+                        id="parishFilter"
+                        class="select select-bordered w-full"
+                        {% if not selected_deanery %}disabled{% endif %}
+                    >
+                        <option value="">All Parishes</option>
+
+                        {% for parish in parishes %}
+                            <option
+                                value="{{ parish.id }}"
+                                {% if selected_parish == parish.id|stringformat:"s" %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ parish.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Zone -->
+                <div>
+                    <label class="label">
+                        <span class="label-text font-medium">
+                            Zone
+                        </span>
+                    </label>
+
+                    <select
+                        name="zone"
+                        id="zoneFilter"
+                        class="select select-bordered w-full"
+                        {% if not selected_parish %}disabled{% endif %}
+                    >
+                        <option value="">All Zones</option>
+
+                        {% for zone in zones %}
+                            <option
+                                value="{{ zone.id }}"
+                                {% if selected_zone == zone.id|stringformat:"s" %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ zone.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- SCC -->
+                <div>
+                    <label class="label">
+                        <span class="label-text font-medium">
+                            Small Christian Community
+                        </span>
+                    </label>
+
+                    <select
+                        name="scc"
+                        id="sccFilter"
+                        class="select select-bordered w-full"
+                        {% if not selected_zone %}disabled{% endif %}
+                    >
+                        <option value="">All SCCs</option>
+
+                        {% for scc in small_christian_communities %}
+                            <option
+                                value="{{ scc.id }}"
+                                {% if selected_scc == scc.id|stringformat:"s" %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ scc.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Family -->
+                <div>
+                    <label class="label">
+                        <span class="label-text font-medium">
+                            Family
+                        </span>
+                    </label>
+
+                    <select
+                        name="family"
+                        id="familyFilter"
+                        class="select select-bordered w-full"
+                    >
+                        <option value="">All Families</option>
+
+                        {% for family in families %}
+                            <option
+                                value="{{ family }}"
+                                {% if selected_family == family %}
+                                    selected
+                                {% endif %}
+                            >
+                                {{ family }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="flex justify-end mt-5">
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                >
+                    Apply Filters
+                </button>
+            </div>
+
+        </form>
+    </div>
+
 
     <!-- Results -->
     <div class="bg-gray-200 rounded-xl shadow-sm overflow-hidden">
@@ -250,6 +468,323 @@
             }
         });
     });
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const dioceseFilter = document.getElementById("dioceseFilter");
+    const deaneryFilter = document.getElementById("deaneryFilter");
+    const parishFilter = document.getElementById("parishFilter");
+    const zoneFilter = document.getElementById("zoneFilter");
+    const sccFilter = document.getElementById("sccFilter");
+
+
+    const deaneryUrl = "{% url 'members:get_deaneries' %}";
+    const parishUrl = "{% url 'members:get_parishes' %}";
+    const zoneUrl = "{% url 'members:get_zones' %}";
+    const sccUrl = "{% url 'members:get_small_christian_communities' %}";
+
+
+    // ---------------------------------------------------------
+    // Reset a select field
+    // ---------------------------------------------------------
+    function resetSelect(select, placeholder) {
+
+        select.innerHTML = `
+            <option value="">${placeholder}</option>
+        `;
+
+        select.disabled = true;
+    }
+
+
+    // ---------------------------------------------------------
+    // Populate a select field
+    // ---------------------------------------------------------
+    function populateSelect(select, items, placeholder) {
+
+        select.innerHTML = `
+            <option value="">${placeholder}</option>
+        `;
+
+        items.forEach(item => {
+
+            const option = document.createElement("option");
+
+            option.value = item.id;
+            option.textContent = item.name;
+
+            select.appendChild(option);
+        });
+
+        select.disabled = false;
+    }
+
+
+    // ---------------------------------------------------------
+    // Load data from AJAX endpoint
+    // ---------------------------------------------------------
+    async function loadOptions(url, parameter, value) {
+
+        const response = await fetch(
+            `${url}?${parameter}=${encodeURIComponent(value)}`,
+            {
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(
+                "Failed to load organizational data."
+            );
+        }
+
+        return await response.json();
+    }
+
+
+    // =========================================================
+    // DIOCESE → DEANERY
+    // =========================================================
+    dioceseFilter.addEventListener("change", async function () {
+
+        const dioceseId = this.value;
+
+
+        // Reset everything below Diocese
+        resetSelect(
+            deaneryFilter,
+            "Loading Deaneries..."
+        );
+
+        resetSelect(
+            parishFilter,
+            "Select Deanery first"
+        );
+
+        resetSelect(
+            zoneFilter,
+            "Select Parish first"
+        );
+
+        resetSelect(
+            sccFilter,
+            "Select Zone first"
+        );
+
+
+        if (!dioceseId) {
+
+            resetSelect(
+                deaneryFilter,
+                "Select Diocese first"
+            );
+
+            return;
+        }
+
+
+        try {
+
+            const data = await loadOptions(
+                deaneryUrl,
+                "diocese",
+                dioceseId
+            );
+
+
+            populateSelect(
+                deaneryFilter,
+                data,
+                "All Deaneries"
+            );
+
+        } catch (error) {
+
+            console.error(error);
+
+            resetSelect(
+                deaneryFilter,
+                "Unable to load Deaneries"
+            );
+        }
+    });
+
+
+    // =========================================================
+    // DEANERY → PARISH
+    // =========================================================
+    deaneryFilter.addEventListener("change", async function () {
+
+        const deaneryId = this.value;
+
+
+        resetSelect(
+            parishFilter,
+            "Loading Parishes..."
+        );
+
+        resetSelect(
+            zoneFilter,
+            "Select Parish first"
+        );
+
+        resetSelect(
+            sccFilter,
+            "Select Zone first"
+        );
+
+
+        if (!deaneryId) {
+
+            resetSelect(
+                parishFilter,
+                "Select Deanery first"
+            );
+
+            return;
+        }
+
+
+        try {
+
+            const data = await loadOptions(
+                parishUrl,
+                "deanery",
+                deaneryId
+            );
+
+
+            populateSelect(
+                parishFilter,
+                data,
+                "All Parishes"
+            );
+
+        } catch (error) {
+
+            console.error(error);
+
+            resetSelect(
+                parishFilter,
+                "Unable to load Parishes"
+            );
+        }
+    });
+
+
+    // =========================================================
+    // PARISH → ZONE
+    // =========================================================
+    parishFilter.addEventListener("change", async function () {
+
+        const parishId = this.value;
+
+
+        resetSelect(
+            zoneFilter,
+            "Loading Zones..."
+        );
+
+        resetSelect(
+            sccFilter,
+            "Select Zone first"
+        );
+
+
+        if (!parishId) {
+
+            resetSelect(
+                zoneFilter,
+                "Select Parish first"
+            );
+
+            return;
+        }
+
+
+        try {
+
+            const data = await loadOptions(
+                zoneUrl,
+                "parish",
+                parishId
+            );
+
+
+            populateSelect(
+                zoneFilter,
+                data,
+                "All Zones"
+            );
+
+        } catch (error) {
+
+            console.error(error);
+
+            resetSelect(
+                zoneFilter,
+                "Unable to load Zones"
+            );
+        }
+    });
+
+
+    // =========================================================
+    // ZONE → SMALL CHRISTIAN COMMUNITY
+    // =========================================================
+    zoneFilter.addEventListener("change", async function () {
+
+        const zoneId = this.value;
+
+
+        resetSelect(
+            sccFilter,
+            "Loading SCCs..."
+        );
+
+
+        if (!zoneId) {
+
+            resetSelect(
+                sccFilter,
+                "Select Zone first"
+            );
+
+            return;
+        }
+
+
+        try {
+
+            const data = await loadOptions(
+                sccUrl,
+                "zone",
+                zoneId
+            );
+
+
+            populateSelect(
+                sccFilter,
+                data,
+                "All SCCs"
+            );
+
+        } catch (error) {
+
+            console.error(error);
+
+            resetSelect(
+                sccFilter,
+                "Unable to load SCCs"
+            );
+        }
+    });
+
+});
 </script>
 
 {% endblock %}

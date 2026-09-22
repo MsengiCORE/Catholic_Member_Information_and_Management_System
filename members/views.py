@@ -12,7 +12,14 @@ from accounts.permissions import require_role
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 from django.core.exceptions import PermissionDenied
-from accounts.permissions import can_manage_members
+
+from accounts.permissions import (
+    can_access_member,
+    can_manage_members,
+    get_accessible_members,
+    is_church_member,
+    can_access_scc,
+)
 
 from .forms import (
     ChurchAssociationForm,
@@ -140,11 +147,18 @@ def get_small_christian_communities(request):
     return JsonResponse(data, safe=False)
 
 
+@login_required
+@never_cache
 def register_family(request):
     if request.method == "POST":
         form = FamilyForm(request.POST)
 
         if form.is_valid():
+            scc = form.cleaned_data["small_christian_community"]
+
+            if not can_access_scc(request.user, scc):
+                raise PermissionDenied
+
             form.save()
 
             messages.success(
@@ -259,6 +273,9 @@ def register_new_member(request):
                 "small_christian_community"
             ]
 
+            if not can_access_scc(request.user, scc):
+                raise PermissionDenied
+
             member.small_christian_community = scc
 
             family_name = (
@@ -317,14 +334,30 @@ def register_new_member(request):
 @login_required
 @never_cache
 def member_list(request):
-
-    if not can_manage_members(request.user):
+    if not can_manage_members(request.user) and not is_church_member(request.user):
         raise PermissionDenied
 
     query = request.GET.get("q", "").strip()
 
-    members = ChurchMember.objects.all()
+    diocese_id = request.GET.get("diocese", "").strip()
+    deanery_id = request.GET.get("deanery", "").strip()
+    parish_id = request.GET.get("parish", "").strip()
+    zone_id = request.GET.get("zone", "").strip()
+    scc_id = request.GET.get("scc", "").strip()
+    family_name = request.GET.get("family", "").strip()
 
+    members = ChurchMember.objects.select_related(
+        "small_christian_community__zone__parish__deanery__diocese"
+    ).all()
+
+    members = get_accessible_members(
+        request.user,
+        members,
+    )
+
+    # ---------------------------------------------------------
+    # Text search
+    # ---------------------------------------------------------
     if query:
         members = members.filter(
             Q(digital_offering_number__icontains=query)
@@ -335,15 +368,183 @@ def member_list(request):
             | Q(email__icontains=query)
         )
 
+    # ---------------------------------------------------------
+    # Organizational filters
+    # ---------------------------------------------------------
+    if diocese_id:
+        members = members.filter(
+            small_christian_community__zone__parish__deanery__diocese_id=diocese_id
+        )
+
+    if deanery_id:
+        members = members.filter(
+            small_christian_community__zone__parish__deanery_id=deanery_id
+        )
+
+    if parish_id:
+        members = members.filter(
+            small_christian_community__zone__parish_id=parish_id
+        )
+
+    if zone_id:
+        members = members.filter(
+            small_christian_community__zone_id=zone_id
+        )
+
+    if scc_id:
+        members = members.filter(
+            small_christian_community_id=scc_id
+        )
+
+    # ---------------------------------------------------------
+    # Family filter
+    # Family is intentionally a CharField.
+    # ---------------------------------------------------------
     members = members.order_by(
         "last_name",
         "first_name",
         "middle_name",
     )
 
+    # Keep the queryset before applying the family filter
+    # so that the family dropdown can be populated correctly.
+    family_members = members
+
+    if family_name:
+        members = members.filter(
+            family__iexact=family_name
+        )
+
+    # ---------------------------------------------------------
+    # Filter option querysets
+    # Respect the user's organizational scope.
+    # ---------------------------------------------------------
+
+    profile = None
+
+    if not request.user.is_superuser:
+        from accounts.permissions import get_user_profile
+
+        profile = get_user_profile(request.user)
+
+
+    # ---------------------------------------------------------
+    # Diocese filter
+    # ---------------------------------------------------------
+
+    if request.user.is_superuser:
+        dioceses = Diocese.objects.filter(
+            is_active=True
+        ).order_by("name")
+
+    elif profile and profile.role == "diocese_admin":
+        dioceses = Diocese.objects.filter(
+            id=profile.diocese_id,
+            is_active=True,
+        ).order_by("name")
+
+    elif profile and profile.role == "parish_admin":
+        if profile.parish_id:
+            dioceses = Diocese.objects.filter(
+                id=profile.parish.deanery.diocese_id,
+                is_active=True,
+            ).order_by("name")
+        else:
+            dioceses = Diocese.objects.none()
+
+    elif profile and profile.role == "scc_leader":
+        if profile.small_christian_community_id:
+            dioceses = Diocese.objects.filter(
+                id=profile.small_christian_community.zone.parish.deanery.diocese_id,
+                is_active=True,
+            ).order_by("name")
+        else:
+            dioceses = Diocese.objects.none()
+
+    else:
+        dioceses = Diocese.objects.none()
+
+
+    # ---------------------------------------------------------
+    # Deanery filter
+    # ---------------------------------------------------------
+
+    deaneries = Deanery.objects.none()
+
+    if diocese_id:
+        deaneries = Deanery.objects.filter(
+            diocese_id=diocese_id,
+            is_active=True,
+        ).order_by("name")
+
+
+    # ---------------------------------------------------------
+    # Parish filter
+    # ---------------------------------------------------------
+
+    parishes = Parish.objects.none()
+
+    if deanery_id:
+        parishes = Parish.objects.filter(
+            deanery_id=deanery_id,
+            is_active=True,
+        ).order_by("name")
+
+
+    # ---------------------------------------------------------
+    # Zone filter
+    # ---------------------------------------------------------
+
+    zones = Zone.objects.none()
+
+    if parish_id:
+        zones = Zone.objects.filter(
+            parish_id=parish_id,
+            is_active=True,
+        ).order_by("name")
+
+
+    # ---------------------------------------------------------
+    # Small Christian Community filter
+    # ---------------------------------------------------------
+
+    small_christian_communities = SmallChristianCommunity.objects.none()
+
+    if zone_id:
+        small_christian_communities = SmallChristianCommunity.objects.filter(
+            zone_id=zone_id,
+            is_active=True,
+        ).order_by("name")
+
+    # Family names are derived from ChurchMember because
+    # ChurchMember.family is currently a CharField.
+    families = (
+        family_members
+        .exclude(family="")
+        .values_list("family", flat=True)
+        .distinct()
+        .order_by("family")
+    )
+
     context = {
         "members": members,
         "query": query,
+
+        # Selected filters
+        "selected_diocese": diocese_id,
+        "selected_deanery": deanery_id,
+        "selected_parish": parish_id,
+        "selected_zone": zone_id,
+        "selected_scc": scc_id,
+        "selected_family": family_name,
+
+        # Filter options
+        "dioceses": dioceses,
+        "deaneries": deaneries,
+        "parishes": parishes,
+        "zones": zones,
+        "small_christian_communities": small_christian_communities,
+        "families": families,
     }
 
     return render(
@@ -356,9 +557,6 @@ def member_list(request):
 @never_cache
 def member_detail(request, pk):
 
-    if not can_manage_members(request.user):
-        raise PermissionDenied
-
     member = get_object_or_404(
         ChurchMember.objects
         .select_related(
@@ -370,6 +568,9 @@ def member_detail(request, pk):
         ),
         pk=pk,
     )
+
+    if not can_access_member(request.user, member):
+        raise PermissionDenied
 
     context = {
         "member": member,
@@ -384,52 +585,30 @@ def member_detail(request, pk):
 @login_required
 @never_cache
 def member_update(request, pk):
+    member = get_object_or_404(ChurchMember, pk=pk)
 
-    if not can_manage_members(request.user):
+    if not can_access_member(request.user, member):
         raise PermissionDenied
 
-    member = get_object_or_404(
-        ChurchMember,
-        pk=pk,
-    )
-
     if request.method == "POST":
-
-        form = ChurchMemberForm(
-            request.POST,
-            instance=member,
-        )
+        form = ChurchMemberForm(request.POST, instance=member)
 
         if form.is_valid():
-
             form.save()
-
             messages.success(
                 request,
                 "Church member information updated successfully."
             )
-
-            return redirect(
-                "members:member_detail",
-                pk=member.pk,
-            )
-
+            return redirect("members:member_detail", pk=member.pk)
     else:
-
-        form = ChurchMemberForm(
-            instance=member,
-        )
+        form = ChurchMemberForm(instance=member)
 
     context = {
         "form": form,
         "member": member,
     }
 
-    return render(
-        request,
-        "members/member_form.html",
-        context,
-    )
+    return render(request, "members/member_form.html", context)
 
 
 @login_required
@@ -563,14 +742,13 @@ def association_update(request, pk):
 @login_required
 @never_cache
 def member_associations(request, pk):
-
     if not can_manage_members(request.user):
         raise PermissionDenied
 
-    member = get_object_or_404(
-        ChurchMember,
-        pk=pk
-    )
+    member = get_object_or_404(ChurchMember, pk=pk)
+
+    if not can_access_member(request.user, member):
+        raise PermissionDenied
 
     if request.method == "POST":
 
@@ -701,14 +879,13 @@ def leadership_update(request, pk):
 @login_required
 @never_cache
 def member_leadership(request, pk):
-
     if not can_manage_members(request.user):
         raise PermissionDenied
 
-    member = get_object_or_404(
-        ChurchMember,
-        pk=pk
-    )
+    member = get_object_or_404(ChurchMember, pk=pk)
+
+    if not can_access_member(request.user, member):
+        raise PermissionDenied
 
     if request.method == "POST":
 
