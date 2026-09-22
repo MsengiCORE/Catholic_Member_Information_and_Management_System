@@ -583,3 +583,436 @@ class MemberScopeViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "VIEW-001")
         self.assertNotContains(response, "VIEW-002")
+
+class ProtectedMemberOperationTests(TestCase):
+
+    def setUp(self):
+        User = get_user_model()
+
+        # -----------------------------------------------------
+        # Organization
+        # -----------------------------------------------------
+        self.diocese_1 = Diocese.objects.create(
+            name="Operation Test Diocese One"
+        )
+
+        self.diocese_2 = Diocese.objects.create(
+            name="Operation Test Diocese Two"
+        )
+
+        self.deanery_1 = Deanery.objects.create(
+            diocese=self.diocese_1,
+            name="Operation Test Deanery One"
+        )
+
+        self.deanery_2 = Deanery.objects.create(
+            diocese=self.diocese_2,
+            name="Operation Test Deanery Two"
+        )
+
+        self.parish_1 = Parish.objects.create(
+            deanery=self.deanery_1,
+            name="Operation Test Parish One"
+        )
+
+        self.parish_2 = Parish.objects.create(
+            deanery=self.deanery_2,
+            name="Operation Test Parish Two"
+        )
+
+        self.zone_1 = Zone.objects.create(
+            parish=self.parish_1,
+            name="Operation Test Zone One"
+        )
+
+        self.zone_2 = Zone.objects.create(
+            parish=self.parish_2,
+            name="Operation Test Zone Two"
+        )
+
+        self.scc_1 = SmallChristianCommunity.objects.create(
+            zone=self.zone_1,
+            name="Operation Test SCC One"
+        )
+
+        self.scc_2 = SmallChristianCommunity.objects.create(
+            zone=self.zone_2,
+            name="Operation Test SCC Two"
+        )
+
+        # -----------------------------------------------------
+        # Users
+        # -----------------------------------------------------
+        self.superuser = User.objects.create_superuser(
+            username="operation_superuser",
+            password="testpass123"
+        )
+
+        self.diocese_admin = User.objects.create_user(
+            username="operation_diocese_admin",
+            password="testpass123"
+        )
+
+        self.parish_admin = User.objects.create_user(
+            username="operation_parish_admin",
+            password="testpass123"
+        )
+
+        self.scc_leader = User.objects.create_user(
+            username="operation_scc_leader",
+            password="testpass123"
+        )
+
+        self.church_member_user = User.objects.create_user(
+            username="operation_church_member",
+            password="testpass123"
+        )
+
+        self.other_member_user = User.objects.create_user(
+            username="operation_other_member",
+            password="testpass123"
+        )
+
+        # -----------------------------------------------------
+        # Profiles
+        # -----------------------------------------------------
+        profile = UserProfile.objects.get(user=self.diocese_admin)
+        profile.role = UserProfile.Role.DIOCESE_ADMIN
+        profile.diocese = self.diocese_1
+        profile.save()
+
+        profile = UserProfile.objects.get(user=self.parish_admin)
+        profile.role = UserProfile.Role.PARISH_ADMIN
+        profile.diocese = self.diocese_1
+        profile.parish = self.parish_1
+        profile.save()
+
+        profile = UserProfile.objects.get(user=self.scc_leader)
+        profile.role = UserProfile.Role.SCC_LEADER
+        profile.diocese = self.diocese_1
+        profile.parish = self.parish_1
+        profile.small_christian_community = self.scc_1
+        profile.save()
+
+        profile = UserProfile.objects.get(user=self.church_member_user)
+        profile.role = UserProfile.Role.CHURCH_MEMBER
+        profile.save()
+
+        profile = UserProfile.objects.get(user=self.other_member_user)
+        profile.role = UserProfile.Role.CHURCH_MEMBER
+        profile.save()
+
+        # -----------------------------------------------------
+        # Members
+        # -----------------------------------------------------
+        self.member_1 = ChurchMember.objects.create(
+            user=self.church_member_user,
+            digital_offering_number="OP-001",
+            first_name="Operation",
+            middle_name="Member",
+            last_name="One",
+            date_of_birth="1995-01-01",
+            marital_status="single",
+            phone_number="0711000021",
+            ward="Ward One",
+            district="District One",
+            region="Region One",
+            baptism_status="baptized",
+            small_christian_community=self.scc_1,
+            family="Family One",
+        )
+
+        self.member_2 = ChurchMember.objects.create(
+            user=self.other_member_user,
+            digital_offering_number="OP-002",
+            first_name="Operation",
+            middle_name="Member",
+            last_name="Two",
+            date_of_birth="1996-01-01",
+            marital_status="single",
+            phone_number="0711000022",
+            ward="Ward Two",
+            district="District Two",
+            region="Region Two",
+            baptism_status="baptized",
+            small_christian_community=self.scc_2,
+            family="Family Two",
+        )
+
+    # =========================================================
+    # MEMBER UPDATE
+    # =========================================================
+
+    def test_diocese_admin_can_update_member_in_own_diocese(self):
+        self.client.force_login(self.diocese_admin)
+
+        response = self.client.get(
+            reverse(
+                "members:member_update",
+                kwargs={"pk": self.member_1.pk},
+            )
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_diocese_admin_cannot_update_member_outside_own_diocese(self):
+        self.client.force_login(self.diocese_admin)
+
+        response = self.client.get(
+            reverse(
+                "members:member_update",
+                kwargs={"pk": self.member_2.pk},
+            )
+        )
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_parish_admin_can_update_member_in_own_parish(self):
+        self.client.force_login(self.parish_admin)
+
+        response = self.client.get(
+            reverse(
+                "members:member_update",
+                kwargs={"pk": self.member_1.pk},
+            )
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_parish_admin_cannot_update_member_outside_own_parish(self):
+        self.client.force_login(self.parish_admin)
+
+        response = self.client.get(
+            reverse(
+                "members:member_update",
+                kwargs={"pk": self.member_2.pk},
+            )
+        )
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_scc_leader_can_update_member_in_own_scc(self):
+        self.client.force_login(self.scc_leader)
+
+        response = self.client.get(
+            reverse(
+                "members:member_update",
+                kwargs={"pk": self.member_1.pk},
+            )
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_scc_leader_cannot_update_member_outside_own_scc(self):
+        self.client.force_login(self.scc_leader)
+
+        response = self.client.get(
+            reverse(
+                "members:member_update",
+                kwargs={"pk": self.member_2.pk},
+            )
+        )
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_church_member_can_update_own_profile(self):
+        self.client.force_login(self.church_member_user)
+
+        response = self.client.get(
+            reverse(
+                "members:member_update",
+                kwargs={"pk": self.member_1.pk},
+            )
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_church_member_cannot_update_another_member(self):
+        self.client.force_login(self.church_member_user)
+
+        response = self.client.get(
+            reverse(
+                "members:member_update",
+                kwargs={"pk": self.member_2.pk},
+            )
+        )
+
+        self.assertEqual(response.status_code, 403)
+
+    # =========================================================
+    # MEMBER ASSOCIATIONS
+    # =========================================================
+
+    def test_diocese_admin_can_manage_associations_for_own_member(self):
+        self.client.force_login(self.diocese_admin)
+
+        response = self.client.get(
+            reverse(
+                "members:member_associations",
+                kwargs={"pk": self.member_1.pk},
+            )
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_diocese_admin_cannot_manage_associations_outside_diocese(self):
+        self.client.force_login(self.diocese_admin)
+
+        response = self.client.get(
+            reverse(
+                "members:member_associations",
+                kwargs={"pk": self.member_2.pk},
+            )
+        )
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_parish_admin_can_manage_associations_for_own_member(self):
+        self.client.force_login(self.parish_admin)
+
+        response = self.client.get(
+            reverse(
+                "members:member_associations",
+                kwargs={"pk": self.member_1.pk,
+                },
+            )
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_parish_admin_cannot_manage_associations_outside_parish(self):
+        self.client.force_login(self.parish_admin)
+
+        response = self.client.get(
+            reverse(
+                "members:member_associations",
+                kwargs={"pk": self.member_2.pk,
+                },
+            )
+        )
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_scc_leader_can_manage_associations_for_own_member(self):
+        self.client.force_login(self.scc_leader)
+
+        response = self.client.get(
+            reverse(
+                "members:member_associations",
+                kwargs={"pk": self.member_1.pk},
+            )
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_scc_leader_cannot_manage_associations_outside_scc(self):
+        self.client.force_login(self.scc_leader)
+
+        response = self.client.get(
+            reverse(
+                "members:member_associations",
+                kwargs={"pk": self.member_2.pk},
+            )
+        )
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_church_member_cannot_manage_associations(self):
+        self.client.force_login(self.church_member_user)
+
+        response = self.client.get(
+            reverse(
+                "members:member_associations",
+                kwargs={"pk": self.member_1.pk},
+            )
+        )
+
+        self.assertEqual(response.status_code, 403)
+
+    # =========================================================
+    # MEMBER LEADERSHIP
+    # =========================================================
+
+    def test_diocese_admin_can_manage_leadership_for_own_member(self):
+        self.client.force_login(self.diocese_admin)
+
+        response = self.client.get(
+            reverse(
+                "members:member_leadership",
+                kwargs={"pk": self.member_1.pk},
+            )
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_diocese_admin_cannot_manage_leadership_outside_diocese(self):
+        self.client.force_login(self.diocese_admin)
+
+        response = self.client.get(
+            reverse(
+                "members:member_leadership",
+                kwargs={"pk": self.member_2.pk},
+            )
+        )
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_parish_admin_can_manage_leadership_for_own_member(self):
+        self.client.force_login(self.parish_admin)
+
+        response = self.client.get(
+            reverse(
+                "members:member_leadership",
+                kwargs={"pk": self.member_1.pk},
+            )
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_parish_admin_cannot_manage_leadership_outside_parish(self):
+        self.client.force_login(self.parish_admin)
+
+        response = self.client.get(
+            reverse(
+                "members:member_leadership",
+                kwargs={"pk": self.member_2.pk},
+            )
+        )
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_scc_leader_can_manage_leadership_for_own_member(self):
+        self.client.force_login(self.scc_leader)
+
+        response = self.client.get(
+            reverse(
+                "members:member_leadership",
+                kwargs={"pk": self.member_1.pk},
+            )
+        )
+
+        self.assertEqual(response.status_code, 200)
+
+    def test_scc_leader_cannot_manage_leadership_outside_scc(self):
+        self.client.force_login(self.scc_leader)
+
+        response = self.client.get(
+            reverse(
+                "members:member_leadership",
+                kwargs={"pk": self.member_2.pk},
+            )
+        )
+
+        self.assertEqual(response.status_code, 403)
+
+    def test_church_member_cannot_manage_leadership(self):
+        self.client.force_login(self.church_member_user)
+
+        response = self.client.get(
+            reverse(
+                "members:member_leadership",
+                kwargs={"pk": self.member_1.pk},
+            )
+        )
+
+        self.assertEqual(response.status_code, 403)
