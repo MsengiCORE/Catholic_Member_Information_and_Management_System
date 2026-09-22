@@ -5,9 +5,33 @@ app_name = "members"
 
 urlpatterns = [
     path(
+        "view-members/",
+        views.member_list,
+        name="member_list",
+    ),
+
+    path(
+        "member-details/<uuid:pk>/",
+        views.member_detail,
+        name="member_detail",
+    ),
+
+    path(
+        "member-info/<uuid:pk>/edit/",
+        views.member_update,
+        name="member_update",
+    ),
+
+    path(
         "register/",
         views.register_member,
         name="register",
+    ),
+
+    path(
+        "register-new-member/",
+        views.register_new_member,
+        name="register_new_member",
     ),
 
     path(
@@ -65,7 +89,7 @@ urlpatterns = [
     ),
 
     path(
-        "members/<uuid:pk>/associations/",
+        "member-associations/<uuid:pk>/associations/",
         views.member_associations,
         name="member_associations",
     ),
@@ -89,7 +113,7 @@ urlpatterns = [
     ),
 
     path(
-        "members/<uuid:pk>/leadership/",
+        "member-leadership/<uuid:pk>/leadership/",
         views.member_leadership,
         name="member_leadership",
     ),

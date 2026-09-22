@@ -42,7 +42,7 @@
 
 
     <!-- Association Form -->
-    <div class="card bg-base-100 shadow-md">
+    <div class="card bg-gray-200 shadow-md">
 
         <div class="card-body">
 
@@ -67,7 +67,7 @@
 
                         <label
                             class="flex items-center gap-3 p-3
-                                   rounded-lg bg-green-mint
+                                   rounded-lg bg-gray-300
                                    cursor-pointer hover:shadow-sm"
                         >
 
@@ -94,7 +94,7 @@
                 <div class="flex justify-end gap-3 mt-6">
 
                     <a
-                        href="{% url 'members:dashboard' %}"
+                        href="{% url 'members:member_detail' member.pk %}"
                         class="btn btn-ghost"
                     >
                         Cancel

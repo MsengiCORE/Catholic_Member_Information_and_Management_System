@@ -1,4 +1,6 @@
 from django.db import transaction
+from django.db.models import Q
+
 from django.contrib import messages
 from django.http import JsonResponse
 from django.shortcuts import (
@@ -186,6 +188,8 @@ def register_member(request):
                 "small_christian_community"
             ]
 
+            member.small_christian_community = scc
+
             family_name = (
                 form.cleaned_data
                 .get("family", "")
@@ -236,6 +240,195 @@ def register_member(request):
         {
             "form": form,
         },
+    )
+
+@login_required
+@never_cache
+@transaction.atomic
+def register_new_member(request):
+
+    if request.method == "POST":
+
+        form = ChurchMemberForm(request.POST)
+
+        if form.is_valid():
+
+            member = form.save(commit=False)
+
+            scc = form.cleaned_data[
+                "small_christian_community"
+            ]
+
+            member.small_christian_community = scc
+
+            family_name = (
+                form.cleaned_data
+                .get("family", "")
+                .strip()
+            )
+
+            if family_name:
+
+                family = Family.objects.filter(
+                    small_christian_community=scc,
+                    name__iexact=family_name,
+                    is_active=True,
+                ).first()
+
+                if family is None:
+                    family = Family.objects.create(
+                        small_christian_community=scc,
+                        name=family_name,
+                        is_active=True,
+                    )
+
+                member.family = family.name
+
+            member.save()
+
+            form.save_m2m()
+
+            request.session["pending_member_id"] = str(
+                member.pk
+            )
+
+            messages.success(
+                request,
+                "Member registered successfully. "
+                "Please complete member account registration.",
+            )
+
+            return redirect(
+                "accounts:complete_new_member_registration"
+            )
+
+    else:
+        form = ChurchMemberForm()
+
+    return render(
+        request,
+        "members/register_new_member.html",
+        {
+            "form": form,
+        },
+    )
+
+
+@login_required
+@never_cache
+def member_list(request):
+
+    if not can_manage_members(request.user):
+        raise PermissionDenied
+
+    query = request.GET.get("q", "").strip()
+
+    members = ChurchMember.objects.all()
+
+    if query:
+        members = members.filter(
+            Q(digital_offering_number__icontains=query)
+            | Q(first_name__icontains=query)
+            | Q(middle_name__icontains=query)
+            | Q(last_name__icontains=query)
+            | Q(phone_number__icontains=query)
+            | Q(email__icontains=query)
+        )
+
+    members = members.order_by(
+        "last_name",
+        "first_name",
+        "middle_name",
+    )
+
+    context = {
+        "members": members,
+        "query": query,
+    }
+
+    return render(
+        request,
+        "members/member_list.html",
+        context,
+    )
+
+@login_required
+@never_cache
+def member_detail(request, pk):
+
+    if not can_manage_members(request.user):
+        raise PermissionDenied
+
+    member = get_object_or_404(
+        ChurchMember.objects
+        .select_related(
+            "small_christian_community__zone__parish__deanery__diocese"
+        )
+        .prefetch_related(
+            "church_associations",
+            "leadership_positions",
+        ),
+        pk=pk,
+    )
+
+    context = {
+        "member": member,
+    }
+
+    return render(
+        request,
+        "members/member_detail.html",
+        context,
+    )
+
+@login_required
+@never_cache
+def member_update(request, pk):
+
+    if not can_manage_members(request.user):
+        raise PermissionDenied
+
+    member = get_object_or_404(
+        ChurchMember,
+        pk=pk,
+    )
+
+    if request.method == "POST":
+
+        form = ChurchMemberForm(
+            request.POST,
+            instance=member,
+        )
+
+        if form.is_valid():
+
+            form.save()
+
+            messages.success(
+                request,
+                "Church member information updated successfully."
+            )
+
+            return redirect(
+                "members:member_detail",
+                pk=member.pk,
+            )
+
+    else:
+
+        form = ChurchMemberForm(
+            instance=member,
+        )
+
+    context = {
+        "form": form,
+        "member": member,
+    }
+
+    return render(
+        request,
+        "members/member_form.html",
+        context,
     )
 
 

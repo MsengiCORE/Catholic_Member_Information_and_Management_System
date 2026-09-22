@@ -140,6 +140,87 @@ def complete_registration(request):
         },
     )
 
+@login_required
+@never_cache
+def complete_new_member_registration(request):
+    """
+    Complete registration for a newly registered church member.
+
+    The phone number becomes the Django username.
+    """
+
+    pending_member_id = request.session.get("pending_member_id")
+
+    if not pending_member_id:
+        messages.warning(
+            request,
+            "Member registration session has expired. "
+            "Please register again."
+        )
+        return redirect("members:register")
+
+    try:
+        member = ChurchMember.objects.get(
+            pk=pending_member_id
+        )
+    except ChurchMember.DoesNotExist:
+        request.session.pop("pending_member_id", None)
+
+        messages.error(
+            request,
+            "The member registration could not be found."
+        )
+
+        return redirect("members:register_new_member")
+
+
+    if request.method == "POST":
+        form = CompleteRegistrationForm(request.POST)
+
+        if form.is_valid():
+            phone_number = form.cleaned_data["phone_number"]
+            password = form.cleaned_data["password1"]
+
+            user = User.objects.create_user(
+                username=phone_number,
+                password=password,
+            )
+
+            member.phone_number = phone_number
+            member.user = user
+            member.save(
+                update_fields=[
+                    "phone_number",
+                    "user",
+                    "updated_at",
+                ]
+            )
+
+            request.session.pop(
+                "pending_member_id",
+                None
+            )
+
+            messages.success(
+                request,
+                "Registration completed successfully. "
+                "You can now log in using your phone number."
+            )
+
+            return redirect("members:member_list")
+
+    else:
+        form = CompleteRegistrationForm()
+
+    return render(
+        request,
+        "accounts/complete_new_member_registration.html",
+        {
+            "form": form,
+            "member": member,
+        },
+    )
+
 
 @never_cache
 @login_required

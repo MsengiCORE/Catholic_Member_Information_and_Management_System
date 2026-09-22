@@ -17,6 +17,12 @@ urlpatterns = [
     ),
 
     path(
+        "complete-new-member-registration/",
+        views.complete_new_member_registration,
+        name="complete_new_member_registration",
+    ),
+
+    path(
         "logout/",
         views.logout_view,
         name="logout",

@@ -510,6 +510,15 @@ class ChurchMember(models.Model):
         choices=BAPTISM_STATUS_CHOICES
     )
 
+    # Church Organizational Hierarchy
+    small_christian_community = models.ForeignKey(
+        SmallChristianCommunity,
+        on_delete=models.PROTECT,
+        null=True,
+        blank=True,
+        related_name="members",
+    )
+
     # Church Associations
     church_associations = models.ManyToManyField(
         ChurchAssociation,

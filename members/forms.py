@@ -488,6 +488,66 @@ class ChurchMemberForm(forms.ModelForm):
         )
 
         # -----------------------------------------------------
+        # Load existing member's organizational hierarchy
+        # -----------------------------------------------------
+
+        if self.instance and self.instance.pk:
+            scc = self.instance.small_christian_community
+
+            if scc:
+                zone = scc.zone
+                parish = zone.parish
+                deanery = parish.deanery
+                diocese = deanery.diocese
+
+                # Diocese
+                self.fields["diocese"].initial = diocese
+
+                # Deanery
+                self.fields["deanery"].queryset = (
+                    Deanery.objects
+                    .filter(
+                        diocese=diocese,
+                        is_active=True,
+                    )
+                    .order_by("name")
+                )
+                self.fields["deanery"].initial = deanery
+
+                # Parish
+                self.fields["parish"].queryset = (
+                    Parish.objects
+                    .filter(
+                        deanery=deanery,
+                        is_active=True,
+                    )
+                    .order_by("name")
+                )
+                self.fields["parish"].initial = parish
+
+                # Zone
+                self.fields["zone"].queryset = (
+                    Zone.objects
+                    .filter(
+                        parish=parish,
+                        is_active=True,
+                    )
+                    .order_by("name")
+                )
+                self.fields["zone"].initial = zone
+
+                # SCC
+                self.fields["small_christian_community"].queryset = (
+                    SmallChristianCommunity.objects
+                    .filter(
+                        zone=zone,
+                        is_active=True,
+                    )
+                    .order_by("name")
+                )
+                self.fields["small_christian_community"].initial = scc
+
+        # -----------------------------------------------------
         # Cascading hierarchy for submitted form
         # -----------------------------------------------------
 

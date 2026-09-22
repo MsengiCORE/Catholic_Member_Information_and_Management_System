@@ -236,6 +236,7 @@ class ChurchMemberAdmin(admin.ModelAdmin):
         "phone_number",
         "marital_status",
         "baptism_status",
+        "small_christian_community",
         "created_at",
     )
 
@@ -247,6 +248,7 @@ class ChurchMemberAdmin(admin.ModelAdmin):
         "phone_number",
         "email",
         "family",
+        "small_christian_community",
     )
 
     list_filter = (

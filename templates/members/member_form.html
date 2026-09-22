@@ -1,0 +1,240 @@
+{% extends "base/base_with_menu.html" %}
+
+{% block content %}
+
+<div class="p-6">
+
+    <!-- Header -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+
+        <div>
+            <h1 class="text-2xl font-bold text-gray-800">
+                Edit Church Member
+            </h1>
+
+            <p class="text-gray-500 mt-1">
+                Update information for
+                <span class="font-medium">
+                    {{ member.first_name }}
+                    {% if member.middle_name %}
+                        {{ member.middle_name }}
+                    {% endif %}
+                    {{ member.last_name }}
+                </span>
+            </p>
+        </div>
+
+        <a
+            href="{% url 'members:member_detail' member.pk %}"
+            class="btn btn-outline"
+        >
+            Back to Profile
+        </a>
+
+    </div>
+
+
+    <!-- Form -->
+    <div class="bg-gray-200 rounded-xl shadow-sm p-6">
+
+        <form
+            method="post"
+            novalidate
+        >
+
+            {% csrf_token %}
+
+
+            <!-- Form Errors -->
+            {% if form.non_field_errors %}
+
+                <div class="alert alert-error mb-6">
+
+                    <div>
+
+                        {% for error in form.non_field_errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+
+            <!-- Member Information -->
+            <div class="mb-8">
+
+                <h2 class="text-lg font-bold text-gray-800 mb-5">
+                    Member Information
+                </h2>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+
+                    {% for field in form %}
+
+                        {% if field.name != "church_associations" and field.name != "leadership_positions" %}
+
+                            <div>
+
+                                <label
+                                    for="{{ field.id_for_label }}"
+                                    class="label"
+                                >
+                                    <span class="label-text font-medium text-gray-700">
+                                        {{ field.label }}
+
+                                        {% if field.field.required %}
+                                            <span class="text-red-500">*</span>
+                                        {% endif %}
+                                    </span>
+                                </label>
+
+                                {{ field }}
+
+                                {% if field.help_text %}
+                                    <p class="text-xs text-gray-500 mt-1">
+                                        {{ field.help_text }}
+                                    </p>
+                                {% endif %}
+
+                                {% for error in field.errors %}
+                                    <p class="text-sm text-red-600 mt-1">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+
+                            </div>
+
+                        {% endif %}
+
+                    {% endfor %}
+
+                </div>
+
+            </div>
+
+
+            <!-- Church Associations -->
+            <div class="mb-8">
+
+                <h2 class="text-lg font-bold text-gray-800 mb-2">
+                    Church Associations
+                </h2>
+
+                <p class="text-sm text-gray-500 mb-4">
+                    Select the church associations that this member belongs to.
+                </p>
+
+                <div class="bg-gray-200 rounded-lg border border-gray-300 p-5">
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+                        {% for checkbox in form.church_associations %}
+
+                            <label class="flex items-center gap-3 cursor-pointer">
+
+                                {{ checkbox.tag }}
+
+                                <span class="text-gray-700">
+                                    {{ checkbox.choice_label }}
+                                </span>
+
+                            </label>
+
+                        {% empty %}
+
+                            <p class="text-gray-500">
+                                No active church associations available.
+                            </p>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+                {% for error in form.church_associations.errors %}
+                    <p class="text-sm text-red-600 mt-2">
+                        {{ error }}
+                    </p>
+                {% endfor %}
+
+            </div>
+
+
+            <!-- Leadership Positions -->
+            <div class="mb-8">
+
+                <h2 class="text-lg font-bold text-gray-800 mb-2">
+                    Leadership Positions
+                </h2>
+
+                <p class="text-sm text-gray-500 mb-4">
+                    Select the leadership positions applicable to this member.
+                </p>
+
+                <div class="bg-gray-200 rounded-lg border border-gray-300 p-5">
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+                        {% for checkbox in form.leadership_positions %}
+
+                            <label class="flex items-center gap-3 cursor-pointer">
+
+                                {{ checkbox.tag }}
+
+                                <span class="text-gray-700">
+                                    {{ checkbox.choice_label }}
+                                </span>
+
+                            </label>
+
+                        {% empty %}
+
+                            <p class="text-gray-500">
+                                No active leadership positions available.
+                            </p>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+                {% for error in form.leadership_positions.errors %}
+                    <p class="text-sm text-red-600 mt-2">
+                        {{ error }}
+                    </p>
+                {% endfor %}
+
+            </div>
+
+
+            <!-- Actions -->
+            <div class="flex flex-col sm:flex-row justify-end gap-3 border-t border-gray-300 pt-6">
+
+                <a
+                    href="{% url 'members:member_detail' member.pk %}"
+                    class="btn btn-outline"
+                >
+                    Cancel
+                </a>
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                >
+                    Update Member
+                </button>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+{% endblock %}

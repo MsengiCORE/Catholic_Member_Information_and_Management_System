@@ -1,0 +1,255 @@
+{% extends "base/base_with_menu.html" %}
+
+{% block content %}
+
+<div class="p-6">
+
+    <!-- Page Header -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+
+        <div>
+            <h1 class="text-2xl font-bold text-gray-800">
+                Church Members
+            </h1>
+
+            <p class="text-gray-500 mt-1">
+                Search and view registered church members.
+            </p>
+        </div>
+
+        <a
+            href="{% url 'members:register_new_member' %}"
+            class="btn btn-primary"
+        >
+            Register Member
+        </a>
+
+    </div>
+
+
+    <!-- Search -->
+    <div class="bg-gray-200 rounded-xl shadow-sm p-5 mb-6">
+
+        <form
+            method="get"
+            action="{% url 'members:member_list' %}"
+            class="flex flex-col md:flex-row gap-3"
+        >
+
+            <div class="flex-1">
+
+                <label
+                    for="member-search"
+                    class="label"
+                >
+                    <span class="label-text font-medium">
+                        Search Church Members
+                    </span>
+                </label>
+
+                <input
+                    id="member-search"
+                    type="text"
+                    name="q"
+                    value="{{ query }}"
+                    placeholder="Search by name, digital offering number, phone or email..."
+                    class="input input-bordered w-full"
+                >
+
+            </div>
+
+            <div class="flex items-end gap-2">
+
+                <button
+                    type="submit"
+                    class="btn btn-primary"
+                >
+                    Search
+                </button>
+
+                {% if query %}
+                    <a
+                        href="{% url 'members:member_list' %}"
+                        class="btn btn-outline"
+                    >
+                        Clear
+                    </a>
+                {% endif %}
+
+            </div>
+
+        </form>
+
+    </div>
+
+
+    <!-- Results -->
+    <div class="bg-gray-200 rounded-xl shadow-sm overflow-hidden">
+
+        <div class="p-5 border-b border-gray-200">
+
+            {% if query %}
+
+                <h2 class="font-semibold text-gray-700">
+                    Search Results for "{{ query }}"
+                </h2>
+
+            {% else %}
+
+                <h2 class="font-semibold text-gray-700">
+                    Registered Church Members
+                </h2>
+
+            {% endif %}
+
+        </div>
+
+
+        {% if members %}
+
+            <div class="overflow-x-auto">
+
+                <table id="membersTable" class="table w-full">
+
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Digital Offering No.</th>
+                            <th>Full Name</th>
+                            <th>Phone</th>
+                            <th>Email</th>
+                            <th>Marital Status</th>
+                            <th>Baptism Status</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for member in members %}
+
+                            <tr>
+
+                                <td>
+                                    {{ forloop.counter }}
+                                </td>
+
+                                <td>
+                                    <span class="font-medium">
+                                        {{ member.digital_offering_number }}
+                                    </span>
+                                </td>
+
+                                <td>
+                                    {{ member.first_name }}
+                                    {% if member.middle_name %}
+                                        {{ member.middle_name }}
+                                    {% endif %}
+                                    {{ member.last_name }}
+                                </td>
+
+                                <td>
+                                    {{ member.phone_number }}
+                                </td>
+
+                                <td>
+                                    {% if member.email %}
+                                        {{ member.email }}
+                                    {% else %}
+                                        <span class="text-gray-400">
+                                            —
+                                        </span>
+                                    {% endif %}
+                                </td>
+
+                                <td>
+                                    {{ member.get_marital_status_display }}
+                                </td>
+
+                                <td>
+                                    {{ member.get_baptism_status_display }}
+                                </td>
+
+                                <td>
+
+                                    <a
+                                        href="{% url 'members:member_detail' member.pk %}"
+                                        class="btn btn-sm btn-outline"
+                                    >
+                                        View
+                                    </a>
+
+                                </td>
+
+                            </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        {% else %}
+
+            <div class="p-10 text-center">
+
+                <div class="text-gray-400 text-5xl mb-3">
+                    👤
+                </div>
+
+                {% if query %}
+
+                    <h3 class="text-lg font-semibold text-gray-700">
+                        No members found
+                    </h3>
+
+                    <p class="text-gray-500 mt-1">
+                        No church member matched "{{ query }}".
+                    </p>
+
+                {% else %}
+
+                    <h3 class="text-lg font-semibold text-gray-700">
+                        No church members registered
+                    </h3>
+
+                    <p class="text-gray-500 mt-1">
+                        Registered church members will appear here.
+                    </p>
+
+                {% endif %}
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script>
+    $(document).ready(function () {
+        $('#membersTable').DataTable({
+            pageLength: 10,
+            lengthMenu: [10, 25, 50, 100],
+            ordering: true,
+            searching: true,
+            responsive: true,
+            language: {
+                search: "Search members:",
+                lengthMenu: "Show _MENU_ members",
+                info: "Showing _START_ to _END_ of _TOTAL_ members",
+                infoEmpty: "No members available",
+                zeroRecords: "No matching members found"
+            }
+        });
+    });
+</script>
+
+{% endblock %}
