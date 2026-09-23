@@ -196,7 +196,7 @@
                 <a
                     href="{% url 'members:register_new_member' %}"
                     class="flex items-center gap-3 px-4 py-2.5 rounded-lg transition
-                           {% if request.resolver_match.url_name == 'register' %}
+                           {% if request.resolver_match.url_name == 'register_new_member' %}
                                bg-purple-600 text-white
                            {% else %}
                                text-gray-600 hover:bg-purple-50 hover:text-purple-700

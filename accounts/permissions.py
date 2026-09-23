@@ -144,6 +144,46 @@ def can_access_diocese(user, diocese):
 
     return False
 
+def can_access_deanery(user, deanery):
+    """
+    Determine whether the user can access a specific Deanery.
+    """
+
+    if not user.is_authenticated:
+        return False
+
+    if user.is_superuser:
+        return True
+
+    profile = get_user_profile(user)
+
+    if profile is None:
+        return False
+
+    # Diocese Administrator
+    if profile.role == UserProfile.Role.DIOCESE_ADMIN:
+        return (
+            profile.diocese_id is not None
+            and deanery.diocese_id == profile.diocese_id
+        )
+
+    # Parish Administrator
+    if profile.role == UserProfile.Role.PARISH_ADMIN:
+        return (
+            profile.parish is not None
+            and deanery.diocese_id == profile.parish.deanery.diocese_id
+        )
+
+    # SCC / Community Leader
+    if profile.role == UserProfile.Role.SCC_LEADER:
+        return (
+            profile.small_christian_community is not None
+            and deanery.diocese_id
+            == profile.small_christian_community.zone.parish.deanery.diocese_id
+        )
+
+    return False
+
 def can_access_parish(user, parish):
     """
     Determine whether the user can access a Parish.
@@ -174,6 +214,46 @@ def can_access_parish(user, parish):
             profile.small_christian_community is not None
             and profile.small_christian_community.zone.parish_id
             == parish.id
+        )
+
+    return False
+
+def can_access_zone(user, zone):
+    """
+    Determine whether the user can access a specific Zone.
+    """
+
+    if not user.is_authenticated:
+        return False
+
+    if user.is_superuser:
+        return True
+
+    profile = get_user_profile(user)
+
+    if profile is None:
+        return False
+
+    # Diocese Administrator
+    if profile.role == UserProfile.Role.DIOCESE_ADMIN:
+        return (
+            profile.diocese_id is not None
+            and zone.parish.deanery.diocese_id == profile.diocese_id
+        )
+
+    # Parish Administrator
+    if profile.role == UserProfile.Role.PARISH_ADMIN:
+        return (
+            profile.parish_id is not None
+            and zone.parish_id == profile.parish_id
+        )
+
+    # SCC / Community Leader
+    if profile.role == UserProfile.Role.SCC_LEADER:
+        return (
+            profile.small_christian_community is not None
+            and zone.parish_id
+            == profile.small_christian_community.zone.parish_id
         )
 
     return False
@@ -211,6 +291,49 @@ def can_access_scc(user, scc):
         return profile.small_christian_community_id == scc.id
 
     return False
+
+def can_access_family(user, family):
+    """
+    Determine whether the user can access a specific Family.
+    """
+
+    if not user.is_authenticated:
+        return False
+
+    if user.is_superuser:
+        return True
+
+    profile = get_user_profile(user)
+
+    if profile is None:
+        return False
+
+    # Diocese Administrator
+    if profile.role == UserProfile.Role.DIOCESE_ADMIN:
+        return (
+            profile.diocese_id is not None
+            and family.small_christian_community.zone.parish.deanery.diocese_id
+            == profile.diocese_id
+        )
+
+    # Parish Administrator
+    if profile.role == UserProfile.Role.PARISH_ADMIN:
+        return (
+            profile.parish_id is not None
+            and family.small_christian_community.zone.parish_id
+            == profile.parish_id
+        )
+
+    # SCC / Community Leader
+    if profile.role == UserProfile.Role.SCC_LEADER:
+        return (
+            profile.small_christian_community_id is not None
+            and family.small_christian_community_id
+            == profile.small_christian_community_id
+        )
+
+    return False
+
 
 def can_access_member(user, member):
     """

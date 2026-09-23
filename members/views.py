@@ -36,6 +36,8 @@ from .forms import (
     MemberLeadershipForm,
 )
 
+from accounts.models import UserProfile
+
 from .models import (
     Diocese,
     Deanery,
@@ -198,16 +200,30 @@ def diocese_data(request):
 
         profile = get_user_profile(request.user)
 
-        if (
-            profile is None
-            or profile.role != "diocese_admin"
-            or profile.diocese_id is None
-        ):
+        if profile is None:
             raise PermissionDenied
 
-        queryset = Diocese.objects.filter(
-            id=profile.diocese_id
-        )
+        if profile.role == UserProfile.Role.DIOCESE_ADMIN:
+
+            queryset = Diocese.objects.filter(
+                id=profile.diocese_id
+            )
+
+        elif profile.role == UserProfile.Role.PARISH_ADMIN:
+
+            queryset = Diocese.objects.filter(
+                id=profile.parish.deanery.diocese_id
+            )
+
+        elif profile.role == UserProfile.Role.SCC_LEADER:
+
+            queryset = Diocese.objects.filter(
+                id=profile.small_christian_community
+                .zone.parish.deanery.diocese_id
+            )
+
+        else:
+            raise PermissionDenied
 
     # -------------------------------------------------
     # DataTables parameters
@@ -666,15 +682,45 @@ def deanery_update(request, pk):
 
     profile = None
 
-    if not request.user.is_superuser:
+    if request.user.is_superuser:
+
+        queryset = Deanery.objects.select_related(
+            "diocese"
+        )
+
+    else:
 
         profile = get_user_profile(request.user)
 
-        if (
-            profile is None
-            or profile.role != "diocese_admin"
-            or profile.diocese_id != deanery.diocese_id
-        ):
+        if profile is None:
+            raise PermissionDenied
+
+        if profile.role == UserProfile.Role.DIOCESE_ADMIN:
+
+            queryset = Deanery.objects.filter(
+                diocese_id=profile.diocese_id
+            ).select_related(
+                "diocese"
+            )
+
+        elif profile.role == UserProfile.Role.PARISH_ADMIN:
+
+            queryset = Deanery.objects.filter(
+                id=profile.parish.deanery_id
+            ).select_related(
+                "diocese"
+            )
+
+        elif profile.role == UserProfile.Role.SCC_LEADER:
+
+            queryset = Deanery.objects.filter(
+                id=profile.small_christian_community
+                .zone.parish.deanery_id
+            ).select_related(
+                "diocese"
+            )
+
+        else:
             raise PermissionDenied
 
     if request.method == "POST":
@@ -965,19 +1011,44 @@ def parish_update(request, pk):
     )
 
     # Superuser can edit any Parish.
-    if not request.user.is_superuser:
+    if request.user.is_superuser:
+
+        queryset = Parish.objects.select_related(
+            "deanery__diocese"
+        )
+
+    else:
 
         profile = get_user_profile(request.user)
 
-        if (
-            profile is None
-            or profile.role != "diocese_admin"
-            or profile.diocese_id is None
-        ):
+        if profile is None:
             raise PermissionDenied
 
-        # Parish must belong to the administrator's Diocese.
-        if parish.deanery.diocese_id != profile.diocese_id:
+        if profile.role == UserProfile.Role.DIOCESE_ADMIN:
+
+            queryset = Parish.objects.filter(
+                deanery__diocese_id=profile.diocese_id
+            ).select_related(
+                "deanery__diocese"
+            )
+
+        elif profile.role == UserProfile.Role.PARISH_ADMIN:
+
+            queryset = Parish.objects.filter(
+                id=profile.parish_id
+            ).select_related(
+                "deanery__diocese"
+            )
+
+        elif profile.role == UserProfile.Role.SCC_LEADER:
+
+            queryset = Parish.objects.filter(
+                id=profile.small_christian_community.zone.parish_id
+            ).select_related(
+                "deanery__diocese"
+            )
+
+        else:
             raise PermissionDenied
 
     if request.method == "POST":
@@ -1061,18 +1132,45 @@ def zone_data(request):
 
         profile = get_user_profile(request.user)
 
-        if (
-            profile is None
-            or profile.role != "diocese_admin"
-            or profile.diocese_id is None
-        ):
+        if profile is None:
             raise PermissionDenied
 
-        queryset = Zone.objects.filter(
-            parish__deanery__diocese_id=profile.diocese_id
-        ).select_related(
-            "parish__deanery__diocese"
-        )
+        if profile.role == UserProfile.Role.DIOCESE_ADMIN:
+
+            if profile.diocese_id is None:
+                raise PermissionDenied
+
+            queryset = Zone.objects.filter(
+                parish__deanery__diocese_id=profile.diocese_id
+            ).select_related(
+                "parish__deanery__diocese"
+            )
+
+        elif profile.role == UserProfile.Role.PARISH_ADMIN:
+
+            if profile.parish_id is None:
+                raise PermissionDenied
+
+            queryset = Zone.objects.filter(
+                parish_id=profile.parish_id
+            ).select_related(
+                "parish__deanery__diocese"
+            )
+
+        elif profile.role == UserProfile.Role.SCC_LEADER:
+
+            if profile.small_christian_community_id is None:
+                raise PermissionDenied
+
+            queryset = Zone.objects.filter(
+                small_christian_community__id=
+                profile.small_christian_community_id
+            ).select_related(
+                "parish__deanery__diocese"
+            )
+
+        else:
+            raise PermissionDenied
 
     # ---------------------------------------------------------
     # DATATABLES PARAMETERS
@@ -1353,18 +1451,44 @@ def small_christian_community_data(request):
 
         profile = get_user_profile(request.user)
 
-        if (
-            profile is None
-            or profile.role != "diocese_admin"
-            or profile.diocese_id is None
-        ):
+        if profile is None:
             raise PermissionDenied
 
-        queryset = SmallChristianCommunity.objects.filter(
-            zone__parish__deanery__diocese_id=profile.diocese_id
-        ).select_related(
-            "zone__parish__deanery__diocese"
-        )
+        if profile.role == UserProfile.Role.DIOCESE_ADMIN:
+
+            if profile.diocese_id is None:
+                raise PermissionDenied
+
+            queryset = SmallChristianCommunity.objects.filter(
+                zone__parish__deanery__diocese_id=profile.diocese_id
+            ).select_related(
+                "zone__parish__deanery__diocese"
+            )
+
+        elif profile.role == UserProfile.Role.PARISH_ADMIN:
+
+            if profile.parish_id is None:
+                raise PermissionDenied
+
+            queryset = SmallChristianCommunity.objects.filter(
+                zone__parish_id=profile.parish_id
+            ).select_related(
+                "zone__parish__deanery__diocese"
+            )
+
+        elif profile.role == UserProfile.Role.SCC_LEADER:
+
+            if profile.small_christian_community_id is None:
+                raise PermissionDenied
+
+            queryset = SmallChristianCommunity.objects.filter(
+                id=profile.small_christian_community_id
+            ).select_related(
+                "zone__parish__deanery__diocese"
+            )
+
+        else:
+            raise PermissionDenied
 
     # -------------------------------------------------
     # DataTables parameters
@@ -1670,18 +1794,47 @@ def family_data(request):
 
         profile = get_user_profile(request.user)
 
-        if (
-            profile is None
-            or profile.role != "diocese_admin"
-            or profile.diocese_id is None
-        ):
+        if profile is None:
             raise PermissionDenied
 
-        queryset = Family.objects.filter(
-            small_christian_community__zone__parish__deanery__diocese_id=profile.diocese_id
-        ).select_related(
-            "small_christian_community__zone__parish__deanery__diocese"
-        )
+        if profile.role == UserProfile.Role.DIOCESE_ADMIN:
+
+            if profile.diocese_id is None:
+                raise PermissionDenied
+
+            queryset = Family.objects.filter(
+                small_christian_community__zone__parish__deanery__diocese_id=
+                profile.diocese_id
+            ).select_related(
+                "small_christian_community__zone__parish__deanery__diocese"
+            )
+
+        elif profile.role == UserProfile.Role.PARISH_ADMIN:
+
+            if profile.parish_id is None:
+                raise PermissionDenied
+
+            queryset = Family.objects.filter(
+                small_christian_community__zone__parish_id=
+                profile.parish_id
+            ).select_related(
+                "small_christian_community__zone__parish__deanery__diocese"
+            )
+
+        elif profile.role == UserProfile.Role.SCC_LEADER:
+
+            if profile.small_christian_community_id is None:
+                raise PermissionDenied
+
+            queryset = Family.objects.filter(
+                small_christian_community_id=
+                profile.small_christian_community_id
+            ).select_related(
+                "small_christian_community__zone__parish__deanery__diocese"
+            )
+
+        else:
+            raise PermissionDenied
 
     # ---------------------------------------------------------
     # DATATABLES PARAMETERS
