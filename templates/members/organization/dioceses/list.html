@@ -1,0 +1,214 @@
+{% extends "base/base_with_menu.html" %}
+
+{% block content %}
+
+<div class="p-6">
+
+    <!-- Header -->
+    <div class="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
+
+        <div>
+            <h1 class="text-2xl font-bold text-slate-800">
+                Dioceses
+            </h1>
+
+            <p class="mt-1 text-sm text-slate-500">
+                Manage Catholic Church dioceses.
+            </p>
+        </div>
+
+        {% if user.is_superuser %}
+            <a
+                href="{% url 'members:diocese_create' %}"
+                class="btn btn-primary"
+            >
+                + Add Diocese
+            </a>
+        {% endif %}
+
+    </div>
+
+
+    <!-- Diocese Table -->
+    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-gray-200 shadow-sm">
+
+        <table id="diocesesTable" class="table w-full">
+
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Diocese</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th class="text-right">Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+            </tbody>
+
+        </table>
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    new DataTable("#diocesesTable", {
+
+        processing: true,
+
+        serverSide: true,
+
+        ajax: {
+            url: "{% url 'members:diocese_data' %}",
+            type: "GET"
+        },
+
+        pageLength: 10,
+
+        lengthMenu: [10, 25, 50, 100],
+
+        order: [
+            [1, "asc"]
+        ],
+
+        columns: [
+
+            {
+                data: null,
+                orderable: false,
+                searchable: false,
+
+                render: function (
+                    data,
+                    type,
+                    row,
+                    meta
+                ) {
+
+                    return (
+                        meta.row
+                        + meta.settings._iDisplayStart
+                        + 1
+                    );
+
+                }
+            },
+
+            {
+                data: "name"
+            },
+
+            {
+                data: "description"
+            },
+
+            {
+                data: "status"
+            },
+
+            {
+                data: null,
+                orderable: false,
+                searchable: false,
+
+                className: "text-right",
+
+                render: function (
+                    data,
+                    type,
+                    row
+                ) {
+
+                    let html = `
+                        <div class="flex justify-end gap-2">
+                    `;
+
+                    {% if user.is_superuser or user.profile.role == "diocese_admin" %}
+
+                    html += `
+                        <a
+                            href="/members/dioceses/${row.id}/edit/"
+                            class="btn btn-sm btn-outline"
+                        >
+                            Edit
+                        </a>
+                    `;
+
+                    {% endif %}
+
+
+                    {% if user.is_superuser %}
+
+                    if (row.is_active) {
+
+                        html += `
+                            <form
+                                method="post"
+                                action="${row.toggle_url}"
+                                class="inline"
+                            >
+                                <input
+                                    type="hidden"
+                                    name="csrfmiddlewaretoken"
+                                    value="{{ csrf_token }}"
+                                >
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-sm btn-warning"
+                                >
+                                    Deactivate
+                                </button>
+                            </form>
+                        `;
+
+                    } else {
+
+                        html += `
+                            <form
+                                method="post"
+                                action="${row.toggle_url}"
+                                class="inline"
+                            >
+                                <input
+                                    type="hidden"
+                                    name="csrfmiddlewaretoken"
+                                    value="{{ csrf_token }}"
+                                >
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-sm btn-success"
+                                >
+                                    Activate
+                                </button>
+                            </form>
+                        `;
+
+                    }
+
+                    {% endif %}
+
+                    html += `
+                        </div>
+                    `;
+
+                    return html;
+                }
+            }
+
+        ]
+
+    });
+
+});
+
+</script>
+{% endblock %}

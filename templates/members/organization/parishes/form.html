@@ -1,0 +1,222 @@
+{% extends "base/base_with_menu.html" %}
+
+{% block content %}
+
+<div class="p-6 max-w-3xl mx-auto">
+
+    <div class="mb-6">
+
+        <h1 class="text-2xl font-bold text-base-content">
+            {{ title }}
+        </h1>
+
+        <p class="text-base-content/60">
+            Configure the Parish within the diocesan hierarchy.
+        </p>
+
+    </div>
+
+
+    <div class="card bg-gray-200 shadow">
+
+        <div class="card-body">
+
+            <form method="post">
+
+                {% csrf_token %}
+
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-error mb-4">
+                        {{ form.non_field_errors }}
+                    </div>
+                {% endif %}
+
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+
+                    <!-- Diocese -->
+
+                    <div class="form-control">
+
+                        <label class="label">
+                            <span class="label-text font-semibold">
+                                Diocese
+                            </span>
+                        </label>
+
+                        {{ form.diocese }}
+
+                        {% if form.diocese.errors %}
+                            <div class="text-error text-sm mt-1">
+                                {{ form.diocese.errors }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- Deanery -->
+
+                    <div class="form-control">
+
+                        <label class="label">
+                            <span class="label-text font-semibold">
+                                Deanery
+                            </span>
+                        </label>
+
+                        {{ form.deanery }}
+
+                        {% if form.deanery.errors %}
+                            <div class="text-error text-sm mt-1">
+                                {{ form.deanery.errors }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- Parish Name -->
+
+                    <div class="form-control md:col-span-2">
+
+                        <label class="label">
+                            <span class="label-text font-semibold">
+                                Parish Name
+                            </span>
+                        </label>
+
+                        {{ form.name }}
+
+                        {% if form.name.errors %}
+                            <div class="text-error text-sm mt-1">
+                                {{ form.name.errors }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- Description -->
+
+                    <div class="form-control md:col-span-2">
+
+                        <label class="label">
+                            <span class="label-text font-semibold">
+                                Description
+                            </span>
+                        </label>
+
+                        {{ form.description }}
+
+                        {% if form.description.errors %}
+                            <div class="text-error text-sm mt-1">
+                                {{ form.description.errors }}
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- Active -->
+
+                    <div class="form-control md:col-span-2">
+
+                        <label class="label cursor-pointer justify-start gap-3">
+
+                            {{ form.is_active }}
+
+                            <span class="label-text">
+                                Parish is active
+                            </span>
+
+                        </label>
+
+                    </div>
+
+                </div>
+
+
+                <div class="flex justify-end gap-3 mt-6">
+
+                    <a
+                        href="{% url 'members:parish_list' %}"
+                        class="btn btn-ghost"
+                    >
+                        Cancel
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        {{ submit_text }}
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const dioceseSelect = document.getElementById("id_diocese");
+    const deanerySelect = document.getElementById("id_deanery");
+
+    if (!dioceseSelect || !deanerySelect) {
+        return;
+    }
+
+    dioceseSelect.addEventListener("change", function () {
+
+        const dioceseId = this.value;
+
+        deanerySelect.innerHTML =
+            '<option value="">---------</option>';
+
+        if (!dioceseId) {
+            return;
+        }
+
+        fetch(
+            "{% url 'members:get_deaneries' %}?diocese=" + dioceseId
+        )
+        .then(response => response.json())
+        .then(data => {
+
+            data.forEach(function (deanery) {
+
+                const option = document.createElement("option");
+
+                option.value = deanery.id;
+                option.textContent = deanery.name;
+
+                deanerySelect.appendChild(option);
+
+            });
+
+        })
+        .catch(error => {
+            console.error(
+                "Error loading deaneries:",
+                error
+            );
+        });
+
+    });
+
+});
+
+</script>
+
+{% endblock %}

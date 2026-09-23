@@ -1,0 +1,167 @@
+{% extends "base/base_with_menu.html" %}
+
+{% block content %}
+
+<div class="p-6">
+
+    <!-- Header -->
+    <div class="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
+
+        <div>
+
+            <h1 class="text-2xl font-bold text-slate-800">
+                Deaneries
+            </h1>
+
+            <p class="mt-1 text-sm text-slate-500">
+                Manage Deaneries within the church organizational structure.
+            </p>
+
+        </div>
+
+        {% if user.is_superuser or user.profile.role == "diocese_admin" %}
+
+            <a
+                href="{% url 'members:deanery_create' %}"
+                class="btn btn-primary"
+            >
+                + Add Deanery
+            </a>
+
+        {% endif %}
+
+    </div>
+
+
+    <!-- Deanery Table -->
+    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-gray-200 shadow-sm">
+
+        <table id="deaneriesTable" class="table w-full">
+
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>Deanery</th>
+                    <th>Diocese</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    new DataTable("#deaneriesTable", {
+
+        processing: true,
+
+        serverSide: true,
+
+        ajax: {
+            url: "{% url 'members:deanery_data' %}",
+            type: "GET"
+        },
+
+        pageLength: 10,
+
+        lengthMenu: [10, 25, 50, 100],
+
+        order: [[1, "asc"]],
+
+        columns: [
+
+            // #
+            {
+                data: null,
+                orderable: false,
+                searchable: false,
+
+                render: function (
+                    data,
+                    type,
+                    row,
+                    meta
+                ) {
+                    return (
+                        meta.row
+                        + meta.settings._iDisplayStart
+                        + 1
+                    );
+                }
+            },
+
+            // Deanery
+            {
+                data: "name"
+            },
+
+            // Diocese
+            {
+                data: "diocese"
+            },
+
+            // Description
+            {
+                data: "description"
+            },
+
+            // Status
+            {
+                data: "status"
+            },
+
+            // Actions
+            {
+                data: null,
+
+                orderable: false,
+
+                searchable: false,
+
+                className: "text-right",
+
+                render: function (
+                    data,
+                    type,
+                    row
+                ) {
+
+                    let html = `
+                        <div class="flex justify-end gap-2">
+                    `;
+
+                    html += `
+                        <a
+                            href="${row.edit_url}"
+                            class="btn btn-sm btn-outline"
+                        >
+                            Edit
+                        </a>
+                    `;
+
+                    html += `
+                        </div>
+                    `;
+
+                    return html;
+                }
+            }
+        ]
+    });
+
+});
+</script>
+{% endblock %}

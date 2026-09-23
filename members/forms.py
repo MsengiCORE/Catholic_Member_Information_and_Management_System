@@ -14,14 +14,141 @@ from .models import (
     Zone,
 )
 
+from accounts.permissions import get_user_profile
 
-class FamilyForm(forms.ModelForm):
+class DioceseForm(forms.ModelForm):
+
+    class Meta:
+        model = Diocese
+        fields = [
+            "name",
+            "description",
+            "is_active",
+        ]
+
+        labels = {
+            "name": "Diocese Name",
+            "description": "Description",
+            "is_active": "Active",
+        }
+
+        widgets = {
+            "name": forms.TextInput(
+                attrs={
+                    "class": "input input-bordered w-full bg-white",
+                    "placeholder": "Enter Diocese name",
+                }
+            ),
+
+            "description": forms.Textarea(
+                attrs={
+                    "class": "textarea textarea-bordered w-full bg-white",
+                    "placeholder": "Enter Diocese description (optional)",
+                    "rows": 4,
+                }
+            ),
+
+            "is_active": forms.CheckboxInput(
+                attrs={
+                    "class": "checkbox checkbox-primary",
+                }
+            ),
+        }
+
+class DeaneryForm(forms.ModelForm):
+
+    class Meta:
+        model = Deanery
+
+        fields = [
+            "diocese",
+            "name",
+            "description",
+            "is_active",
+        ]
+
+        labels = {
+            "diocese": "Diocese",
+            "name": "Deanery Name",
+            "description": "Description",
+            "is_active": "Active",
+        }
+
+        widgets = {
+            "diocese": forms.Select(
+                attrs={
+                    "class": "select select-bordered w-full bg-white",
+                }
+            ),
+
+            "name": forms.TextInput(
+                attrs={
+                    "class": "input input-bordered w-full bg-white",
+                    "placeholder": "Enter Deanery name",
+                }
+            ),
+
+            "description": forms.Textarea(
+                attrs={
+                    "class": "textarea textarea-bordered w-full bg-white",
+                    "placeholder": "Enter Deanery description (optional)",
+                    "rows": 4,
+                }
+            ),
+
+            "is_active": forms.CheckboxInput(
+                attrs={
+                    "class": "checkbox checkbox-primary",
+                }
+            ),
+        }
+
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Superuser can see all active Dioceses.
+        if user is not None and user.is_superuser:
+            self.fields["diocese"].queryset = (
+                Diocese.objects
+                .filter(is_active=True)
+                .order_by("name")
+            )
+
+        # Diocese Administrator can only select
+        # their assigned Diocese.
+        elif user is not None:
+            from accounts.permissions import get_user_profile
+
+            profile = get_user_profile(user)
+
+            if (
+                profile is not None
+                and profile.role == "diocese_admin"
+                and profile.diocese_id
+            ):
+                self.fields["diocese"].queryset = (
+                    Diocese.objects
+                    .filter(
+                        id=profile.diocese_id,
+                        is_active=True,
+                    )
+                    .order_by("name")
+                )
+
+            else:
+                self.fields["diocese"].queryset = Diocese.objects.none()
+
+        else:
+            self.fields["diocese"].queryset = Diocese.objects.none()
+
+class ParishForm(forms.ModelForm):
+
     diocese = forms.ModelChoiceField(
-        queryset=Diocese.objects.filter(is_active=True).order_by("name"),
-        empty_label="Select Diocese",
+        queryset=Diocese.objects.none(),
+        label="Diocese",
         widget=forms.Select(
             attrs={
-                "class": "select select-bordered w-full bg-white",
+                "class": "select select-bordered w-full",
                 "id": "id_diocese",
             }
         ),
@@ -29,10 +156,125 @@ class FamilyForm(forms.ModelForm):
 
     deanery = forms.ModelChoiceField(
         queryset=Deanery.objects.none(),
-        empty_label="Select Deanery",
+        label="Deanery",
         widget=forms.Select(
             attrs={
-                "class": "select select-bordered w-full bg-white",
+                "class": "select select-bordered w-full",
+                "id": "id_deanery",
+            }
+        ),
+    )
+
+    class Meta:
+        model = Parish
+        fields = [
+            "diocese",
+            "deanery",
+            "name",
+            "description",
+            "is_active",
+        ]
+
+        widgets = {
+            "name": forms.TextInput(
+                attrs={
+                    "class": "input input-bordered w-full",
+                    "placeholder": "Enter parish name",
+                }
+            ),
+            "description": forms.Textarea(
+                attrs={
+                    "class": "textarea textarea-bordered w-full",
+                    "rows": 4,
+                    "placeholder": "Enter parish description",
+                }
+            ),
+            "is_active": forms.CheckboxInput(
+                attrs={
+                    "class": "checkbox checkbox-primary",
+                }
+            ),
+        }
+
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # -------------------------------------------------
+        # Diocese choices
+        # -------------------------------------------------
+        if user is not None and user.is_superuser:
+            self.fields["diocese"].queryset = Diocese.objects.filter(
+                is_active=True
+            ).order_by("name")
+
+        elif user is not None:
+            profile = get_user_profile(user)
+
+            if (
+                profile is not None
+                and profile.role == "diocese_admin"
+                and profile.diocese_id
+            ):
+                self.fields["diocese"].queryset = Diocese.objects.filter(
+                    id=profile.diocese_id,
+                    is_active=True,
+                )
+
+        # -------------------------------------------------
+        # Determine selected Diocese
+        # -------------------------------------------------
+        selected_diocese_id = None
+
+        if self.is_bound:
+            selected_diocese_id = self.data.get("diocese")
+
+        elif self.instance.pk and self.instance.deanery_id:
+            selected_diocese_id = self.instance.deanery.diocese_id
+
+        # -------------------------------------------------
+        # Deanery choices
+        # -------------------------------------------------
+        if selected_diocese_id:
+            self.fields["deanery"].queryset = Deanery.objects.filter(
+                diocese_id=selected_diocese_id,
+                is_active=True,
+            ).order_by("name")
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        diocese = cleaned_data.get("diocese")
+        deanery = cleaned_data.get("deanery")
+
+        if diocese and deanery:
+
+            if deanery.diocese_id != diocese.id:
+                self.add_error(
+                    "deanery",
+                    "The selected Deanery does not belong to the selected Diocese."
+                )
+
+        return cleaned_data
+
+class ZoneForm(forms.ModelForm):
+
+    diocese = forms.ModelChoiceField(
+        queryset=Diocese.objects.none(),
+        label="Diocese",
+        widget=forms.Select(
+            attrs={
+                "class": "select select-bordered w-full",
+                "id": "id_diocese",
+            }
+        ),
+    )
+
+    deanery = forms.ModelChoiceField(
+        queryset=Deanery.objects.none(),
+        label="Deanery",
+        widget=forms.Select(
+            attrs={
+                "class": "select select-bordered w-full",
                 "id": "id_deanery",
             }
         ),
@@ -40,10 +282,185 @@ class FamilyForm(forms.ModelForm):
 
     parish = forms.ModelChoiceField(
         queryset=Parish.objects.none(),
-        empty_label="Select Parish",
+        label="Parish",
         widget=forms.Select(
             attrs={
-                "class": "select select-bordered w-full bg-white",
+                "class": "select select-bordered w-full",
+                "id": "id_parish",
+            }
+        ),
+    )
+
+    class Meta:
+        model = Zone
+        fields = [
+            "diocese",
+            "deanery",
+            "parish",
+            "name",
+            "description",
+            "is_active",
+        ]
+
+        widgets = {
+            "name": forms.TextInput(
+                attrs={
+                    "class": "input input-bordered w-full",
+                    "placeholder": "Enter zone name",
+                }
+            ),
+            "description": forms.Textarea(
+                attrs={
+                    "class": "textarea textarea-bordered w-full",
+                    "rows": 4,
+                    "placeholder": "Enter zone description",
+                }
+            ),
+            "is_active": forms.CheckboxInput(
+                attrs={
+                    "class": "checkbox checkbox-primary",
+                }
+            ),
+        }
+
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # -------------------------------------------------
+        # Diocese choices
+        # -------------------------------------------------
+
+        if user is not None and user.is_superuser:
+
+            self.fields["diocese"].queryset = Diocese.objects.filter(
+                is_active=True
+            ).order_by("name")
+
+        elif user is not None:
+
+            profile = get_user_profile(user)
+
+            if (
+                profile is not None
+                and profile.role == "diocese_admin"
+                and profile.diocese_id
+            ):
+                self.fields["diocese"].queryset = Diocese.objects.filter(
+                    id=profile.diocese_id,
+                    is_active=True,
+                )
+
+        # -------------------------------------------------
+        # Determine selected Diocese
+        # -------------------------------------------------
+
+        selected_diocese_id = None
+
+        if self.is_bound:
+            selected_diocese_id = self.data.get("diocese")
+
+        elif self.instance.pk and self.instance.parish_id:
+            selected_diocese_id = (
+                self.instance.parish.deanery.diocese_id
+            )
+
+        # -------------------------------------------------
+        # Deanery choices
+        # -------------------------------------------------
+
+        if selected_diocese_id:
+
+            self.fields["deanery"].queryset = Deanery.objects.filter(
+                diocese_id=selected_diocese_id,
+                is_active=True,
+            ).order_by("name")
+
+        # -------------------------------------------------
+        # Determine selected Deanery
+        # -------------------------------------------------
+
+        selected_deanery_id = None
+
+        if self.is_bound:
+            selected_deanery_id = self.data.get("deanery")
+
+        elif self.instance.pk and self.instance.parish_id:
+            selected_deanery_id = self.instance.parish.deanery_id
+
+        # -------------------------------------------------
+        # Parish choices
+        # -------------------------------------------------
+
+        if selected_deanery_id:
+
+            self.fields["parish"].queryset = Parish.objects.filter(
+                deanery_id=selected_deanery_id,
+                is_active=True,
+            ).order_by("name")
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        diocese = cleaned_data.get("diocese")
+        deanery = cleaned_data.get("deanery")
+        parish = cleaned_data.get("parish")
+
+        # -------------------------------------------------
+        # Validate Diocese → Deanery
+        # -------------------------------------------------
+
+        if diocese and deanery:
+
+            if deanery.diocese_id != diocese.id:
+                self.add_error(
+                    "deanery",
+                    "The selected Deanery does not belong to the selected Diocese."
+                )
+
+        # -------------------------------------------------
+        # Validate Deanery → Parish
+        # -------------------------------------------------
+
+        if deanery and parish:
+
+            if parish.deanery_id != deanery.id:
+                self.add_error(
+                    "parish",
+                    "The selected Parish does not belong to the selected Deanery."
+                )
+
+        return cleaned_data
+
+class SmallChristianCommunityForm(forms.ModelForm):
+
+    diocese = forms.ModelChoiceField(
+        queryset=Diocese.objects.none(),
+        label="Diocese",
+        widget=forms.Select(
+            attrs={
+                "class": "select select-bordered w-full",
+                "id": "id_diocese",
+            }
+        ),
+    )
+
+    deanery = forms.ModelChoiceField(
+        queryset=Deanery.objects.none(),
+        label="Deanery",
+        widget=forms.Select(
+            attrs={
+                "class": "select select-bordered w-full",
+                "id": "id_deanery",
+            }
+        ),
+    )
+
+    parish = forms.ModelChoiceField(
+        queryset=Parish.objects.none(),
+        label="Parish",
+        widget=forms.Select(
+            attrs={
+                "class": "select select-bordered w-full",
                 "id": "id_parish",
             }
         ),
@@ -51,121 +468,147 @@ class FamilyForm(forms.ModelForm):
 
     zone = forms.ModelChoiceField(
         queryset=Zone.objects.none(),
-        empty_label="Select Zone",
+        label="Zone",
         widget=forms.Select(
             attrs={
-                "class": "select select-bordered w-full bg-white",
+                "class": "select select-bordered w-full",
                 "id": "id_zone",
             }
         ),
     )
 
-    small_christian_community = forms.ModelChoiceField(
-        queryset=SmallChristianCommunity.objects.none(),
-        empty_label="Select Small Christian Community",
-        widget=forms.Select(
-            attrs={
-                "class": "select select-bordered w-full bg-white",
-                "id": "id_small_christian_community",
-            }
-        ),
-    )
-
     class Meta:
-        model = Family
-
+        model = SmallChristianCommunity
         fields = [
             "diocese",
             "deanery",
             "parish",
             "zone",
-            "small_christian_community",
             "name",
             "description",
+            "is_active",
         ]
-
-        labels = {
-            "diocese": "Diocese",
-            "deanery": "Deanery",
-            "parish": "Parish",
-            "zone": "Zone",
-            "small_christian_community": "Small Christian Community",
-            "name": "Family Name",
-            "description": "Description",
-        }
 
         widgets = {
             "name": forms.TextInput(
                 attrs={
-                    "class": "input input-bordered w-full bg-white",
-                    "placeholder": "Enter family name",
+                    "class": "input input-bordered w-full",
+                    "placeholder": "Enter SCC name",
                 }
             ),
-
             "description": forms.Textarea(
                 attrs={
-                    "class": "textarea textarea-bordered w-full bg-white",
-                    "placeholder": "Enter family description (optional)",
+                    "class": "textarea textarea-bordered w-full",
                     "rows": 4,
+                    "placeholder": "Enter SCC description",
+                }
+            ),
+            "is_active": forms.CheckboxInput(
+                attrs={
+                    "class": "checkbox checkbox-primary",
                 }
             ),
         }
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, user=None, **kwargs):
         super().__init__(*args, **kwargs)
 
+        # -------------------------------------------------
+        # Diocese choices
+        # -------------------------------------------------
+
+        if user is not None and user.is_superuser:
+
+            self.fields["diocese"].queryset = Diocese.objects.filter(
+                is_active=True
+            ).order_by("name")
+
+        elif user is not None:
+
+            profile = get_user_profile(user)
+
+            if (
+                profile is not None
+                and profile.role == "diocese_admin"
+                and profile.diocese_id
+            ):
+                self.fields["diocese"].queryset = Diocese.objects.filter(
+                    id=profile.diocese_id,
+                    is_active=True,
+                )
+
+        # -------------------------------------------------
+        # Determine selected Diocese
+        # -------------------------------------------------
+
+        selected_diocese_id = None
+
         if self.is_bound:
-            try:
-                diocese_id = self.data.get("diocese")
+            selected_diocese_id = self.data.get("diocese")
 
-                if diocese_id:
-                    self.fields["deanery"].queryset = (
-                        Deanery.objects
-                        .filter(
-                            diocese_id=diocese_id,
-                            is_active=True,
-                        )
-                        .order_by("name")
-                    )
+        elif self.instance.pk and self.instance.zone_id:
+            selected_diocese_id = (
+                self.instance.zone.parish.deanery.diocese_id
+            )
 
-                deanery_id = self.data.get("deanery")
+        # -------------------------------------------------
+        # Deanery choices
+        # -------------------------------------------------
 
-                if deanery_id:
-                    self.fields["parish"].queryset = (
-                        Parish.objects
-                        .filter(
-                            deanery_id=deanery_id,
-                            is_active=True,
-                        )
-                        .order_by("name")
-                    )
+        if selected_diocese_id:
 
-                parish_id = self.data.get("parish")
+            self.fields["deanery"].queryset = Deanery.objects.filter(
+                diocese_id=selected_diocese_id,
+                is_active=True,
+            ).order_by("name")
 
-                if parish_id:
-                    self.fields["zone"].queryset = (
-                        Zone.objects
-                        .filter(
-                            parish_id=parish_id,
-                            is_active=True,
-                        )
-                        .order_by("name")
-                    )
+        # -------------------------------------------------
+        # Determine selected Deanery
+        # -------------------------------------------------
 
-                zone_id = self.data.get("zone")
+        selected_deanery_id = None
 
-                if zone_id:
-                    self.fields["small_christian_community"].queryset = (
-                        SmallChristianCommunity.objects
-                        .filter(
-                            zone_id=zone_id,
-                            is_active=True,
-                        )
-                        .order_by("name")
-                    )
+        if self.is_bound:
+            selected_deanery_id = self.data.get("deanery")
 
-            except (ValueError, TypeError):
-                pass
+        elif self.instance.pk and self.instance.zone_id:
+            selected_deanery_id = (
+                self.instance.zone.parish.deanery_id
+            )
+
+        # -------------------------------------------------
+        # Parish choices
+        # -------------------------------------------------
+
+        if selected_deanery_id:
+
+            self.fields["parish"].queryset = Parish.objects.filter(
+                deanery_id=selected_deanery_id,
+                is_active=True,
+            ).order_by("name")
+
+        # -------------------------------------------------
+        # Determine selected Parish
+        # -------------------------------------------------
+
+        selected_parish_id = None
+
+        if self.is_bound:
+            selected_parish_id = self.data.get("parish")
+
+        elif self.instance.pk and self.instance.zone_id:
+            selected_parish_id = self.instance.zone.parish_id
+
+        # -------------------------------------------------
+        # Zone choices
+        # -------------------------------------------------
+
+        if selected_parish_id:
+
+            self.fields["zone"].queryset = Zone.objects.filter(
+                parish_id=selected_parish_id,
+                is_active=True,
+            ).order_by("name")
 
     def clean(self):
         cleaned_data = super().clean()
@@ -174,52 +617,352 @@ class FamilyForm(forms.ModelForm):
         deanery = cleaned_data.get("deanery")
         parish = cleaned_data.get("parish")
         zone = cleaned_data.get("zone")
-        small_christian_community = cleaned_data.get(
-            "small_christian_community"
-        )
 
-        if deanery and diocese:
+        # -------------------------------------------------
+        # Diocese → Deanery
+        # -------------------------------------------------
+
+        if diocese and deanery:
+
             if deanery.diocese_id != diocese.id:
                 self.add_error(
                     "deanery",
-                    "The selected Deanery does not belong to the selected Diocese.",
+                    "The selected Deanery does not belong to the selected Diocese."
                 )
 
-        if parish and deanery:
+        # -------------------------------------------------
+        # Deanery → Parish
+        # -------------------------------------------------
+
+        if deanery and parish:
+
             if parish.deanery_id != deanery.id:
                 self.add_error(
                     "parish",
-                    "The selected Parish does not belong to the selected Deanery.",
+                    "The selected Parish does not belong to the selected Deanery."
                 )
 
-        if zone and parish:
+        # -------------------------------------------------
+        # Parish → Zone
+        # -------------------------------------------------
+
+        if parish and zone:
+
             if zone.parish_id != parish.id:
                 self.add_error(
                     "zone",
-                    "The selected Zone does not belong to the selected Parish.",
-                )
-
-        if small_christian_community and zone:
-            if small_christian_community.zone_id != zone.id:
-                self.add_error(
-                    "small_christian_community",
-                    "The selected Small Christian Community does not belong to the selected Zone.",
+                    "The selected Zone does not belong to the selected Parish."
                 )
 
         return cleaned_data
 
-    def clean_name(self):
-        name = self.cleaned_data["name"].strip()
+    def save(self, commit=True):
+        """
+        Save the SCC using the selected Zone.
 
-        if not name:
-            raise forms.ValidationError(
-                "Family name is required."
+        The Diocese, Deanery and Parish fields are helper
+        fields used for hierarchy selection and validation.
+        """
+
+        instance = super().save(commit=False)
+
+        if commit:
+            instance.save()
+
+        return instance
+
+class FamilyForm(forms.ModelForm):
+
+    diocese = forms.ModelChoiceField(
+        queryset=Diocese.objects.none(),
+        label="Diocese",
+        widget=forms.Select(
+            attrs={
+                "class": "select select-bordered w-full",
+                "id": "id_diocese",
+            }
+        ),
+    )
+
+    deanery = forms.ModelChoiceField(
+        queryset=Deanery.objects.none(),
+        label="Deanery",
+        widget=forms.Select(
+            attrs={
+                "class": "select select-bordered w-full",
+                "id": "id_deanery",
+            }
+        ),
+    )
+
+    parish = forms.ModelChoiceField(
+        queryset=Parish.objects.none(),
+        label="Parish",
+        widget=forms.Select(
+            attrs={
+                "class": "select select-bordered w-full",
+                "id": "id_parish",
+            }
+        ),
+    )
+
+    zone = forms.ModelChoiceField(
+        queryset=Zone.objects.none(),
+        label="Zone",
+        widget=forms.Select(
+            attrs={
+                "class": "select select-bordered w-full",
+                "id": "id_zone",
+            }
+        ),
+    )
+
+    small_christian_community = forms.ModelChoiceField(
+        queryset=SmallChristianCommunity.objects.none(),
+        label="Small Christian Community",
+        widget=forms.Select(
+            attrs={
+                "class": "select select-bordered w-full",
+                "id": "id_small_christian_community",
+            }
+        ),
+    )
+
+    class Meta:
+        model = Family
+        fields = [
+            "diocese",
+            "deanery",
+            "parish",
+            "zone",
+            "small_christian_community",
+            "name",
+            "description",
+            "is_active",
+        ]
+
+        widgets = {
+            "name": forms.TextInput(
+                attrs={
+                    "class": "input input-bordered w-full",
+                    "placeholder": "Enter family name",
+                }
+            ),
+            "description": forms.Textarea(
+                attrs={
+                    "class": "textarea textarea-bordered w-full",
+                    "rows": 4,
+                    "placeholder": "Enter family description",
+                }
+            ),
+            "is_active": forms.CheckboxInput(
+                attrs={
+                    "class": "checkbox checkbox-primary",
+                }
+            ),
+        }
+
+    def __init__(self, *args, user=None, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # -------------------------------------------------
+        # Diocese
+        # -------------------------------------------------
+
+        if user is not None and user.is_superuser:
+
+            self.fields["diocese"].queryset = Diocese.objects.filter(
+                is_active=True
+            ).order_by("name")
+
+        elif user is not None:
+
+            profile = get_user_profile(user)
+
+            if (
+                profile is not None
+                and profile.role == "diocese_admin"
+                and profile.diocese_id
+            ):
+                self.fields["diocese"].queryset = Diocese.objects.filter(
+                    id=profile.diocese_id,
+                    is_active=True,
+                )
+
+        # -------------------------------------------------
+        # Selected Diocese
+        # -------------------------------------------------
+
+        selected_diocese_id = None
+
+        if self.is_bound:
+            selected_diocese_id = self.data.get("diocese")
+
+        elif self.instance.pk and self.instance.small_christian_community_id:
+            selected_diocese_id = (
+                self.instance
+                .small_christian_community
+                .zone
+                .parish
+                .deanery
+                .diocese_id
             )
 
-        return name
+        # -------------------------------------------------
+        # Deanery
+        # -------------------------------------------------
 
-    def clean_description(self):
-        return self.cleaned_data["description"].strip()
+        if selected_diocese_id:
+
+            self.fields["deanery"].queryset = Deanery.objects.filter(
+                diocese_id=selected_diocese_id,
+                is_active=True,
+            ).order_by("name")
+
+        # -------------------------------------------------
+        # Selected Deanery
+        # -------------------------------------------------
+
+        selected_deanery_id = None
+
+        if self.is_bound:
+            selected_deanery_id = self.data.get("deanery")
+
+        elif self.instance.pk and self.instance.small_christian_community_id:
+            selected_deanery_id = (
+                self.instance
+                .small_christian_community
+                .zone
+                .parish
+                .deanery_id
+            )
+
+        # -------------------------------------------------
+        # Parish
+        # -------------------------------------------------
+
+        if selected_deanery_id:
+
+            self.fields["parish"].queryset = Parish.objects.filter(
+                deanery_id=selected_deanery_id,
+                is_active=True,
+            ).order_by("name")
+
+        # -------------------------------------------------
+        # Selected Parish
+        # -------------------------------------------------
+
+        selected_parish_id = None
+
+        if self.is_bound:
+            selected_parish_id = self.data.get("parish")
+
+        elif self.instance.pk and self.instance.small_christian_community_id:
+            selected_parish_id = (
+                self.instance
+                .small_christian_community
+                .zone
+                .parish_id
+            )
+
+        # -------------------------------------------------
+        # Zone
+        # -------------------------------------------------
+
+        if selected_parish_id:
+
+            self.fields["zone"].queryset = Zone.objects.filter(
+                parish_id=selected_parish_id,
+                is_active=True,
+            ).order_by("name")
+
+        # -------------------------------------------------
+        # Selected Zone
+        # -------------------------------------------------
+
+        selected_zone_id = None
+
+        if self.is_bound:
+            selected_zone_id = self.data.get("zone")
+
+        elif self.instance.pk and self.instance.small_christian_community_id:
+            selected_zone_id = (
+                self.instance
+                .small_christian_community
+                .zone_id
+            )
+
+        # -------------------------------------------------
+        # SCC
+        # -------------------------------------------------
+
+        if selected_zone_id:
+
+            self.fields[
+                "small_christian_community"
+            ].queryset = SmallChristianCommunity.objects.filter(
+                zone_id=selected_zone_id,
+                is_active=True,
+            ).order_by("name")
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        diocese = cleaned_data.get("diocese")
+        deanery = cleaned_data.get("deanery")
+        parish = cleaned_data.get("parish")
+        zone = cleaned_data.get("zone")
+        scc = cleaned_data.get("small_christian_community")
+
+        # -------------------------------------------------
+        # Diocese → Deanery
+        # -------------------------------------------------
+
+        if diocese and deanery:
+
+            if deanery.diocese_id != diocese.id:
+                self.add_error(
+                    "deanery",
+                    "The selected Deanery does not belong to the selected Diocese."
+                )
+
+        # -------------------------------------------------
+        # Deanery → Parish
+        # -------------------------------------------------
+
+        if deanery and parish:
+
+            if parish.deanery_id != deanery.id:
+                self.add_error(
+                    "parish",
+                    "The selected Parish does not belong to the selected Deanery."
+                )
+
+        # -------------------------------------------------
+        # Parish → Zone
+        # -------------------------------------------------
+
+        if parish and zone:
+
+            if zone.parish_id != parish.id:
+                self.add_error(
+                    "zone",
+                    "The selected Zone does not belong to the selected Parish."
+                )
+
+        # -------------------------------------------------
+        # Zone → SCC
+        # -------------------------------------------------
+
+        if zone and scc:
+
+            if scc.zone_id != zone.id:
+                self.add_error(
+                    "small_christian_community",
+                    "The selected SCC does not belong to the selected Zone."
+                )
+
+        return cleaned_data
 
 class ChurchMemberForm(forms.ModelForm):
     # ---------------------------------------------------------

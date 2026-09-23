@@ -1,0 +1,154 @@
+{% extends "base/base_with_menu.html" %}
+
+{% block content %}
+
+<div class="p-6">
+
+    <div class="max-w-3xl mx-auto">
+
+        <!-- Header -->
+        <div class="mb-6">
+
+            <h1 class="text-2xl font-bold text-slate-800">
+                {{ page_title }}
+            </h1>
+
+            <p class="mt-1 text-sm text-slate-500">
+                Create or update Deanery information.
+            </p>
+
+        </div>
+
+
+        <!-- Form -->
+        <div class="rounded-xl border border-slate-200 bg-gray-200 shadow-sm">
+
+            <form method="post">
+
+                {% csrf_token %}
+
+                <div class="p-6 space-y-6">
+
+                    <!-- Diocese -->
+                    <div>
+
+                        <label
+                            for="{{ form.diocese.id_for_label }}"
+                            class="mb-2 block text-sm font-medium text-slate-700"
+                        >
+                            Diocese
+                        </label>
+
+                        {{ form.diocese }}
+
+                        {% for error in form.diocese.errors %}
+
+                            <p class="mt-1 text-sm text-red-600">
+                                {{ error }}
+                            </p>
+
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- Deanery Name -->
+                    <div>
+
+                        <label
+                            for="{{ form.name.id_for_label }}"
+                            class="mb-2 block text-sm font-medium text-slate-700"
+                        >
+                            Deanery Name
+                        </label>
+
+                        {{ form.name }}
+
+                        {% for error in form.name.errors %}
+
+                            <p class="mt-1 text-sm text-red-600">
+                                {{ error }}
+                            </p>
+
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- Description -->
+                    <div>
+
+                        <label
+                            for="{{ form.description.id_for_label }}"
+                            class="mb-2 block text-sm font-medium text-slate-700"
+                        >
+                            Description
+                        </label>
+
+                        {{ form.description }}
+
+                        {% for error in form.description.errors %}
+
+                            <p class="mt-1 text-sm text-red-600">
+                                {{ error }}
+                            </p>
+
+                        {% endfor %}
+
+                    </div>
+
+
+                    <!-- Active -->
+                    <div>
+
+                        <label class="flex items-center gap-3 cursor-pointer">
+
+                            {{ form.is_active }}
+
+                            <span class="text-sm font-medium text-slate-700">
+                                Deanery is active
+                            </span>
+
+                        </label>
+
+                        {% for error in form.is_active.errors %}
+
+                            <p class="mt-1 text-sm text-red-600">
+                                {{ error }}
+                            </p>
+
+                        {% endfor %}
+
+                    </div>
+
+                </div>
+
+
+                <!-- Actions -->
+                <div class="flex justify-end gap-3 border-t border-slate-200 bg-gray-200 px-6 py-4">
+
+                    <a
+                        href="{% url 'members:deanery_list' %}"
+                        class="btn btn-ghost"
+                    >
+                        Cancel
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        {{ submit_label }}
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

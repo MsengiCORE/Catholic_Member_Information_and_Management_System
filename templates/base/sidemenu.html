@@ -61,7 +61,7 @@
             <div class="space-y-1">
 
                 <a
-                    href="#"
+                    href="{% url 'members:diocese_list' %}"
                     class="flex items-center gap-3 px-4 py-2.5 rounded-lg transition
                            {% if request.resolver_match.url_name == 'diocese_list' or request.resolver_match.url_name == 'diocese_create' or request.resolver_match.url_name == 'diocese_update' %}
                                bg-purple-600 text-white
@@ -78,7 +78,7 @@
 
 
                 <a
-                    href="#"
+                    href="{% url 'members:deanery_list' %}"
                     class="flex items-center gap-3 px-4 py-2.5 rounded-lg transition
                            {% if request.resolver_match.url_name == 'deanery_list' or request.resolver_match.url_name == 'deanery_create' or request.resolver_match.url_name == 'deanery_update' %}
                                bg-purple-600 text-white
@@ -95,7 +95,7 @@
 
 
                 <a
-                    href="#"
+                    href="{% url 'members:parish_list' %}"
                     class="flex items-center gap-3 px-4 py-2.5 rounded-lg transition
                            {% if request.resolver_match.url_name == 'parish_list' or request.resolver_match.url_name == 'parish_create' or request.resolver_match.url_name == 'parish_update' %}
                                bg-purple-600 text-white
@@ -112,7 +112,7 @@
 
 
                 <a
-                    href="#"
+                    href="{% url 'members:zone_list' %}"
                     class="flex items-center gap-3 px-4 py-2.5 rounded-lg transition
                            {% if request.resolver_match.url_name == 'zone_list' or request.resolver_match.url_name == 'zone_create' or request.resolver_match.url_name == 'zone_update' %}
                                bg-purple-600 text-white
@@ -129,9 +129,9 @@
 
 
                 <a
-                    href="#"
+                    href="{% url 'members:small_christian_community_list' %}"
                     class="flex items-center gap-3 px-4 py-2.5 rounded-lg transition
-                           {% if request.resolver_match.url_name == 'scc_list' or request.resolver_match.url_name == 'scc_create' or request.resolver_match.url_name == 'scc_update' %}
+                           {% if request.resolver_match.url_name == 'small_christian_community_list' or request.resolver_match.url_name == 'small_christian_community_create' or request.resolver_match.url_name == 'small_christian_community_update' %}
                                bg-purple-600 text-white
                            {% else %}
                                text-gray-600 hover:bg-green-mint hover:text-green-700
@@ -146,7 +146,7 @@
 
 
                 <a
-                    href="#"
+                    href="{% url 'members:family_list' %}"
                     class="flex items-center gap-3 px-4 py-2.5 rounded-lg transition
                            {% if request.resolver_match.url_name == 'family_list' or request.resolver_match.url_name == 'family_create' or request.resolver_match.url_name == 'family_update' %}
                                bg-purple-600 text-white

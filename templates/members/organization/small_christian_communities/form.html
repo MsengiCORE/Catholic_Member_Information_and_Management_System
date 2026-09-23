@@ -1,0 +1,432 @@
+{% extends "base/base_with_menu.html" %}
+
+{% block content %}
+
+<div class="p-6 max-w-3xl mx-auto">
+
+    <div class="mb-6">
+
+        <h1 class="text-2xl font-bold text-base-content">
+            {{ title }}
+        </h1>
+
+        <p class="text-base-content/60">
+            Configure the Small Christian Community within the organizational hierarchy.
+        </p>
+
+    </div>
+
+
+    <div class="card bg-gray-200 shadow">
+
+        <div class="card-body">
+
+            <form method="post">
+
+                {% csrf_token %}
+
+
+                {% if form.non_field_errors %}
+
+                    <div class="alert alert-error mb-4">
+                        {{ form.non_field_errors }}
+                    </div>
+
+                {% endif %}
+
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+
+                    <!-- Diocese -->
+
+                    <div class="form-control">
+
+                        <label class="label">
+
+                            <span class="label-text font-semibold">
+                                Diocese
+                            </span>
+
+                        </label>
+
+                        {{ form.diocese }}
+
+                        {% if form.diocese.errors %}
+
+                            <div class="text-error text-sm mt-1">
+                                {{ form.diocese.errors }}
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- Deanery -->
+
+                    <div class="form-control">
+
+                        <label class="label">
+
+                            <span class="label-text font-semibold">
+                                Deanery
+                            </span>
+
+                        </label>
+
+                        {{ form.deanery }}
+
+                        {% if form.deanery.errors %}
+
+                            <div class="text-error text-sm mt-1">
+                                {{ form.deanery.errors }}
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- Parish -->
+
+                    <div class="form-control md:col-span-2">
+
+                        <label class="label">
+
+                            <span class="label-text font-semibold">
+                                Parish
+                            </span>
+
+                        </label>
+
+                        {{ form.parish }}
+
+                        {% if form.parish.errors %}
+
+                            <div class="text-error text-sm mt-1">
+                                {{ form.parish.errors }}
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- Zone -->
+
+                    <div class="form-control md:col-span-2">
+
+                        <label class="label">
+
+                            <span class="label-text font-semibold">
+                                Zone
+                            </span>
+
+                        </label>
+
+                        {{ form.zone }}
+
+                        {% if form.zone.errors %}
+
+                            <div class="text-error text-sm mt-1">
+                                {{ form.zone.errors }}
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- SCC Name -->
+
+                    <div class="form-control md:col-span-2">
+
+                        <label class="label">
+
+                            <span class="label-text font-semibold">
+                                SCC Name
+                            </span>
+
+                        </label>
+
+                        {{ form.name }}
+
+                        {% if form.name.errors %}
+
+                            <div class="text-error text-sm mt-1">
+                                {{ form.name.errors }}
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- Description -->
+
+                    <div class="form-control md:col-span-2">
+
+                        <label class="label">
+
+                            <span class="label-text font-semibold">
+                                Description
+                            </span>
+
+                        </label>
+
+                        {{ form.description }}
+
+                        {% if form.description.errors %}
+
+                            <div class="text-error text-sm mt-1">
+                                {{ form.description.errors }}
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- Active -->
+
+                    <div class="form-control md:col-span-2">
+
+                        <label class="label cursor-pointer justify-start gap-3">
+
+                            {{ form.is_active }}
+
+                            <span class="label-text">
+                                SCC is active
+                            </span>
+
+                        </label>
+
+                    </div>
+
+                </div>
+
+
+                <div class="flex justify-end gap-3 mt-6">
+
+                    <a
+                        href="{% url 'members:small_christian_community_list' %}"
+                        class="btn btn-ghost"
+                    >
+                        Cancel
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        {{ submit_text }}
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const dioceseSelect =
+        document.getElementById("id_diocese");
+
+    const deanerySelect =
+        document.getElementById("id_deanery");
+
+    const parishSelect =
+        document.getElementById("id_parish");
+
+    const zoneSelect =
+        document.getElementById("id_zone");
+
+
+    if (
+        !dioceseSelect ||
+        !deanerySelect ||
+        !parishSelect ||
+        !zoneSelect
+    ) {
+        return;
+    }
+
+
+    // ---------------------------------------------
+    // Diocese → Deanery
+    // ---------------------------------------------
+
+    dioceseSelect.addEventListener("change", function () {
+
+        const dioceseId = this.value;
+
+        deanerySelect.innerHTML =
+            '<option value="">---------</option>';
+
+        parishSelect.innerHTML =
+            '<option value="">---------</option>';
+
+        zoneSelect.innerHTML =
+            '<option value="">---------</option>';
+
+
+        if (!dioceseId) {
+            return;
+        }
+
+
+        fetch(
+            "{% url 'members:get_deaneries' %}?diocese="
+            + dioceseId
+        )
+
+        .then(response => response.json())
+
+        .then(data => {
+
+            data.forEach(function (deanery) {
+
+                const option =
+                    document.createElement("option");
+
+                option.value = deanery.id;
+                option.textContent = deanery.name;
+
+                deanerySelect.appendChild(option);
+
+            });
+
+        })
+
+        .catch(error => {
+
+            console.error(
+                "Error loading deaneries:",
+                error
+            );
+
+        });
+
+    });
+
+
+    // ---------------------------------------------
+    // Deanery → Parish
+    // ---------------------------------------------
+
+    deanerySelect.addEventListener("change", function () {
+
+        const deaneryId = this.value;
+
+        parishSelect.innerHTML =
+            '<option value="">---------</option>';
+
+        zoneSelect.innerHTML =
+            '<option value="">---------</option>';
+
+
+        if (!deaneryId) {
+            return;
+        }
+
+
+        fetch(
+            "{% url 'members:get_parishes' %}?deanery="
+            + deaneryId
+        )
+
+        .then(response => response.json())
+
+        .then(data => {
+
+            data.forEach(function (parish) {
+
+                const option =
+                    document.createElement("option");
+
+                option.value = parish.id;
+                option.textContent = parish.name;
+
+                parishSelect.appendChild(option);
+
+            });
+
+        })
+
+        .catch(error => {
+
+            console.error(
+                "Error loading parishes:",
+                error
+            );
+
+        });
+
+    });
+
+
+    // ---------------------------------------------
+    // Parish → Zone
+    // ---------------------------------------------
+
+    parishSelect.addEventListener("change", function () {
+
+        const parishId = this.value;
+
+        zoneSelect.innerHTML =
+            '<option value="">---------</option>';
+
+
+        if (!parishId) {
+            return;
+        }
+
+
+        fetch(
+            "{% url 'members:get_zones' %}?parish="
+            + parishId
+        )
+
+        .then(response => response.json())
+
+        .then(data => {
+
+            data.forEach(function (zone) {
+
+                const option =
+                    document.createElement("option");
+
+                option.value = zone.id;
+                option.textContent = zone.name;
+
+                zoneSelect.appendChild(option);
+
+            });
+
+        })
+
+        .catch(error => {
+
+            console.error(
+                "Error loading zones:",
+                error
+            );
+
+        });
+
+    });
+
+});
+
+</script>
+
+{% endblock %}

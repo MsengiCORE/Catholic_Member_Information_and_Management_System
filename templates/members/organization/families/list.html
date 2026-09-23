@@ -1,0 +1,174 @@
+{% extends "base/base_with_menu.html" %}
+
+{% block content %}
+
+<div class="p-6">
+
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+
+        <div>
+            <h1 class="text-2xl font-bold text-base-content">
+                Families
+            </h1>
+
+            <p class="text-base-content/60">
+                Manage families within the Small Christian Community structure.
+            </p>
+        </div>
+
+        <a
+            href="{% url 'members:family_create' %}"
+            class="btn btn-primary"
+        >
+            + Add Family
+        </a>
+
+    </div>
+
+
+    <div class="overflow-x-auto bg-gray-200 rounded-box shadow">
+
+        <table id="familiesTable" class="table">
+
+            <thead>
+
+                <tr>
+                    <th>#</th>
+                    <th>Family</th>
+                    <th>SCC</th>
+                    <th>Zone</th>
+                    <th>Parish</th>
+                    <th>Deanery</th>
+                    <th>Diocese</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    new DataTable("#familiesTable", {
+
+        processing: true,
+
+        serverSide: true,
+
+        ajax: {
+            url: "{% url 'members:family_data' %}",
+            type: "GET"
+        },
+
+        pageLength: 10,
+
+        lengthMenu: [10, 25, 50, 100],
+
+        order: [[1, "asc"]],
+
+        columns: [
+
+            // #
+            {
+                data: null,
+                orderable: false,
+                searchable: false,
+
+                render: function (
+                    data,
+                    type,
+                    row,
+                    meta
+                ) {
+                    return (
+                        meta.row
+                        + meta.settings._iDisplayStart
+                        + 1
+                    );
+                }
+            },
+
+            // Family
+            {
+                data: "name"
+            },
+
+            // SCC
+            {
+                data: "scc"
+            },
+
+            // Zone
+            {
+                data: "zone"
+            },
+
+            // Parish
+            {
+                data: "parish"
+            },
+
+            // Deanery
+            {
+                data: "deanery"
+            },
+
+            // Diocese
+            {
+                data: "diocese"
+            },
+
+            // Status
+            {
+                data: "status"
+            },
+
+            // Actions
+            {
+                data: null,
+
+                orderable: false,
+
+                searchable: false,
+
+                className: "text-right",
+
+                render: function (
+                    data,
+                    type,
+                    row
+                ) {
+
+                    return `
+                        <div class="flex justify-end gap-2">
+
+                            <a
+                                href="${row.edit_url}"
+                                class="btn btn-sm btn-outline"
+                            >
+                                Edit
+                            </a>
+
+                        </div>
+                    `;
+                }
+            }
+        ]
+    });
+
+});
+</script>
+{% endblock %}

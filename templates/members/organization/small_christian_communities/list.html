@@ -1,0 +1,132 @@
+{% extends "base/base_with_menu.html" %}
+
+{% block content %}
+
+<div class="p-6">
+
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+
+        <div>
+            <h1 class="text-2xl font-bold text-base-content">
+                Small Christian Communities
+            </h1>
+
+            <p class="text-base-content/60">
+                Manage Small Christian Communities within the zone structure.
+            </p>
+        </div>
+
+        <a
+            href="{% url 'members:small_christian_community_create' %}"
+            class="btn btn-primary"
+        >
+            + Add SCC
+        </a>
+
+    </div>
+
+
+    <div class="overflow-x-auto bg-gray-200 rounded-box shadow">
+
+        <table id="smallChristianCommunitiesTable" class="table">
+
+            <thead>
+
+                <tr>
+                    <th>#</th>
+                    <th>SCC</th>
+                    <th>Zone</th>
+                    <th>Parish</th>
+                    <th>Deanery</th>
+                    <th>Diocese</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    new DataTable("#smallChristianCommunitiesTable", {
+
+        processing: true,
+
+        serverSide: true,
+
+        ajax: {
+            url: "{% url 'members:small_christian_community_data' %}",
+            type: "GET"
+        },
+
+        pageLength: 10,
+
+        lengthMenu: [10, 25, 50, 100],
+
+        order: [
+            [1, "asc"]
+        ],
+
+        columns: [
+
+            {
+                data: null,
+                orderable: false,
+                searchable: false,
+                render: function (data, type, row, meta) {
+                    return meta.row + meta.settings._iDisplayStart + 1;
+                }
+            },
+
+            {
+                data: "name"
+            },
+
+            {
+                data: "zone"
+            },
+
+            {
+                data: "parish"
+            },
+
+            {
+                data: "deanery"
+            },
+
+            {
+                data: "diocese"
+            },
+
+            {
+                data: "status"
+            },
+
+            {
+                data: "actions",
+                orderable: false,
+                searchable: false
+            }
+
+        ]
+
+    });
+
+});
+
+</script>
+{% endblock %}
