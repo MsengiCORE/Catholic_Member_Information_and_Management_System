@@ -55,6 +55,7 @@ class DioceseAdmin(admin.ModelAdmin):
 
 @admin.register(Deanery)
 class DeaneryAdmin(admin.ModelAdmin):
+
     list_display = (
         "name",
         "diocese",
@@ -64,7 +65,6 @@ class DeaneryAdmin(admin.ModelAdmin):
     )
 
     list_filter = (
-        "diocese",
         "is_active",
     )
 
@@ -74,9 +74,18 @@ class DeaneryAdmin(admin.ModelAdmin):
         "description",
     )
 
+    autocomplete_fields = (
+        "diocese",
+    )
+
+    list_select_related = (
+        "diocese",
+    )
+
 
 @admin.register(Parish)
 class ParishAdmin(admin.ModelAdmin):
+
     list_display = (
         "name",
         "deanery",
@@ -86,7 +95,6 @@ class ParishAdmin(admin.ModelAdmin):
     )
 
     list_filter = (
-        "deanery",
         "is_active",
     )
 
@@ -96,9 +104,18 @@ class ParishAdmin(admin.ModelAdmin):
         "description",
     )
 
+    autocomplete_fields = (
+        "deanery",
+    )
+
+    list_select_related = (
+        "deanery",
+        "deanery__diocese",
+    )
 
 @admin.register(Zone)
 class ZoneAdmin(admin.ModelAdmin):
+
     list_display = (
         "name",
         "parish",
@@ -108,7 +125,6 @@ class ZoneAdmin(admin.ModelAdmin):
     )
 
     list_filter = (
-        "parish",
         "is_active",
     )
 
@@ -118,9 +134,19 @@ class ZoneAdmin(admin.ModelAdmin):
         "description",
     )
 
+    autocomplete_fields = (
+        "parish",
+    )
+
+    list_select_related = (
+        "parish",
+        "parish__deanery",
+    )
+
 
 @admin.register(SmallChristianCommunity)
 class SmallChristianCommunityAdmin(admin.ModelAdmin):
+
     list_display = (
         "name",
         "zone",
@@ -130,7 +156,6 @@ class SmallChristianCommunityAdmin(admin.ModelAdmin):
     )
 
     list_filter = (
-        "zone",
         "is_active",
     )
 
@@ -140,9 +165,21 @@ class SmallChristianCommunityAdmin(admin.ModelAdmin):
         "description",
     )
 
+    autocomplete_fields = (
+        "zone",
+    )
+
+    list_select_related = (
+        "zone",
+        "zone__parish",
+    )
+
+    list_per_page = 50
+
 
 @admin.register(Family)
 class FamilyAdmin(admin.ModelAdmin):
+
     list_display = (
         "name",
         "small_christian_community",
@@ -152,7 +189,6 @@ class FamilyAdmin(admin.ModelAdmin):
     )
 
     list_filter = (
-        "small_christian_community",
         "is_active",
     )
 
@@ -161,6 +197,17 @@ class FamilyAdmin(admin.ModelAdmin):
         "small_christian_community__name",
         "description",
     )
+
+    autocomplete_fields = (
+        "small_christian_community",
+    )
+
+    list_select_related = (
+        "small_christian_community",
+        "small_christian_community__zone",
+    )
+
+    list_per_page = 50
 
 @admin.register(LeadershipPosition)
 class LeadershipPositionAdmin(admin.ModelAdmin):
@@ -248,17 +295,26 @@ class ChurchMemberAdmin(admin.ModelAdmin):
         "phone_number",
         "email",
         "family",
-        "small_christian_community",
+        "small_christian_community__name",
     )
 
     list_filter = (
         "marital_status",
         "baptism_status",
-        "church_associations",
-        "leadership_positions",
+    )
+
+    autocomplete_fields = (
+        "small_christian_community",
     )
 
     filter_horizontal = (
         "church_associations",
         "leadership_positions",
     )
+
+    list_select_related = (
+        "small_christian_community",
+        "user",
+    )
+
+    list_per_page = 50
