@@ -5,6 +5,7 @@ app_name = "members"
 
 urlpatterns = [
     path("view-members/", views.member_list, name="member_list"),
+    path("view-members/data/", views.member_data, name="member_data"),
     path("member-details/<uuid:pk>/", views.member_detail, name="member_detail"),
     path("member-info/<uuid:pk>/edit/", views.member_update, name="member_update"),
 

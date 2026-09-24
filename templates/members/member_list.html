@@ -1,26 +1,105 @@
 {% extends "base/base_with_menu.html" %}
 
+{% block extra_css %}
+<style>
+    .member-list-page {
+        min-width: 0;
+    }
+
+    .member-list-page input,
+    .member-list-page select {
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    .member-list-page .dataTables_wrapper {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .member-list-page table.dataTable {
+        width: 100% !important;
+    }
+
+    @media (max-width: 639px) {
+        .member-list-page .btn {
+            min-height: 2.75rem;
+        }
+
+        .member-list-page .dataTables_wrapper .dataTables_length,
+        .member-list-page .dataTables_wrapper .dataTables_filter {
+            float: none;
+            width: 100%;
+            margin-bottom: 0.75rem;
+            text-align: left;
+        }
+
+        .member-list-page .dataTables_wrapper .dataTables_filter input {
+            width: min(100%, 18rem);
+            margin-left: 0;
+        }
+    }
+
+        .member-list-page .dataTables_wrapper {
+            min-width: 0;
+        }
+
+        .member-list-page .dataTables_processing {
+            z-index: 20;
+        }
+
+        .member-list-page table.dataTable tbody td {
+            vertical-align: middle;
+        }
+
+        @media (max-width: 639px) {
+            .member-list-page .dataTables_wrapper .dataTables_length,
+            .member-list-page .dataTables_wrapper .dataTables_filter,
+            .member-list-page .dataTables_wrapper .dataTables_info,
+            .member-list-page .dataTables_wrapper .dataTables_paginate {
+                float: none;
+                width: 100%;
+                text-align: left;
+                margin-bottom: 0.75rem;
+            }
+
+            .member-list-page .dataTables_wrapper .dataTables_filter input {
+                width: min(100%, 18rem);
+                margin-left: 0;
+            }
+        }
+
+    </style>
+{% endblock %}
+
 {% block content %}
 
-<div class="p-6">
+<div class="member-list-page mx-auto w-full max-w-[1600px] px-3 py-4 sm:px-5 sm:py-6 lg:px-6 lg:py-8">
 
     <!-- Page Header -->
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+    <div class="mb-5 flex flex-col gap-4 sm:mb-6 lg:flex-row lg:items-center lg:justify-between">
 
-        <div>
-            <h1 class="text-2xl font-bold text-gray-800">
-                Church Members
-            </h1>
+        <div class="flex min-w-0 items-start gap-3">
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-purple-100 text-purple-700 shadow-sm sm:h-12 sm:w-12">
+                <i class="fa-solid fa-users text-xl sm:text-2xl" aria-hidden="true"></i>
+            </div>
 
-            <p class="text-gray-500 mt-1">
-                Search and view registered church members.
-            </p>
+            <div class="min-w-0">
+                <h1 class="text-2xl font-bold leading-tight text-gray-800 sm:text-3xl">
+                    Church Members
+                </h1>
+
+                <p class="mt-1 text-sm leading-5 text-gray-500 sm:text-base">
+                    Search and view registered church members.
+                </p>
+            </div>
         </div>
 
         <a
             href="{% url 'members:register_new_member' %}"
-            class="btn btn-primary"
+            class="btn btn-primary w-full sm:w-auto"
         >
+            <i class="fa-solid fa-user-plus" aria-hidden="true"></i>
             Register Member
         </a>
 
@@ -28,12 +107,12 @@
 
 
     <!-- Search -->
-    <div class="bg-gray-200 rounded-xl shadow-sm p-5 mb-6">
+    <div class="mb-5 overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-sm sm:mb-6">
 
         <form
             method="get"
             action="{% url 'members:member_list' %}"
-            class="flex flex-col md:flex-row gap-3"
+            class="flex flex-col gap-3 p-4 sm:p-5 lg:flex-row"
         >
 
             <div class="flex-1">
@@ -42,36 +121,42 @@
                     for="member-search"
                     class="label"
                 >
-                    <span class="label-text font-medium">
-                        Search Church Members
+                    <span class="label-text flex items-center gap-2 font-medium">
+                        <i class="fa-solid fa-magnifying-glass text-purple-700" aria-hidden="true"></i>
+                        <span>Search Church Members</span>
                     </span>
                 </label>
 
+                <div class="relative">
+                <i class="fa-solid fa-magnifying-glass pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 text-gray-400" aria-hidden="true"></i>
                 <input
                     id="member-search"
                     type="text"
                     name="q"
                     value="{{ query }}"
                     placeholder="Search by name, digital offering number, phone or email..."
-                    class="input input-bordered w-full"
+                    class="input input-bordered w-full pl-10"
                 >
+                </div>
 
             </div>
 
-            <div class="flex items-end gap-2">
+            <div class="grid grid-cols-1 gap-2 sm:flex sm:items-end">
 
                 <button
                     type="submit"
-                    class="btn btn-primary"
+                    class="btn btn-primary w-full sm:w-auto"
                 >
+                    <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
                     Search
                 </button>
 
                 {% if query %}
                     <a
                         href="{% url 'members:member_list' %}"
-                        class="btn btn-outline"
+                        class="btn btn-outline w-full sm:w-auto"
                     >
+                        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                         Clear
                     </a>
                 {% endif %}
@@ -83,12 +168,13 @@
     </div>
 
     <!-- Organizational Filters -->
-    <div class="bg-gray-200 rounded-xl shadow-sm border border-gray-200 p-5 mb-6">
+    <div class="mb-5 overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-sm sm:mb-6">
 
-        <div class="flex items-center justify-between mb-5">
+        <div class="flex flex-col gap-3 border-b border-gray-200 p-4 sm:p-5 lg:flex-row lg:items-center lg:justify-between">
             <div>
-                <h2 class="text-lg font-semibold text-gray-800">
-                    Filter Church Members
+                <h2 class="flex items-center gap-2 text-lg font-semibold text-gray-800">
+                    <i class="fa-solid fa-filter text-purple-700" aria-hidden="true"></i>
+                    <span>Filter Church Members</span>
                 </h2>
                 <p class="text-sm text-gray-500 mt-1">
                     Filter members by their church organizational unit.
@@ -97,13 +183,14 @@
 
             <a
                 href="{% url 'members:member_list' %}"
-                class="btn btn-sm btn-outline"
+                class="btn btn-sm btn-outline w-full sm:w-auto"
             >
+                <i class="fa-solid fa-filter-circle-xmark" aria-hidden="true"></i>
                 Clear Filters
             </a>
         </div>
 
-        <form method="get" id="memberFilterForm">
+        <form method="get" id="memberFilterForm" class="p-4 sm:p-5">
 
             <!-- Keep text search -->
             <input
@@ -112,13 +199,14 @@
                 value="{{ query }}"
             >
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
 
                 <!-- Diocese -->
                 <div>
                     <label class="label">
-                        <span class="label-text font-medium">
-                            Diocese
+                        <span class="label-text flex items-center gap-2 font-medium">
+                            <i class="fa-solid fa-building-columns text-purple-700" aria-hidden="true"></i>
+                            <span>Diocese</span>
                         </span>
                     </label>
 
@@ -145,8 +233,9 @@
                 <!-- Deanery -->
                 <div>
                     <label class="label">
-                        <span class="label-text font-medium">
-                            Deanery
+                        <span class="label-text flex items-center gap-2 font-medium">
+                            <i class="fa-solid fa-sitemap text-purple-700" aria-hidden="true"></i>
+                            <span>Deanery</span>
                         </span>
                     </label>
 
@@ -174,8 +263,9 @@
                 <!-- Parish -->
                 <div>
                     <label class="label">
-                        <span class="label-text font-medium">
-                            Parish
+                        <span class="label-text flex items-center gap-2 font-medium">
+                            <i class="fa-solid fa-church text-purple-700" aria-hidden="true"></i>
+                            <span>Parish</span>
                         </span>
                     </label>
 
@@ -203,8 +293,9 @@
                 <!-- Zone -->
                 <div>
                     <label class="label">
-                        <span class="label-text font-medium">
-                            Zone
+                        <span class="label-text flex items-center gap-2 font-medium">
+                            <i class="fa-solid fa-location-dot text-purple-700" aria-hidden="true"></i>
+                            <span>Zone</span>
                         </span>
                     </label>
 
@@ -232,8 +323,9 @@
                 <!-- SCC -->
                 <div>
                     <label class="label">
-                        <span class="label-text font-medium">
-                            Small Christian Community
+                        <span class="label-text flex items-center gap-2 font-medium">
+                            <i class="fa-solid fa-people-group text-purple-700" aria-hidden="true"></i>
+                            <span>Small Christian Community</span>
                         </span>
                     </label>
 
@@ -261,8 +353,9 @@
                 <!-- Family -->
                 <div>
                     <label class="label">
-                        <span class="label-text font-medium">
-                            Family
+                        <span class="label-text flex items-center gap-2 font-medium">
+                            <i class="fa-solid fa-people-roof text-purple-700" aria-hidden="true"></i>
+                            <span>Family</span>
                         </span>
                     </label>
 
@@ -288,11 +381,12 @@
 
             </div>
 
-            <div class="flex justify-end mt-5">
+            <div class="mt-5 flex justify-stretch sm:justify-end">
                 <button
                     type="submit"
-                    class="btn btn-primary"
+                    class="btn btn-primary w-full sm:w-auto"
                 >
+                    <i class="fa-solid fa-filter" aria-hidden="true"></i>
                     Apply Filters
                 </button>
             </div>
@@ -302,20 +396,22 @@
 
 
     <!-- Results -->
-    <div class="bg-gray-200 rounded-xl shadow-sm overflow-hidden">
+    <div class="overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-sm">
 
-        <div class="p-5 border-b border-gray-200">
+        <div class="border-b border-gray-200 p-4 sm:p-5">
 
             {% if query %}
 
-                <h2 class="font-semibold text-gray-700">
-                    Search Results for "{{ query }}"
+                <h2 class="flex items-center gap-2 font-semibold text-gray-700">
+                    <i class="fa-solid fa-magnifying-glass text-purple-700" aria-hidden="true"></i>
+                    <span class="wrap-break-word">Search Results for "{{ query }}"</span>
                 </h2>
 
             {% else %}
 
-                <h2 class="font-semibold text-gray-700">
-                    Registered Church Members
+                <h2 class="flex items-center gap-2 font-semibold text-gray-700">
+                    <i class="fa-solid fa-users text-purple-700" aria-hidden="true"></i>
+                    <span>Registered Church Members</span>
                 </h2>
 
             {% endif %}
@@ -323,127 +419,25 @@
         </div>
 
 
-        {% if members %}
-
-            <div class="overflow-x-auto">
-
-                <table id="membersTable" class="table w-full">
-
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Digital Offering No.</th>
-                            <th>Full Name</th>
-                            <th>Phone</th>
-                            <th>Email</th>
-                            <th>Marital Status</th>
-                            <th>Baptism Status</th>
-                            <th>Action</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-
-                        {% for member in members %}
-
-                            <tr>
-
-                                <td>
-                                    {{ forloop.counter }}
-                                </td>
-
-                                <td>
-                                    <span class="font-medium">
-                                        {{ member.digital_offering_number }}
-                                    </span>
-                                </td>
-
-                                <td>
-                                    {{ member.first_name }}
-                                    {% if member.middle_name %}
-                                        {{ member.middle_name }}
-                                    {% endif %}
-                                    {{ member.last_name }}
-                                </td>
-
-                                <td>
-                                    {{ member.phone_number }}
-                                </td>
-
-                                <td>
-                                    {% if member.email %}
-                                        {{ member.email }}
-                                    {% else %}
-                                        <span class="text-gray-400">
-                                            —
-                                        </span>
-                                    {% endif %}
-                                </td>
-
-                                <td>
-                                    {{ member.get_marital_status_display }}
-                                </td>
-
-                                <td>
-                                    {{ member.get_baptism_status_display }}
-                                </td>
-
-                                <td>
-
-                                    <a
-                                        href="{% url 'members:member_detail' member.pk %}"
-                                        class="btn btn-sm btn-outline"
-                                    >
-                                        View
-                                    </a>
-
-                                </td>
-
-                            </tr>
-
-                        {% endfor %}
-
-                    </tbody>
-
-                </table>
-
-            </div>
-
-        {% else %}
-
-            <div class="p-10 text-center">
-
-                <div class="text-gray-400 text-5xl mb-3">
-                    👤
-                </div>
-
-                {% if query %}
-
-                    <h3 class="text-lg font-semibold text-gray-700">
-                        No members found
-                    </h3>
-
-                    <p class="text-gray-500 mt-1">
-                        No church member matched "{{ query }}".
-                    </p>
-
-                {% else %}
-
-                    <h3 class="text-lg font-semibold text-gray-700">
-                        No church members registered
-                    </h3>
-
-                    <p class="text-gray-500 mt-1">
-                        Registered church members will appear here.
-                    </p>
-
-                {% endif %}
-
-            </div>
-
-        {% endif %}
-
+        <div class="overflow-x-auto">
+            <table id="membersTable" class="table w-full">
+                <thead>
+                    <tr>
+                        <th><i class="fa-solid fa-hashtag" aria-hidden="true"></i></th>
+                        <th><i class="fa-solid fa-receipt mr-1" aria-hidden="true"></i>Digital Offering No.</th>
+                        <th><i class="fa-solid fa-user mr-1" aria-hidden="true"></i>Full Name</th>
+                        <th><i class="fa-solid fa-phone mr-1" aria-hidden="true"></i>Phone</th>
+                        <th><i class="fa-solid fa-envelope mr-1" aria-hidden="true"></i>Email</th>
+                        <th><i class="fa-solid fa-heart mr-1" aria-hidden="true"></i>Marital Status</th>
+                        <th><i class="fa-solid fa-droplet mr-1" aria-hidden="true"></i>Baptism Status</th>
+                        <th><i class="fa-solid fa-ellipsis mr-1" aria-hidden="true"></i>Action</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
     </div>
+
 
 </div>
 
@@ -453,19 +447,106 @@
 
 <script>
     $(document).ready(function () {
-        $('#membersTable').DataTable({
+
+        const membersTable = $('#membersTable').DataTable({
+            processing: true,
+            serverSide: true,
+            deferRender: true,
             pageLength: 10,
             lengthMenu: [10, 25, 50, 100],
             ordering: true,
-            searching: true,
+            searching: false,
             responsive: true,
+
+            ajax: {
+                url: "{% url 'members:member_data' %}",
+                type: "GET",
+                data: function (d) {
+                    d.q = $('#member-search').val().trim();
+                    d.diocese = $('#dioceseFilter').val() || "";
+                    d.deanery = $('#deaneryFilter').val() || "";
+                    d.parish = $('#parishFilter').val() || "";
+                    d.zone = $('#zoneFilter').val() || "";
+                    d.scc = $('#sccFilter').val() || "";
+                    d.family = $('#familyFilter').val() || "";
+                }
+            },
+
+            columns: [
+                {
+                    data: null,
+                    orderable: false,
+                    searchable: false,
+                    render: function (data, type, row, meta) {
+                        return meta.row + meta.settings._iDisplayStart + 1;
+                    }
+                },
+                {
+                    data: "digital_offering_number",
+                    name: "digital_offering_number",
+                    defaultContent: "—"
+                },
+                {
+                    data: "full_name",
+                    name: "last_name",
+                    defaultContent: "—"
+                },
+                {
+                    data: "phone",
+                    name: "phone_number",
+                    defaultContent: "—"
+                },
+                {
+                    data: "email",
+                    name: "email",
+                    defaultContent: "—"
+                },
+                {
+                    data: "marital_status",
+                    name: "marital_status",
+                    defaultContent: "—"
+                },
+                {
+                    data: "baptism_status",
+                    name: "baptism_status",
+                    defaultContent: "—"
+                },
+                {
+                    data: "detail_url",
+                    orderable: false,
+                    searchable: false,
+                    render: function (data) {
+                        return `
+                            <a href="${data}" class="btn btn-sm btn-outline">
+                                <i class="fa-solid fa-eye" aria-hidden="true"></i>
+                                <span>View</span>
+                            </a>
+                        `;
+                    }
+                }
+            ],
+
             language: {
-                search: "Search members:",
+                search: "Search current results:",
                 lengthMenu: "Show _MENU_ members",
                 info: "Showing _START_ to _END_ of _TOTAL_ members",
                 infoEmpty: "No members available",
-                zeroRecords: "No matching members found"
+                zeroRecords: "No matching members found",
+                processing: '<i class="fa-solid fa-spinner fa-spin mr-2" aria-hidden="true"></i>Loading members...'
             }
+        });
+
+        // The custom search box uses the server-side DataTables endpoint.
+        $('#member-search').on('keydown', function (event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                membersTable.ajax.reload();
+            }
+        });
+
+        $('#memberFilterForm').on('submit', function (event) {
+            event.preventDefault();
+            membersTable.ajax.reload();
         });
     });
 </script>

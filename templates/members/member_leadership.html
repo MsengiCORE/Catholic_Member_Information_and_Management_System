@@ -1,60 +1,91 @@
-{% extends "base/base.html" %}
+{% extends "base/base_with_menu.html" %}
+
+{% block extra_css %}
+<style>
+    .leadership-page {
+        min-width: 0;
+    }
+
+    .leadership-page input[type="checkbox"],
+    .leadership-page input[type="radio"] {
+        flex: 0 0 auto;
+    }
+
+    .leadership-page .btn {
+        min-height: 2.75rem;
+    }
+
+    @media (max-width: 639px) {
+        .leadership-page .btn {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
 
 {% block content %}
 
-<div class="p-6">
+<div class="leadership-page mx-auto w-full max-w-5xl px-3 py-4 sm:px-5 sm:py-6 lg:px-6 lg:py-8">
 
-    <div class="max-w-3xl mx-auto">
+    <div class="mx-auto w-full max-w-4xl">
 
-        <div class="mb-6">
+        <div class="mb-5 flex items-start gap-3 sm:mb-6">
 
-            <h1 class="text-2xl font-bold text-gray-800">
-                Leadership Positions
-            </h1>
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-purple-100 text-purple-700 shadow-sm sm:h-12 sm:w-12">
+                <i class="fa-solid fa-user-tie text-xl sm:text-2xl" aria-hidden="true"></i>
+            </div>
 
-            <p class="text-gray-500 mt-1">
-                Assign leadership positions to
-                <span class="font-semibold">
-                    {{ member.first_name }}
-                    {{ member.middle_name }}
-                    {{ member.last_name }}
-                </span>
-            </p>
+            <div class="min-w-0">
+                <h1 class="text-2xl font-bold leading-tight text-gray-800 sm:text-3xl">
+                    Leadership Positions
+                </h1>
+
+                <p class="mt-1 text-sm leading-5 text-gray-500 sm:text-base">
+                    Assign leadership positions to
+                    <span class="font-semibold text-gray-700">
+                        {{ member.first_name }}
+                        {{ member.middle_name }}
+                        {{ member.last_name }}
+                    </span>
+                </p>
+            </div>
 
         </div>
 
 
-        <div class="bg-gray-200 rounded-xl shadow-sm p-6">
+        <div class="overflow-hidden rounded-2xl border border-gray-200 bg-gray-100 shadow-lg">
 
-            <form method="post">
+            <form method="post" class="w-full">
 
                 {% csrf_token %}
 
                 {% if form.non_field_errors %}
-                    <div class="alert alert-error mb-5">
-                        {{ form.non_field_errors }}
+                    <div class="alert alert-error mb-5 items-start text-sm sm:text-base">
+                        <i class="fa-solid fa-circle-exclamation mt-0.5 shrink-0" aria-hidden="true"></i>
+                        <span>{{ form.non_field_errors }}</span>
                     </div>
                 {% endif %}
 
 
-                <div>
+                <div class="px-4 py-5 sm:px-6 lg:px-8">
 
-                    <label class="block text-sm font-medium text-gray-700 mb-3">
-                        Leadership Positions
+                    <label class="mb-3 flex items-center gap-2 text-sm font-semibold text-gray-700 sm:text-base">
+                        <i class="fa-solid fa-list-check text-purple-700" aria-hidden="true"></i>
+                        <span>Leadership Positions</span>
                     </label>
 
-                    <div class="space-y-3">
+                    <div class="grid grid-cols-1 gap-2.5 sm:grid-cols-2 sm:gap-3 lg:grid-cols-3">
 
                         {% for checkbox in form.leadership_positions %}
 
-                            <label class="flex items-center gap-3
-                                          p-3 rounded-lg
-                                          hover:bg-gray-300
-                                          cursor-pointer">
+                            <label class="flex min-w-0 items-start gap-3 rounded-xl border border-gray-200
+                                          bg-gray-50 p-3.5 transition
+                                          hover:border-purple-300 hover:bg-purple-50
+                                          hover:shadow-sm cursor-pointer">
 
                                 {{ checkbox.tag }}
 
-                                <span class="text-gray-700">
+                                <span class="min-w-0 wrap-break-word text-sm leading-5 text-gray-700 sm:text-base">
                                     {{ checkbox.choice_label }}
                                 </span>
 
@@ -62,8 +93,9 @@
 
                         {% empty %}
 
-                            <p class="text-gray-500">
-                                No active leadership positions are available.
+                            <p class="flex items-start gap-2 text-sm text-gray-500 sm:text-base">
+                                <i class="fa-solid fa-circle-info mt-0.5 shrink-0" aria-hidden="true"></i>
+                                <span>No active leadership positions are available.</span>
                             </p>
 
                         {% endfor %}
@@ -71,25 +103,26 @@
                     </div>
 
                     {% if form.leadership_positions.errors %}
-                        <div class="text-red-600 text-sm mt-2">
-                            {{ form.leadership_positions.errors }}
+                        <div class="mt-2 flex items-start gap-2 text-sm text-red-600">
+                            <i class="fa-solid fa-circle-exclamation mt-0.5 shrink-0" aria-hidden="true"></i>
+                            <span>{{ form.leadership_positions.errors }}</span>
                         </div>
                     {% endif %}
 
                 </div>
 
 
-                <div class="flex justify-end gap-3 mt-8">
+                <div class="flex flex-col-reverse gap-3 border-t border-gray-200 bg-gray-100 px-4 py-5 sm:flex-row sm:justify-end sm:px-6 lg:px-8">
 
                     <a href="{% url 'members:member_detail' member.pk %}"
-                       class="btn btn-ghost">
+                       class="btn btn-ghost w-full sm:w-auto">
+                        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                         Cancel
                     </a>
 
                     <button type="submit"
-                            class="btn bg-purple-600
-                                   hover:bg-purple-700
-                                   text-white">
+                            class="btn w-full bg-purple-600 text-white hover:bg-purple-700 sm:w-auto">
+                        <i class="fa-solid fa-floppy-disk" aria-hidden="true"></i>
                         Save Leadership Positions
                     </button>
 

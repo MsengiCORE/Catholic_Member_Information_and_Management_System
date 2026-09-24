@@ -1,35 +1,90 @@
 {% extends "base/base_with_menu.html" %}
 
+{% block extra_css %}
+<style>
+    .member-detail-page {
+        min-width: 0;
+    }
+
+    .member-detail-page * {
+        min-width: 0;
+    }
+
+    @media (max-width: 639px) {
+        .member-detail-page .btn {
+            min-height: 2.75rem;
+        }
+
+        .member-detail-page .badge {
+            max-width: 100%;
+        }
+    }
+</style>
+<style>
+    .member-detail-page section,
+    .member-detail-page section::before,
+    .member-detail-page section::after {
+        border: 0 !important;
+        border-top: 0 !important;
+        border-right: 0 !important;
+        border-bottom: 0 !important;
+        border-left: 0 !important;
+        box-shadow: none !important;
+        outline: 0 !important;
+        background-image: none !important;
+    }
+
+    .member-detail-page section > div {
+        min-width: 0;
+        border: 0 !important;
+        box-shadow: none !important;
+    }
+
+    .member-detail-page .badge {
+        line-height: 1.25rem;
+    }
+</style>
+
+{% endblock %}
+
 {% block content %}
 
-<div class="p-6">
+<div class="member-detail-page mx-auto w-full max-w-7xl px-3 py-4 sm:px-5 sm:py-6 lg:px-6 lg:py-8">
 
     <!-- Header -->
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+    <div class="mb-5 flex flex-col gap-4 sm:mb-6 lg:flex-row lg:items-center lg:justify-between">
 
-        <div>
-            <h1 class="text-2xl font-bold text-gray-800">
-                Member Profile
-            </h1>
+        <div class="flex min-w-0 items-start gap-3">
+            <div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-purple-100 text-purple-700 shadow-sm sm:h-12 sm:w-12">
+                <i class="fa-solid fa-id-card text-xl sm:text-2xl" aria-hidden="true"></i>
+            </div>
 
-            <p class="text-gray-500 mt-1">
-                View church member information.
-            </p>
+            <div class="min-w-0">
+                <h1 class="text-2xl font-bold leading-tight text-gray-800 sm:text-3xl">
+                    Member Profile
+                </h1>
+
+                <p class="mt-1 text-sm text-gray-500 sm:text-base">
+                    View church member information.
+                </p>
+            </div>
         </div>
 
-        <div class="flex gap-2">
+        <div class="grid grid-cols-1 gap-2 sm:flex sm:flex-wrap sm:justify-end">
 
             <a
                 href="{% url 'members:member_update' member.pk %}"
-                class="btn btn-primary"
+                class="btn btn-primary w-full sm:w-auto"
             >
+                <i class="fa-solid fa-user-pen" aria-hidden="true"></i>
                 Edit Member
             </a>
 
             <a
                 href="{% url 'members:member_list' %}"
-                class="btn btn-outline"
+                class="btn btn-outline w-full sm:w-auto"
             >
+                <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
                 Back to Members
             </a>
 
@@ -39,20 +94,20 @@
 
 
     <!-- Member Identity -->
-    <div class="bg-gray-200 rounded-xl shadow-sm p-6 mb-6">
+    <div class="mb-5 overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-sm sm:mb-6">
 
         <div class="flex flex-col md:flex-row md:items-center gap-5">
 
             <div class="avatar placeholder">
-                <div class="bg-purple-100 text-purple-700 rounded-full w-20">
-                    <span class="text-2xl font-bold">
+                <div class="flex h-16 w-16 items-center justify-center rounded-full bg-purple-100 text-purple-700 sm:h-20 sm:w-20">
+                    <span class="text-xl font-bold sm:text-2xl">
                         {{ member.first_name|first }}{{ member.last_name|first }}
                     </span>
                 </div>
             </div>
 
             <div>
-                <h2 class="text-2xl font-bold text-gray-800">
+                <h2 class="wrap-break-word text-xl font-bold leading-tight text-gray-800 sm:text-2xl">
                     {{ member.first_name }}
                     {% if member.middle_name %}
                         {{ member.middle_name }}
@@ -60,8 +115,9 @@
                     {{ member.last_name }}
                 </h2>
 
-                <p class="text-gray-500">
-                    Digital Offering No:
+                <p class="mt-1 flex flex-wrap items-center gap-1.5 text-sm text-gray-500 sm:text-base">
+                    <i class="fa-solid fa-hashtag text-purple-700" aria-hidden="true"></i>
+                    <span>Digital Offering No:</span>
                     <span class="font-semibold text-gray-700">
                         {{ member.digital_offering_number }}
                     </span>
@@ -74,28 +130,33 @@
 
 
     <!-- Personal Information -->
-    <div class="bg-gray-200 rounded-xl shadow-sm p-6 mb-6">
+    <div class="mb-5 overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-sm sm:mb-6">
 
-        <h2 class="text-lg font-bold text-gray-800 mb-5">
-            Personal Information
+        <div class="p-4 sm:p-6">
+
+        <h2 class="mb-5 flex items-center gap-2 text-lg font-bold text-gray-800 sm:text-xl">
+            <i class="fa-solid fa-user text-purple-700" aria-hidden="true"></i>
+            <span>Personal Information</span>
         </h2>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 sm:gap-5">
 
             <div>
-                <p class="text-sm text-gray-500">
-                    First Name
+                <p class="flex items-center gap-1.5 text-sm text-gray-500">
+                    <i class="fa-solid fa-user" aria-hidden="true"></i>
+                    <span>First Name</span>
                 </p>
-                <p class="font-medium text-gray-800">
+                <p class="wrap-break-word font-medium text-gray-800">
                     {{ member.first_name }}
                 </p>
             </div>
 
             <div>
-                <p class="text-sm text-gray-500">
-                    Middle Name
+                <p class="flex items-center gap-1.5 text-sm text-gray-500">
+                    <i class="fa-solid fa-user" aria-hidden="true"></i>
+                    <span>Middle Name</span>
                 </p>
-                <p class="font-medium text-gray-800">
+                <p class="wrap-break-word font-medium text-gray-800">
                     {% if member.middle_name %}
                         {{ member.middle_name }}
                     {% else %}
@@ -105,37 +166,41 @@
             </div>
 
             <div>
-                <p class="text-sm text-gray-500">
-                    Last Name
+                <p class="flex items-center gap-1.5 text-sm text-gray-500">
+                    <i class="fa-solid fa-user" aria-hidden="true"></i>
+                    <span>Last Name</span>
                 </p>
-                <p class="font-medium text-gray-800">
+                <p class="wrap-break-word font-medium text-gray-800">
                     {{ member.last_name }}
                 </p>
             </div>
 
             <div>
-                <p class="text-sm text-gray-500">
-                    Date of Birth
+                <p class="flex items-center gap-1.5 text-sm text-gray-500">
+                    <i class="fa-solid fa-calendar-days" aria-hidden="true"></i>
+                    <span>Date of Birth</span>
                 </p>
-                <p class="font-medium text-gray-800">
+                <p class="wrap-break-word font-medium text-gray-800">
                     {{ member.date_of_birth }}
                 </p>
             </div>
 
             <div>
-                <p class="text-sm text-gray-500">
-                    Marital Status
+                <p class="flex items-center gap-1.5 text-sm text-gray-500">
+                    <i class="fa-solid fa-heart" aria-hidden="true"></i>
+                    <span>Marital Status</span>
                 </p>
-                <p class="font-medium text-gray-800">
+                <p class="wrap-break-word font-medium text-gray-800">
                     {{ member.get_marital_status_display }}
                 </p>
             </div>
 
             <div>
-                <p class="text-sm text-gray-500">
-                    Baptism Status
+                <p class="flex items-center gap-1.5 text-sm text-gray-500">
+                    <i class="fa-solid fa-droplet" aria-hidden="true"></i>
+                    <span>Baptism Status</span>
                 </p>
-                <p class="font-medium text-gray-800">
+                <p class="wrap-break-word font-medium text-gray-800">
                     {{ member.get_baptism_status_display }}
                 </p>
             </div>
@@ -146,28 +211,33 @@
 
 
     <!-- Contact Information -->
-    <div class="bg-gray-200 rounded-xl shadow-sm p-6 mb-6">
+    <div class="mb-5 overflow-hidden bg-gray-100 shadow-sm sm:mb-6">
 
-        <h2 class="text-lg font-bold text-gray-800 mb-5">
-            Contact Information
+        <div class="p-4 sm:p-6">
+
+        <h2 class="mb-5 flex items-center gap-2 text-lg font-bold text-gray-800 sm:text-xl">
+            <i class="fa-solid fa-address-book text-purple-700" aria-hidden="true"></i>
+            <span>Contact Information</span>
         </h2>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-5">
 
             <div>
-                <p class="text-sm text-gray-500">
-                    Phone Number
+                <p class="flex items-center gap-1.5 text-sm text-gray-500">
+                    <i class="fa-solid fa-phone" aria-hidden="true"></i>
+                    <span>Phone Number</span>
                 </p>
-                <p class="font-medium text-gray-800">
+                <p class="wrap-break-word font-medium text-gray-800">
                     {{ member.phone_number }}
                 </p>
             </div>
 
             <div>
-                <p class="text-sm text-gray-500">
-                    Email Address
+                <p class="flex items-center gap-1.5 text-sm text-gray-500">
+                    <i class="fa-solid fa-envelope" aria-hidden="true"></i>
+                    <span>Email Address</span>
                 </p>
-                <p class="font-medium text-gray-800">
+                <p class="wrap-break-word font-medium text-gray-800">
                     {% if member.email %}
                         {{ member.email }}
                     {% else %}
@@ -182,19 +252,23 @@
 
 
     <!-- Residence -->
-    <div class="bg-gray-200 rounded-xl shadow-sm p-6 mb-6">
+    <div class="mb-5 overflow-hidden bg-gray-100 shadow-sm sm:mb-6">
 
-        <h2 class="text-lg font-bold text-gray-800 mb-5">
-            Residence Information
+        <div class="p-4 sm:p-6">
+
+        <h2 class="mb-5 flex items-center gap-2 text-lg font-bold text-gray-800 sm:text-xl">
+            <i class="fa-solid fa-house text-purple-700" aria-hidden="true"></i>
+            <span>Residence Information</span>
         </h2>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 sm:gap-5">
 
             <div>
-                <p class="text-sm text-gray-500">
-                    House Number
+                <p class="flex items-center gap-1.5 text-sm text-gray-500">
+                    <i class="fa-solid fa-house" aria-hidden="true"></i>
+                    <span>House Number</span>
                 </p>
-                <p class="font-medium text-gray-800">
+                <p class="wrap-break-word font-medium text-gray-800">
                     {% if member.house_number %}
                         {{ member.house_number }}
                     {% else %}
@@ -204,10 +278,11 @@
             </div>
 
             <div>
-                <p class="text-sm text-gray-500">
-                    Street
+                <p class="flex items-center gap-1.5 text-sm text-gray-500">
+                    <i class="fa-solid fa-road" aria-hidden="true"></i>
+                    <span>Street</span>
                 </p>
-                <p class="font-medium text-gray-800">
+                <p class="wrap-break-word font-medium text-gray-800">
                     {% if member.street %}
                         {{ member.street }}
                     {% else %}
@@ -217,37 +292,41 @@
             </div>
 
             <div>
-                <p class="text-sm text-gray-500">
-                    Ward
+                <p class="flex items-center gap-1.5 text-sm text-gray-500">
+                    <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+                    <span>Ward</span>
                 </p>
-                <p class="font-medium text-gray-800">
+                <p class="wrap-break-word font-medium text-gray-800">
                     {{ member.ward }}
                 </p>
             </div>
 
             <div>
-                <p class="text-sm text-gray-500">
-                    District
+                <p class="flex items-center gap-1.5 text-sm text-gray-500">
+                    <i class="fa-solid fa-map-location-dot" aria-hidden="true"></i>
+                    <span>District</span>
                 </p>
-                <p class="font-medium text-gray-800">
+                <p class="wrap-break-word font-medium text-gray-800">
                     {{ member.district }}
                 </p>
             </div>
 
             <div>
-                <p class="text-sm text-gray-500">
-                    Region
+                <p class="flex items-center gap-1.5 text-sm text-gray-500">
+                    <i class="fa-solid fa-map" aria-hidden="true"></i>
+                    <span>Region</span>
                 </p>
-                <p class="font-medium text-gray-800">
+                <p class="wrap-break-word font-medium text-gray-800">
                     {{ member.region }}
                 </p>
             </div>
 
             <div>
-                <p class="text-sm text-gray-500">
-                    Family
+                <p class="flex items-center gap-1.5 text-sm text-gray-500">
+                    <i class="fa-solid fa-people-roof" aria-hidden="true"></i>
+                    <span>Family</span>
                 </p>
-                <p class="font-medium text-gray-800">
+                <p class="wrap-break-word font-medium text-gray-800">
                     {% if member.family %}
                         {{ member.family }}
                     {% else %}
@@ -261,77 +340,86 @@
     </div>
 
     <!-- Church Organizational Information -->
-    <div class="bg-gray-200 rounded-xl shadow-sm p-6 mb-6">
+    <div class="mb-5 overflow-hidden bg-gray-100 shadow-sm sm:mb-6">
 
-        <h2 class="text-lg font-bold text-gray-800 mb-5">
-            Church Organizational Information
+        <div class="p-4 sm:p-6">
+
+        <h2 class="mb-5 flex items-center gap-2 text-lg font-bold text-gray-800 sm:text-xl">
+            <i class="fa-solid fa-sitemap text-purple-700" aria-hidden="true"></i>
+            <span>Church Organizational Information</span>
         </h2>
 
         {% if member.small_christian_community %}
 
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 sm:gap-5">
 
                 <div>
-                    <p class="text-sm text-gray-500">
-                        Diocese
+                    <p class="flex items-center gap-1.5 text-sm text-gray-500">
+                        <i class="fa-solid fa-building-columns" aria-hidden="true"></i>
+                        <span>Diocese</span>
                     </p>
 
-                    <p class="font-medium text-gray-800">
+                    <p class="wrap-break-word font-medium text-gray-800">
                         {{ member.small_christian_community.zone.parish.deanery.diocese.name }}
                     </p>
                 </div>
 
 
                 <div>
-                    <p class="text-sm text-gray-500">
-                        Deanery
+                    <p class="flex items-center gap-1.5 text-sm text-gray-500">
+                        <i class="fa-solid fa-sitemap" aria-hidden="true"></i>
+                        <span>Deanery</span>
                     </p>
 
-                    <p class="font-medium text-gray-800">
+                    <p class="wrap-break-word font-medium text-gray-800">
                         {{ member.small_christian_community.zone.parish.deanery.name }}
                     </p>
                 </div>
 
 
                 <div>
-                    <p class="text-sm text-gray-500">
-                        Parish
+                    <p class="flex items-center gap-1.5 text-sm text-gray-500">
+                        <i class="fa-solid fa-church" aria-hidden="true"></i>
+                        <span>Parish</span>
                     </p>
 
-                    <p class="font-medium text-gray-800">
+                    <p class="wrap-break-word font-medium text-gray-800">
                         {{ member.small_christian_community.zone.parish.name }}
                     </p>
                 </div>
 
 
                 <div>
-                    <p class="text-sm text-gray-500">
-                        Zone
+                    <p class="flex items-center gap-1.5 text-sm text-gray-500">
+                        <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+                        <span>Zone</span>
                     </p>
 
-                    <p class="font-medium text-gray-800">
+                    <p class="wrap-break-word font-medium text-gray-800">
                         {{ member.small_christian_community.zone.name }}
                     </p>
                 </div>
 
 
                 <div>
-                    <p class="text-sm text-gray-500">
-                        Small Christian Community
+                    <p class="flex items-center gap-1.5 text-sm text-gray-500">
+                        <i class="fa-solid fa-people-group" aria-hidden="true"></i>
+                        <span>Small Christian Community</span>
                     </p>
 
-                    <p class="font-medium text-gray-800">
+                    <p class="wrap-break-word font-medium text-gray-800">
                         {{ member.small_christian_community.name }}
                     </p>
                 </div>
 
 
                 <div>
-                    <p class="text-sm text-gray-500">
-                        Family
+                    <p class="flex items-center gap-1.5 text-sm text-gray-500">
+                        <i class="fa-solid fa-people-roof" aria-hidden="true"></i>
+                        <span>Family</span>
                     </p>
 
-                    <p class="font-medium text-gray-800">
+                    <p class="wrap-break-word font-medium text-gray-800">
                         {% if member.family %}
                             {{ member.family }}
                         {% else %}
@@ -344,7 +432,8 @@
 
         {% else %}
 
-            <div class="alert alert-warning">
+            <div class="alert alert-warning items-start text-sm sm:text-base">
+                <i class="fa-solid fa-triangle-exclamation mt-0.5 shrink-0" aria-hidden="true"></i>
                 <span>
                     This member has not yet been assigned to a Church organizational unit.
                 </span>
@@ -356,89 +445,97 @@
 
 
     <!-- Church Associations -->
-    <div class="bg-gray-200 rounded-xl shadow-sm p-6 mb-6">
+    <section class="mb-5 overflow-visible border-0 bg-transparent shadow-none sm:mb-6">
 
-        <div class="flex items-center justify-between mb-5">
+        <div class="p-4 sm:p-6">
 
-            <h2 class="text-lg font-bold text-gray-800">
-                Church Associations
-            </h2>
+            <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 
-            <a
-                href="{% url 'members:member_associations' member.pk %}"
-                class="btn btn-sm btn-primary"
-            >
-                Manage Associations
-            </a>
+                <h2 class="flex min-w-0 items-center gap-2 text-lg font-bold text-gray-800 sm:text-xl">
+                    <i class="fa-solid fa-people-group shrink-0 text-purple-700" aria-hidden="true"></i>
+                    <span>Church Associations</span>
+                </h2>
 
-        </div>
-
-        {% if member.church_associations.all %}
-
-            <div class="flex flex-wrap gap-2">
-
-                {% for association in member.church_associations.all %}
-
-                    <span class="badge badge-lg badge-outline">
-                        {{ association.name }}
-                    </span>
-
-                {% endfor %}
+                <a
+                    href="{% url 'members:member_associations' member.pk %}"
+                    class="btn btn-sm btn-primary w-full sm:w-auto"
+                >
+                    <i class="fa-solid fa-people-group" aria-hidden="true"></i>
+                    <span>Manage Associations</span>
+                </a>
 
             </div>
 
-        {% else %}
+            {% if member.church_associations.all %}
 
-            <p class="text-gray-500">
-                No church associations assigned.
-            </p>
+                <div class="flex flex-wrap gap-2">
+                    {% for association in member.church_associations.all %}
+                        <span class="badge badge-lg badge-outline max-w-full whitespace-normal wrap-break-word text-center">
+                            <i class="fa-solid fa-tag mr-1" aria-hidden="true"></i>
+                            {{ association.name }}
+                        </span>
+                    {% endfor %}
+                </div>
 
-        {% endif %}
+            {% else %}
 
-    </div>
+                <div class="flex items-start gap-2 text-sm text-gray-500 sm:text-base">
+                    <i class="fa-solid fa-circle-info mt-0.5 shrink-0" aria-hidden="true"></i>
+                    <span>No church associations assigned.</span>
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </section>
 
 
     <!-- Leadership Positions -->
-    <div class="bg-gray-200 rounded-xl shadow-sm p-6 mb-6">
+    <section class="mb-5 overflow-visible border-0 bg-transparent shadow-none sm:mb-6">
 
-        <div class="flex items-center justify-between mb-5">
+        <div class="p-4 sm:p-6">
 
-            <h2 class="text-lg font-bold text-gray-800">
-                Leadership Positions
-            </h2>
+            <div class="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
 
-            <a
-                href="{% url 'members:member_leadership' member.pk %}"
-                class="btn btn-sm btn-primary"
-            >
-                Manage Leadership
-            </a>
+                <h2 class="flex min-w-0 items-center gap-2 text-lg font-bold text-gray-800 sm:text-xl">
+                    <i class="fa-solid fa-user-tie shrink-0 text-purple-700" aria-hidden="true"></i>
+                    <span>Leadership Positions</span>
+                </h2>
 
-        </div>
-
-        {% if member.leadership_positions.all %}
-
-            <div class="flex flex-wrap gap-2">
-
-                {% for position in member.leadership_positions.all %}
-
-                    <span class="badge badge-lg badge-outline">
-                        {{ position.name }}
-                    </span>
-
-                {% endfor %}
+                <a
+                    href="{% url 'members:member_leadership' member.pk %}"
+                    class="btn btn-sm btn-primary w-full sm:w-auto"
+                >
+                    <i class="fa-solid fa-user-tie" aria-hidden="true"></i>
+                    <span>Manage Leadership</span>
+                </a>
 
             </div>
 
-        {% else %}
+            {% if member.leadership_positions.all %}
 
-            <p class="text-gray-500">
-                No leadership position assigned.
-            </p>
+                <div class="flex flex-wrap gap-2">
+                    {% for position in member.leadership_positions.all %}
+                        <span class="badge badge-lg badge-outline max-w-full whitespace-normal wrap-break-word text-center">
+                            <i class="fa-solid fa-user-check mr-1" aria-hidden="true"></i>
+                            {{ position.name }}
+                        </span>
+                    {% endfor %}
+                </div>
 
-        {% endif %}
+            {% else %}
 
-    </div>
+                <div class="flex items-start gap-2 text-sm text-gray-500 sm:text-base">
+                    <i class="fa-solid fa-circle-info mt-0.5 shrink-0" aria-hidden="true"></i>
+                    <span>No leadership position assigned.</span>
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </section>
 
 </div>
 

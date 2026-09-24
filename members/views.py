@@ -2477,9 +2477,20 @@ def register_new_member(request):
 @login_required
 @never_cache
 def member_list(request):
+    """
+    Member list page.
+
+    IMPORTANT:
+    The actual member records are loaded by DataTables through the
+    server-side `member_data` endpoint. This view only prepares the
+    relatively small organizational filter options and therefore does
+    not evaluate the full ChurchMember queryset during page rendering.
+    """
     if not can_manage_members(request.user) and not is_church_member(request.user):
         raise PermissionDenied
 
+    # Selected filters are retained by the page so that DataTables can
+    # send them to the server-side endpoint.
     query = request.GET.get("q", "").strip()
 
     diocese_id = request.GET.get("diocese", "").strip()
@@ -2489,92 +2500,14 @@ def member_list(request):
     scc_id = request.GET.get("scc", "").strip()
     family_name = request.GET.get("family", "").strip()
 
-    members = ChurchMember.objects.select_related(
-        "small_christian_community__zone__parish__deanery__diocese"
-    ).all()
-
-    members = get_accessible_members(
-        request.user,
-        members,
-    )
-
-    # ---------------------------------------------------------
-    # Text search
-    # ---------------------------------------------------------
-    if query:
-        members = members.filter(
-            Q(digital_offering_number__icontains=query)
-            | Q(first_name__icontains=query)
-            | Q(middle_name__icontains=query)
-            | Q(last_name__icontains=query)
-            | Q(phone_number__icontains=query)
-            | Q(email__icontains=query)
-        )
-
-    # ---------------------------------------------------------
-    # Organizational filters
-    # ---------------------------------------------------------
-    if diocese_id:
-        members = members.filter(
-            small_christian_community__zone__parish__deanery__diocese_id=diocese_id
-        )
-
-    if deanery_id:
-        members = members.filter(
-            small_christian_community__zone__parish__deanery_id=deanery_id
-        )
-
-    if parish_id:
-        members = members.filter(
-            small_christian_community__zone__parish_id=parish_id
-        )
-
-    if zone_id:
-        members = members.filter(
-            small_christian_community__zone_id=zone_id
-        )
-
-    if scc_id:
-        members = members.filter(
-            small_christian_community_id=scc_id
-        )
-
-    # ---------------------------------------------------------
-    # Family filter
-    # Family is intentionally a CharField.
-    # ---------------------------------------------------------
-    members = members.order_by(
-        "last_name",
-        "first_name",
-        "middle_name",
-    )
-
-    # Keep the queryset before applying the family filter
-    # so that the family dropdown can be populated correctly.
-    family_members = members
-
-    if family_name:
-        members = members.filter(
-            family__iexact=family_name
-        )
-
-    # ---------------------------------------------------------
-    # Filter option querysets
-    # Respect the user's organizational scope.
-    # ---------------------------------------------------------
-
     profile = None
 
     if not request.user.is_superuser:
-        from accounts.permissions import get_user_profile
-
         profile = get_user_profile(request.user)
 
-
     # ---------------------------------------------------------
-    # Diocese filter
+    # Diocese filter options
     # ---------------------------------------------------------
-
     if request.user.is_superuser:
         dioceses = Diocese.objects.filter(
             is_active=True
@@ -2607,60 +2540,69 @@ def member_list(request):
     else:
         dioceses = Diocese.objects.none()
 
-
     # ---------------------------------------------------------
-    # Deanery filter
+    # Cascading organizational filter options
     # ---------------------------------------------------------
-
     deaneries = Deanery.objects.none()
-
     if diocese_id:
         deaneries = Deanery.objects.filter(
             diocese_id=diocese_id,
             is_active=True,
         ).order_by("name")
 
-
-    # ---------------------------------------------------------
-    # Parish filter
-    # ---------------------------------------------------------
-
     parishes = Parish.objects.none()
-
     if deanery_id:
         parishes = Parish.objects.filter(
             deanery_id=deanery_id,
             is_active=True,
         ).order_by("name")
 
-
-    # ---------------------------------------------------------
-    # Zone filter
-    # ---------------------------------------------------------
-
     zones = Zone.objects.none()
-
     if parish_id:
         zones = Zone.objects.filter(
             parish_id=parish_id,
             is_active=True,
         ).order_by("name")
 
-
-    # ---------------------------------------------------------
-    # Small Christian Community filter
-    # ---------------------------------------------------------
-
     small_christian_communities = SmallChristianCommunity.objects.none()
-
     if zone_id:
         small_christian_communities = SmallChristianCommunity.objects.filter(
             zone_id=zone_id,
             is_active=True,
         ).order_by("name")
 
-    # Family names are derived from ChurchMember because
-    # ChurchMember.family is currently a CharField.
+    # ---------------------------------------------------------
+    # Family options
+    #
+    # ChurchMember.family is intentionally a CharField.
+    # Only fetch family names for the user's accessible scope.
+    # ---------------------------------------------------------
+    family_members = get_accessible_members(
+        request.user,
+        ChurchMember.objects.all(),
+    )
+
+    if scc_id:
+        family_members = family_members.filter(
+            small_christian_community_id=scc_id
+        )
+    elif zone_id:
+        family_members = family_members.filter(
+            small_christian_community__zone_id=zone_id
+        )
+    elif parish_id:
+        family_members = family_members.filter(
+            small_christian_community__zone__parish_id=parish_id
+        )
+    elif deanery_id:
+        family_members = family_members.filter(
+            small_christian_community__zone__parish__deanery_id=deanery_id
+        )
+    elif diocese_id:
+        family_members = family_members.filter(
+            small_christian_community__zone__parish__deanery__diocese_id=diocese_id
+        )
+
     families = (
         family_members
         .exclude(family="")
@@ -2670,10 +2612,10 @@ def member_list(request):
     )
 
     context = {
-        "members": members,
+        # No "members" queryset is intentionally passed here.
+        # DataTables obtains members through member_data.
         "query": query,
 
-        # Selected filters
         "selected_diocese": diocese_id,
         "selected_deanery": deanery_id,
         "selected_parish": parish_id,
@@ -2681,7 +2623,6 @@ def member_list(request):
         "selected_scc": scc_id,
         "selected_family": family_name,
 
-        # Filter options
         "dioceses": dioceses,
         "deaneries": deaneries,
         "parishes": parishes,
@@ -2695,6 +2636,198 @@ def member_list(request):
         "members/member_list.html",
         context,
     )
+
+
+@login_required
+@never_cache
+def member_data(request):
+    """
+    Server-side DataTables endpoint for Church Members.
+
+    Only the requested DataTables page is fetched from PostgreSQL.
+    Search, organizational filters, ordering and pagination are all
+    performed at database level.
+    """
+    if not can_manage_members(request.user) and not is_church_member(request.user):
+        raise PermissionDenied
+
+    # ---------------------------------------------------------
+    # Base queryset + organizational access scope
+    # ---------------------------------------------------------
+    queryset = ChurchMember.objects.select_related(
+        "small_christian_community__zone__parish__deanery__diocese"
+    )
+
+    queryset = get_accessible_members(
+        request.user,
+        queryset,
+    )
+
+    # ---------------------------------------------------------
+    # Custom filters from the member list page
+    # ---------------------------------------------------------
+    query = request.GET.get("q", "").strip()
+    diocese_id = request.GET.get("diocese", "").strip()
+    deanery_id = request.GET.get("deanery", "").strip()
+    parish_id = request.GET.get("parish", "").strip()
+    zone_id = request.GET.get("zone", "").strip()
+    scc_id = request.GET.get("scc", "").strip()
+    family_name = request.GET.get("family", "").strip()
+
+    if query:
+        queryset = queryset.filter(
+            Q(digital_offering_number__icontains=query)
+            | Q(first_name__icontains=query)
+            | Q(middle_name__icontains=query)
+            | Q(last_name__icontains=query)
+            | Q(phone_number__icontains=query)
+            | Q(email__icontains=query)
+        )
+
+    if diocese_id:
+        queryset = queryset.filter(
+            small_christian_community__zone__parish__deanery__diocese_id=diocese_id
+        )
+
+    if deanery_id:
+        queryset = queryset.filter(
+            small_christian_community__zone__parish__deanery_id=deanery_id
+        )
+
+    if parish_id:
+        queryset = queryset.filter(
+            small_christian_community__zone__parish_id=parish_id
+        )
+
+    if zone_id:
+        queryset = queryset.filter(
+            small_christian_community__zone_id=zone_id
+        )
+
+    if scc_id:
+        queryset = queryset.filter(
+            small_christian_community_id=scc_id
+        )
+
+    if family_name:
+        queryset = queryset.filter(
+            family__iexact=family_name
+        )
+
+    # ---------------------------------------------------------
+    # DataTables parameters
+    # ---------------------------------------------------------
+    try:
+        draw = int(request.GET.get("draw", 1))
+    except (TypeError, ValueError):
+        draw = 1
+
+    try:
+        start = max(int(request.GET.get("start", 0)), 0)
+    except (TypeError, ValueError):
+        start = 0
+
+    try:
+        length = int(request.GET.get("length", 10))
+    except (TypeError, ValueError):
+        length = 10
+
+    # Protect the endpoint from accidentally requesting an enormous page.
+    if length < 1:
+        length = 10
+    length = min(length, 100)
+
+    # DataTables sends its own search[value]. The custom q field is also
+    # supported so the existing search box remains the source of truth.
+    dt_search = request.GET.get("search[value]", "").strip()
+
+    if dt_search and not query:
+        queryset = queryset.filter(
+            Q(digital_offering_number__icontains=dt_search)
+            | Q(first_name__icontains=dt_search)
+            | Q(middle_name__icontains=dt_search)
+            | Q(last_name__icontains=dt_search)
+            | Q(phone_number__icontains=dt_search)
+            | Q(email__icontains=dt_search)
+        )
+
+    # ---------------------------------------------------------
+    # Counts
+    # ---------------------------------------------------------
+    records_total = get_accessible_members(
+        request.user,
+        ChurchMember.objects.all(),
+    ).count()
+
+    records_filtered = queryset.count()
+
+    # ---------------------------------------------------------
+    # Ordering
+    # ---------------------------------------------------------
+    order_column = request.GET.get("order[0][column]", "2")
+    order_direction = request.GET.get("order[0][dir]", "asc")
+
+    columns = {
+        "0": "last_name",
+        "1": "digital_offering_number",
+        "2": "last_name",
+        "3": "phone_number",
+        "4": "email",
+        "5": "marital_status",
+        "6": "baptism_status",
+    }
+
+    order_field = columns.get(order_column, "last_name")
+
+    if order_direction == "desc":
+        order_field = f"-{order_field}"
+
+    queryset = queryset.order_by(
+        order_field,
+        "first_name",
+        "middle_name",
+        "pk",
+    )
+
+    # ---------------------------------------------------------
+    # Database pagination
+    # ---------------------------------------------------------
+    page_queryset = queryset[start:start + length]
+
+    # ---------------------------------------------------------
+    # Response
+    # ---------------------------------------------------------
+    data = []
+
+    for member in page_queryset:
+        full_name = " ".join(
+            part
+            for part in (
+                member.first_name,
+                member.middle_name,
+                member.last_name,
+            )
+            if part
+        )
+
+        data.append({
+            "id": str(member.pk),
+            "digital_offering_number": member.digital_offering_number,
+            "full_name": full_name,
+            "phone": member.phone_number or "—",
+            "email": member.email or "—",
+            "marital_status": member.get_marital_status_display(),
+            "baptism_status": member.get_baptism_status_display(),
+            "detail_url": f"/members/member-details/{member.pk}/",
+        })
+
+    return JsonResponse({
+        "draw": draw,
+        "recordsTotal": records_total,
+        "recordsFiltered": records_filtered,
+        "data": data,
+    })
+
 
 @login_required
 @never_cache
