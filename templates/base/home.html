@@ -4,27 +4,161 @@
 
 {% block content %}
 
-<div class="min-h-screen bg-base-200 flex items-center justify-center">
-    <div class="text-center">
-        <h1 class="text-4xl font-bold text-primary">
-            Catholic Church Member Information and Management System
-        </h1>
+{% block extra_css %}
+<style>
+    @media (max-width: 380px) {
+        .btn.btn-lg {
+            min-height: 3rem;
+            height: 3rem;
+            font-size: 0.9rem;
+        }
+    }
+</style>
+{% endblock %}
 
-        <p class="mt-4 text-lg">
-            Welcome to CCMIMS
-        </p>
 
-        <button class="btn btn-secondary mt-6">
-            <a href="{% url 'accounts:login' %}">
-                Login
-            </a>
-        </button>
+<div class="relative min-h-[calc(100vh-7rem)] overflow-hidden bg-gray-200">
 
-        <button class="btn btn-primary mt-6">
-            <a href="{% url 'members:register' %}">
-                Get Started
-            </a>
-        </button>
+    <div class="relative mx-auto flex min-h-[calc(100vh-7rem)] max-w-7xl items-center px-4 py-8 sm:px-6 sm:py-10 md:px-8 md:py-12 lg:px-10">
+        <div class="grid w-full items-center gap-8 sm:gap-10 lg:grid-cols-2 lg:gap-14">
+
+            <div class="text-center lg:text-left">
+
+                <div class="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-2 text-sm font-medium text-primary">
+                    <span class="h-2 w-2 rounded-full bg-success"></span>
+                    Catholic Church Management Platform
+                </div>
+
+                <h1 class="text-3xl font-black leading-[1.08] tracking-tight text-base-content xs:text-4xl sm:text-5xl lg:text-6xl">
+                    Catholic Church
+                    <span class="block bg-linear-to-r from-primary via-secondary to-success bg-clip-text text-transparent">
+                        Member Information
+                    </span>
+                    <span class="block text-base-content">and Management System</span>
+                </h1>
+
+                <p class="mx-auto mt-5 max-w-2xl text-sm leading-6 sm:mt-6 sm:text-base sm:leading-7 text-base-content/65 lg:mx-0">
+                    Welcome to <span class="font-semibold text-primary">CCMIMS</span> —
+                    a modern platform for managing church members, communities,
+                    families, leadership and church information in one place.
+                </p>
+
+                <!-- Actions -->
+                <div class="mt-7 flex w-full flex-col justify-center gap-3 sm:mt-8 sm:flex-row lg:justify-start">
+                    <a
+                        href="{% url 'accounts:login' %}"
+                        class="btn btn-primary btn-lg w-full rounded-xl px-7 sm:w-auto shadow-lg shadow-primary/20 transition duration-200 hover:-translate-y-0.5"
+                    >
+                        Login
+                        <i class="fa-solid fa-arrow-right text-sm"></i>
+                    </a>
+
+                    <a
+                        href="{% url 'members:register' %}"
+                        class="btn bg-secondary btn-lg w-full rounded-xl border-2 px-7 sm:w-auto transition duration-200 hover:-translate-y-0.5"
+                    >
+                        Get Started
+                    </a>
+                </div>
+
+                <!-- Quick highlights -->
+                <div class="mt-8 grid grid-cols-1 gap-3 sm:mt-10 sm:grid-cols-3">
+                    <div class="rounded-2xl border border-base-300 bg-gray-100 p-4 shadow-sm backdrop-blur transition duration-200 hover:-translate-y-1 hover:shadow-md">
+                        <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-primary/10 text-primary"><i class="fa-solid fa-users"></i></div>
+                        <p class="font-semibold text-base-content">Members</p>
+                        <p class="mt-1 text-xs text-base-content/55">Centralized member records</p>
+                    </div>
+
+                    <div class="rounded-2xl border border-base-300 bg-gray-100 p-4 shadow-sm backdrop-blur transition duration-200 hover:-translate-y-1 hover:shadow-md">
+                        <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-success/10 text-success"><i class="fa-solid fa-church"></i></div>
+                        <p class="font-semibold text-base-content">Communities</p>
+                        <p class="mt-1 text-xs text-base-content/55">Organized church structure</p>
+                    </div>
+
+                    <div class="rounded-2xl border border-base-300 bg-gray-100 p-4 shadow-sm backdrop-blur transition duration-200 hover:-translate-y-1 hover:shadow-md">
+                        <div class="mb-3 flex h-10 w-10 items-center justify-center rounded-xl bg-secondary/10 text-secondary"><i class="fa-solid fa-shield-halved"></i></div>
+                        <p class="font-semibold text-base-content">Secure</p>
+                        <p class="mt-1 text-xs text-base-content/55">Role-based access control</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Visual panel -->
+            <div class="relative block w-full lg:block">
+
+                <div class="absolute -inset-6 rounded-4xl bg-linear-to-br from-primary/20 via-secondary/10 to-success/20 blur-2xl"></div>
+
+                <div class="relative rounded-4xl border border-base-300 bg-gray-100 p-4 shadow-xl sm:p-6">
+
+                    <!-- Dashboard header -->
+                    <div class="flex items-center justify-between border-b border-base-300 pb-5">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-widest text-primary">
+                                CCMIMS
+                            </p>
+                            <h2 class="mt-1 text-xl font-bold">Church Overview</h2>
+                        </div>
+
+                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary sm:h-11 sm:w-11">
+                            <i class="fa-solid fa-church"></i>
+                        </div>
+                    </div>
+
+                    <!-- Mock statistics -->
+                    <div class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
+                        <div class="rounded-2xl bg-primary/5 p-4 sm:p-5">
+                            <p class="text-sm text-base-content/60">Members</p>
+                            <p class="mt-2 text-3xl font-bold text-primary">1,248</p>
+                            <p class="mt-1 text-xs text-success">Member records</p>
+                        </div>
+
+                        <div class="rounded-2xl bg-success/5 p-4 sm:p-5">
+                            <p class="text-sm text-base-content/60">Communities</p>
+                            <p class="mt-2 text-3xl font-bold text-success">48</p>
+                            <p class="mt-1 text-xs text-success">Active communities</p>
+                        </div>
+                    </div>
+
+                    <!-- Organization structure -->
+                    <div class="mt-5 rounded-2xl border border-base-300 p-5">
+                        <p class="mb-4 text-sm font-semibold">Church Organization</p>
+
+                        <div class="space-y-3 text-sm">
+                            <div class="flex items-center gap-3">
+                                <span class="h-3 w-3 shrink-0 rounded-full bg-primary"></span>
+                                <span>Diocese</span>
+                            </div>
+
+                            <div class="ml-3 border-l-2 border-primary/20 pl-4 sm:ml-5 sm:pl-5">
+                                <div class="flex items-center gap-3">
+                                    <span class="h-3 w-3 shrink-0 rounded-full bg-secondary"></span>
+                                    <span>Deanery</span>
+                                </div>
+
+                                <div class="mt-3 ml-3 border-l-2 border-secondary/20 pl-4 sm:ml-5 sm:pl-5">
+                                    <div class="flex flex-wrap items-center gap-2">
+                                        <span class="h-3 w-3 shrink-0 rounded-full bg-info"></span>
+                                        <span>Parish</span><span class="text-base-content/30">→</span>
+                                        <span>Zone</span><span class="text-base-content/30">→</span>
+                                        <span>SCC</span><span class="text-base-content/30">→</span>
+                                        <span>Family</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Status -->
+                    <div class="mt-5 flex items-center gap-3 rounded-xl bg-success/10 px-4 py-3">
+                        <span class="h-2.5 w-2.5 rounded-full bg-success"></span>
+                        <p class="text-sm font-medium text-base-content/75">
+                            System ready for church management
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
     </div>
 </div>
 

@@ -2,41 +2,84 @@
 
 {% block title %}Register Member{% endblock %}
 
+{% block extra_css %}
+<style>
+    /* Responsive Django form controls */
+    #id_digital_offering_number,
+    #id_first_name,
+    #id_middle_name,
+    #id_last_name,
+    #id_date_of_birth,
+    #id_marital_status,
+    #id_baptism_status,
+    #id_diocese,
+    #id_deanery,
+    #id_parish,
+    #id_zone,
+    #id_small_christian_community,
+    #id_family,
+    #id_email,
+    #id_house_number,
+    #id_street,
+    #id_ward,
+    #id_district,
+    #id_region {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    #id_church_associations,
+    #id_leadership_positions {
+        max-width: 100%;
+    }
+
+    @media (max-width: 639px) {
+        input,
+        select,
+        textarea {
+            max-width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 
-<div class="min-h-screen bg-gray-200 px-4 py-10">
+<div class="min-h-full bg-gray-200 px-3 py-6 sm:px-5 sm:py-8 lg:px-8 lg:py-10">
 
-    <div class="mx-auto max-w-5xl">
+    <div class="mx-auto w-full max-w-5xl">
 
         <!-- Page Header -->
-        <div class="mb-8">
-            <div class="mb-2 text-sm font-medium text-primary">
-                Church Member Management
+        <div class="mx-auto mb-6 w-full max-w-4xl text-center sm:mb-8">
+            <div class="mb-3 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary sm:text-sm">
+                <i class="fa-solid fa-users" aria-hidden="true"></i>
+                <span>Church Member Management</span>
             </div>
 
-            <h1 class="text-3xl font-bold text-slate-900">
+            <h1 class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl lg:text-4xl">
                 Register Church Member
             </h1>
 
-            <p class="mt-2 text-slate-600">
-                Enter the member's information below to create a new
-                Church member record.
+            <p class="mx-auto mt-2 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">
+                Enter the member's information below to create a new Church member record.
             </p>
         </div>
 
 
         <!-- Form Card -->
-        <div class="rounded-2xl border border-slate-200 bg-gray-200 shadow-sm">
+        <div class="mx-auto w-full overflow-hidden rounded-2xl border border-slate-200 bg-gray-100 shadow-lg">
 
             <!-- Card Header -->
-            <div class="border-b border-slate-200 px-6 py-5">
-                <h2 class="text-lg font-semibold text-slate-900">
-                    Member Information
+            <div class="border-b border-slate-200 bg-gray-100 px-4 py-4 sm:px-6 sm:py-5">
+                <h2 class="flex items-center gap-2 text-base font-semibold text-slate-900 sm:text-lg">
+                    <i class="fa-solid fa-id-card text-primary" aria-hidden="true"></i>
+                    <span>Member Information</span>
                 </h2>
 
                 <p class="mt-1 text-sm text-slate-500">
                     Fields marked with
-                    <span class="text-red-500">*</span>
+                    <span class="ml-0.5 text-red-500" title="Required">*</span>
                     are required.
                 </p>
             </div>
@@ -46,16 +89,19 @@
 
                 {% csrf_token %}
 
-                <div class="space-y-8 p-6 bg-gray-200">
+                <div class="space-y-8 bg-gray-50 p-4 sm:p-6 lg:p-8">
 
                     <!-- Non-field Errors -->
                     {% if form.non_field_errors %}
-                        <div class="rounded-lg border border-red-200 bg-red-50 p-4">
+                        <div class="flex gap-3 rounded-lg border border-red-200 bg-red-50 p-4">
+                            <i class="fa-solid fa-circle-exclamation mt-0.5 text-red-600" aria-hidden="true"></i>
+                            <div>
                             {% for error in form.non_field_errors %}
                                 <p class="text-sm text-red-700">
                                     {{ error }}
                                 </p>
                             {% endfor %}
+                            </div>
                         </div>
                     {% endif %}
 
@@ -64,8 +110,9 @@
                     <section>
 
                         <div class="mb-5">
-                            <h3 class="text-base font-semibold text-slate-900">
-                                Identification
+                            <h3 class="flex items-center gap-2 text-base font-semibold text-slate-900">
+                                <i class="fa-solid fa-hashtag text-primary" aria-hidden="true"></i>
+                                <span>Identification</span>
                             </h3>
 
                             <p class="mt-1 text-sm text-slate-500">
@@ -80,7 +127,7 @@
                                 class="mb-2 block text-sm font-medium text-slate-700"
                             >
                                 Digital Offering Number
-                                <span class="text-red-500">*</span>
+                                <span class="ml-0.5 text-red-500" title="Required">*</span>
                             </label>
 
                             {{ form.digital_offering_number }}
@@ -100,8 +147,9 @@
                     <section>
 
                         <div class="mb-5">
-                            <h3 class="text-base font-semibold text-slate-900">
-                                Personal Information
+                            <h3 class="flex items-center gap-2 text-base font-semibold text-slate-900">
+                                <i class="fa-solid fa-user text-primary" aria-hidden="true"></i>
+                                <span>Personal Information</span>
                             </h3>
 
                             <p class="mt-1 text-sm text-slate-500">
@@ -118,7 +166,7 @@
                                     class="mb-2 block text-sm font-medium text-slate-700"
                                 >
                                     First Name
-                                    <span class="text-red-500">*</span>
+                                    <span class="ml-0.5 text-red-500" title="Required">*</span>
                                 </label>
 
                                 {{ form.first_name }}
@@ -157,7 +205,7 @@
                                     class="mb-2 block text-sm font-medium text-slate-700"
                                 >
                                     Last Name
-                                    <span class="text-red-500">*</span>
+                                    <span class="ml-0.5 text-red-500" title="Required">*</span>
                                 </label>
 
                                 {{ form.last_name }}
@@ -177,7 +225,7 @@
                                     class="mb-2 block text-sm font-medium text-slate-700"
                                 >
                                     Date of Birth
-                                    <span class="text-red-500">*</span>
+                                    <span class="ml-0.5 text-red-500" title="Required">*</span>
                                 </label>
 
                                 {{ form.date_of_birth }}
@@ -197,7 +245,7 @@
                                     class="mb-2 block text-sm font-medium text-slate-700"
                                 >
                                     Marital Status
-                                    <span class="text-red-500">*</span>
+                                    <span class="ml-0.5 text-red-500" title="Required">*</span>
                                 </label>
 
                                 {{ form.marital_status }}
@@ -217,7 +265,7 @@
                                     class="mb-2 block text-sm font-medium text-slate-700"
                                 >
                                     Baptism Status
-                                    <span class="text-red-500">*</span>
+                                    <span class="ml-0.5 text-red-500" title="Required">*</span>
                                 </label>
 
                                 {{ form.baptism_status }}
@@ -237,8 +285,9 @@
                     <section>
 
                         <div class="mb-5">
-                            <h3 class="text-base font-semibold text-slate-900">
-                                Church Organizational Information
+                            <h3 class="flex items-center gap-2 text-base font-semibold text-slate-900">
+                                <i class="fa-solid fa-sitemap text-primary" aria-hidden="true"></i>
+                                <span>Church Organizational Information</span>
                             </h3>
 
                             <p class="mt-1 text-sm text-slate-500">
@@ -256,7 +305,7 @@
                                     class="mb-2 block text-sm font-medium text-slate-700"
                                 >
                                     Diocese
-                                    <span class="text-red-500">*</span>
+                                    <span class="ml-0.5 text-red-500" title="Required">*</span>
                                 </label>
 
                                 {{ form.diocese }}
@@ -276,7 +325,7 @@
                                     class="mb-2 block text-sm font-medium text-slate-700"
                                 >
                                     Deanery
-                                    <span class="text-red-500">*</span>
+                                    <span class="ml-0.5 text-red-500" title="Required">*</span>
                                 </label>
 
                                 {{ form.deanery }}
@@ -296,7 +345,7 @@
                                     class="mb-2 block text-sm font-medium text-slate-700"
                                 >
                                     Parish
-                                    <span class="text-red-500">*</span>
+                                    <span class="ml-0.5 text-red-500" title="Required">*</span>
                                 </label>
 
                                 {{ form.parish }}
@@ -316,7 +365,7 @@
                                     class="mb-2 block text-sm font-medium text-slate-700"
                                 >
                                     Zone
-                                    <span class="text-red-500">*</span>
+                                    <span class="ml-0.5 text-red-500" title="Required">*</span>
                                 </label>
 
                                 {{ form.zone }}
@@ -336,7 +385,7 @@
                                     class="mb-2 block text-sm font-medium text-slate-700"
                                 >
                                     Small Christian Community
-                                    <span class="text-red-500">*</span>
+                                    <span class="ml-0.5 text-red-500" title="Required">*</span>
                                 </label>
 
                                 {{ form.small_christian_community }}
@@ -381,8 +430,9 @@
                     <section>
 
                         <div class="mb-5">
-                            <h3 class="text-base font-semibold text-slate-900">
-                                Contact Information
+                            <h3 class="flex items-center gap-2 text-base font-semibold text-slate-900">
+                                <i class="fa-solid fa-address-book text-primary" aria-hidden="true"></i>
+                                <span>Contact Information</span>
                             </h3>
 
                             <p class="mt-1 text-sm text-slate-500">
@@ -419,8 +469,9 @@
                     <section>
 
                         <div class="mb-5">
-                            <h3 class="text-base font-semibold text-slate-900">
-                                Residence Information
+                            <h3 class="flex items-center gap-2 text-base font-semibold text-slate-900">
+                                <i class="fa-solid fa-house text-primary" aria-hidden="true"></i>
+                                <span>Residence Information</span>
                             </h3>
 
                             <p class="mt-1 text-sm text-slate-500">
@@ -533,8 +584,9 @@
                     <section>
 
                         <div class="mb-5">
-                            <h3 class="text-base font-semibold text-slate-900">
-                                Church Information
+                            <h3 class="flex items-center gap-2 text-base font-semibold text-slate-900">
+                                <i class="fa-solid fa-church text-primary" aria-hidden="true"></i>
+                                <span>Church Information</span>
                             </h3>
 
                             <p class="mt-1 text-sm text-slate-500">
@@ -547,7 +599,7 @@
                         <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
 
                             <!-- Church Associations -->
-                            <div class="bg-gray-200">
+                            <div class="rounded-xl">
 
                                 <label
                                     class="mb-3 block text-sm font-medium text-slate-700"
@@ -585,7 +637,7 @@
 
 
                             <!-- Leadership Positions -->
-                            <div class="bg-gray-200">
+                            <div class="rounded-xl">
 
                                 <label
                                     class="mb-3 block text-sm font-medium text-slate-700"
@@ -629,26 +681,29 @@
 
 
                 <!-- Form Actions -->
-                <div class="flex flex-col-reverse gap-3 border-t border-slate-200 bg-gray-200 px-6 py-5 sm:flex-row sm:justify-end">
+                <div class="flex flex-col-reverse gap-3 border-t border-slate-200 bg-gray-100 px-4 py-4 sm:flex-row sm:justify-end sm:px-6 sm:py-5">
 
                     <a
                         href="{% url 'base:home' %}"
-                        class="btn btn-ghost"
+                        class="btn btn-ghost w-full sm:w-auto"
                     >
+                        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
                         Cancel
                     </a>
                                         
                     <a
                         href="{% url 'accounts:login' %}"
-                        class="btn btn-secondary"
+                        class="btn btn-secondary w-full sm:w-auto"
                     >
+                        <i class="fa-solid fa-right-to-bracket" aria-hidden="true"></i>
                         Login
                     </a>
 
                     <button
                         type="submit"
-                        class="btn btn-primary"
+                        class="btn btn-primary w-full sm:w-auto"
                     >
+                        <i class="fa-solid fa-user-plus" aria-hidden="true"></i>
                         Register Member
                     </button>
 
@@ -661,6 +716,8 @@
     </div>
 
 </div>
+
+{% endblock %}
 
 {% block extra_js %}
 
@@ -923,7 +980,5 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 </script>
-
-{% endblock %}
 
 {% endblock %}

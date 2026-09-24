@@ -10,6 +10,12 @@
         CCMIMS | {% block title %}Catholic Church Member Information and Management System{% endblock %}
     </title>
 
+        <!-- Font Awesome -->
+    <link
+        rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css"
+    >
+
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 
     <link rel="stylesheet"
@@ -24,29 +30,58 @@
     {% load tailwind_tags %}
     {% tailwind_css %}
 
-    {% block extra_css %}{% endblock %}
+    {% block extra_css %}
+<style>
+    html,
+    body {
+        width: 100%;
+        min-width: 0;
+    }
+
+    /* Prevent wide page content from pushing the application layout sideways. */
+    main {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    /* Keep tables/DataTables usable on narrow screens. */
+    .dataTables_wrapper,
+    .dataTables_wrapper .dataTable {
+        max-width: 100%;
+    }
+
+    @media (max-width: 639px) {
+        .dataTables_wrapper {
+            overflow-x: auto;
+        }
+    }
+</style>
+{% endblock %}
+
 </head>
 
-<body class="bg-gray-200">
+<body class="min-h-screen bg-gray-200">
 
-    <div class="flex min-h-screen">
+    <div class="flex min-h-screen w-full">
 
         {% include "base/sidemenu.html" %}
 
-
-        <!-- Main Content -->
-        <div class="flex-1 lg:ml-64">
+        <!-- Main Application Area -->
+        <div class="flex min-w-0 flex-1 flex-col">
 
             <!-- Topbar -->
             <header
-                class="h-20 bg-gray-200 border-b border-gray-300
-                       flex items-center justify-between
-                       px-6 sticky top-0 z-30"
+                class="sticky top-0 z-30 flex min-h-20 items-center justify-between
+                       gap-3 border-b border-gray-300 bg-gray-200
+                       px-4 sm:px-6"
             >
 
                 <div>
 
-                    <h2 class="text-xl font-semibold text-gray-800">
+                    <h2 class="max-w-[70vw] text-base font-semibold leading-tight text-gray-800 sm:max-w-none sm:text-xl">
+                        <span class="mr-2 inline-flex text-purple-700" aria-hidden="true">
+                            <i class="fa-solid fa-church"></i>
+                        </span>
                         {% block page_title %}
                             CCMIMS | Catholic Church Member Information and Management System
                         {% endblock %}
@@ -56,7 +91,7 @@
 
 
                 <!-- User -->
-                <div class="flex items-center gap-3">
+                <div class="flex shrink-0 items-center gap-2 sm:gap-3">
 
                     <div class="text-right hidden sm:block">
 
@@ -76,9 +111,8 @@
 
 
                     <div
-                        class="w-10 h-10 rounded-full
+                        class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full sm:h-10 sm:w-10
                                bg-purple-mint
-                               flex items-center justify-center
                                text-purple-700 font-bold"
                     >
                         {{ user.username|first|upper }}
@@ -90,12 +124,24 @@
 
 
             <!-- Page Content -->
-            <main class="p-6">
+            <main class="min-w-0 flex-1 p-3 sm:p-4 lg:p-6">
 
                 {% block content %}
                 {% endblock %}
 
             </main>
+
+            <!-- Footer -->
+            <footer class="mt-auto border-t border-gray-300 bg-gray-200 px-4 py-4 text-center sm:px-6">
+                <p class="text-xs text-gray-700">
+                    <i class="fa-regular fa-copyright mr-1" aria-hidden="true"></i>
+                    {% now "Y" %} CCMIMS
+                </p>
+
+                <p class="mt-1 text-xs leading-5 text-gray-500">
+                    Catholic Church Member Information and Management System
+                </p>
+            </footer>
 
         </div>
 
@@ -134,18 +180,5 @@
             });
         </script>
     {% endif %}
-
-    <!-- Footer -->
-    <div class="text-center bg-gray-200 m-4">
-
-        <p class="text-xs text-gray-800">
-            © {% now "Y" %} CCMIMS
-        </p>
-
-        <p class="text-xs text-gray-800 mt-1">
-            Catholic Church Member Information and Management System
-        </p>
-
-    </div>
 
 </body>

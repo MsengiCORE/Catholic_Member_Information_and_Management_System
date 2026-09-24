@@ -1,15 +1,49 @@
 {% load static %}
 
-<aside
-    class="w-64 bg-gray-200 border-r border-gray-300
-           flex flex-col fixed inset-y-0 left-0 z-40
-           lg:flex"
+<!-- Mobile menu button -->
+<button
+    type="button"
+    id="sidebarOpen"
+    class="fixed left-4 top-4 z-50 flex h-11 w-11 items-center justify-center rounded-xl
+           bg-purple-600 text-white shadow-lg transition hover:bg-purple-700
+           focus:outline-none focus:ring-2 focus:ring-purple-400 lg:hidden"
+    aria-label="Open navigation"
+    aria-controls="ccmimsSidebar"
+    aria-expanded="false"
 >
+    <i class="fa-solid fa-bars text-lg" aria-hidden="true"></i>
+</button>
+
+<!-- Mobile overlay -->
+<div
+    id="sidebarOverlay"
+    class="fixed inset-0 z-40 hidden bg-black/40 backdrop-blur-[2px] lg:hidden"
+    aria-hidden="true"
+></div>
+
+<aside
+    id="ccmimsSidebar"
+    class="fixed inset-y-0 left-0 z-50 flex h-screen w-[min(18rem,85vw)] -translate-x-full flex-col
+           border-r border-gray-300 bg-gray-100 shadow-2xl transition-transform duration-300 ease-out
+           lg:sticky lg:top-0 lg:z-40 lg:h-screen lg:w-64 lg:translate-x-0 lg:shadow-none"
+    aria-label="Main navigation"
+>
+    <!-- Mobile close button -->
+    <button
+        type="button"
+        id="sidebarClose"
+        class="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-lg
+               text-gray-500 transition hover:bg-purple-50 hover:text-purple-700
+               focus:outline-none focus:ring-2 focus:ring-purple-400 lg:hidden"
+        aria-label="Close navigation"
+    >
+        <i class="fa-solid fa-xmark text-lg" aria-hidden="true"></i>
+    </button>
 
     <!-- Brand -->
-    <div class="h-20 flex items-center px-6 border-b border-gray-200">
+    <div class="flex min-h-20 shrink-0 items-center justify-between gap-3 border-b border-gray-200 px-5 sm:px-6">
 
-        <div>
+        <div class="min-w-0">
             <h1 class="text-xl font-bold text-purple-700">
                 CCMIMS
             </h1>
@@ -23,7 +57,7 @@
 
 
     <!-- Navigation -->
-    <nav class="flex-1 overflow-y-auto px-4 py-6">
+    <nav class="min-h-0 flex-1 overflow-y-auto px-3 py-5 sm:px-4 sm:py-6">
 
 
         <!-- DASHBOARD -->
@@ -39,7 +73,7 @@
                        {% endif %}"
             >
 
-                <span class="text-lg">▣</span>
+                <i class="fa-solid fa-gauge-high w-5 text-center shrink-0" aria-hidden="true"></i>
 
                 <span class="font-medium">
                     Dashboard
@@ -53,7 +87,7 @@
         <!-- ORGANIZATION -->
         <div class="mb-6">
 
-            <p class="px-4 mb-2 text-xs font-bold
+            <p class="px-3 mb-2 text-[11px] font-bold
                       uppercase tracking-wider text-gray-400">
                 Organization
             </p>
@@ -62,103 +96,85 @@
 
                 <a
                     href="{% url 'members:diocese_list' %}"
-                    class="flex items-center gap-3 px-4 py-2.5 rounded-lg transition
+                    class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
                            {% if request.resolver_match.url_name == 'diocese_list' or request.resolver_match.url_name == 'diocese_create' or request.resolver_match.url_name == 'diocese_update' %}
                                bg-purple-600 text-white
                            {% else %}
                                text-gray-600 hover:bg-green-mint hover:text-green-700
                            {% endif %}"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <rect x="4" y="4" width="16" height="16" rx="2"/>
-                        <path d="M4 10h16M10 4v16"/>
-                    </svg>
-                    <span>Dioceses</span>
+                    <i class="fa-solid fa-building-columns w-5 text-center shrink-0" aria-hidden="true"></i>
+                    <span class="min-w-0 truncate">Dioceses</span>
                 </a>
 
 
                 <a
                     href="{% url 'members:deanery_list' %}"
-                    class="flex items-center gap-3 px-4 py-2.5 rounded-lg transition
+                    class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
                            {% if request.resolver_match.url_name == 'deanery_list' or request.resolver_match.url_name == 'deanery_create' or request.resolver_match.url_name == 'deanery_update' %}
                                bg-purple-600 text-white
                            {% else %}
                                text-gray-600 hover:bg-green-mint hover:text-green-700
                            {% endif %}"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <rect x="4" y="4" width="16" height="16" rx="2"/>
-                        <path d="M4 10h16M10 4v16"/>
-                    </svg>
-                    <span>Deaneries</span>
+                    <i class="fa-solid fa-sitemap w-5 text-center shrink-0" aria-hidden="true"></i>
+                    <span class="min-w-0 truncate">Deaneries</span>
                 </a>
 
 
                 <a
                     href="{% url 'members:parish_list' %}"
-                    class="flex items-center gap-3 px-4 py-2.5 rounded-lg transition
+                    class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
                            {% if request.resolver_match.url_name == 'parish_list' or request.resolver_match.url_name == 'parish_create' or request.resolver_match.url_name == 'parish_update' %}
                                bg-purple-600 text-white
                            {% else %}
                                text-gray-600 hover:bg-green-mint hover:text-green-700
                            {% endif %}"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <rect x="4" y="4" width="16" height="16" rx="2"/>
-                        <path d="M4 10h16M10 4v16"/>
-                    </svg>
-                    <span>Parishes</span>
+                    <i class="fa-solid fa-church w-5 text-center shrink-0" aria-hidden="true"></i>
+                    <span class="min-w-0 truncate">Parishes</span>
                 </a>
 
 
                 <a
                     href="{% url 'members:zone_list' %}"
-                    class="flex items-center gap-3 px-4 py-2.5 rounded-lg transition
+                    class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
                            {% if request.resolver_match.url_name == 'zone_list' or request.resolver_match.url_name == 'zone_create' or request.resolver_match.url_name == 'zone_update' %}
                                bg-purple-600 text-white
                            {% else %}
                                text-gray-600 hover:bg-green-mint hover:text-green-700
                            {% endif %}"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <rect x="4" y="4" width="16" height="16" rx="2"/>
-                        <path d="M4 10h16M10 4v16"/>
-                    </svg>
-                    <span>Zones</span>
+                    <i class="fa-solid fa-location-dot w-5 text-center shrink-0" aria-hidden="true"></i>
+                    <span class="min-w-0 truncate">Zones</span>
                 </a>
 
 
                 <a
                     href="{% url 'members:small_christian_community_list' %}"
-                    class="flex items-center gap-3 px-4 py-2.5 rounded-lg transition
+                    class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
                            {% if request.resolver_match.url_name == 'small_christian_community_list' or request.resolver_match.url_name == 'small_christian_community_create' or request.resolver_match.url_name == 'small_christian_community_update' %}
                                bg-purple-600 text-white
                            {% else %}
                                text-gray-600 hover:bg-green-mint hover:text-green-700
                            {% endif %}"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <rect x="4" y="4" width="16" height="16" rx="2"/>
-                        <path d="M4 10h16M10 4v16"/>
-                    </svg>
-                    <span>Small Christian Communities</span>
+                    <i class="fa-solid fa-people-group w-5 text-center shrink-0" aria-hidden="true"></i>
+                    <span class="min-w-0 leading-5">Small Christian Communities</span>
                 </a>
 
 
                 <a
                     href="{% url 'members:family_list' %}"
-                    class="flex items-center gap-3 px-4 py-2.5 rounded-lg transition
+                    class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
                            {% if request.resolver_match.url_name == 'family_list' or request.resolver_match.url_name == 'family_create' or request.resolver_match.url_name == 'family_update' %}
                                bg-purple-600 text-white
                            {% else %}
                                text-gray-600 hover:bg-green-mint hover:text-green-700
                            {% endif %}"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <rect x="4" y="4" width="16" height="16" rx="2"/>
-                        <path d="M4 10h16M10 4v16"/>
-                    </svg>
-                    <span>Families</span>
+                    <i class="fa-solid fa-house-user w-5 text-center shrink-0" aria-hidden="true"></i>
+                    <span class="min-w-0 truncate">Families</span>
                 </a>
 
             </div>
@@ -169,7 +185,7 @@
         <!-- MEMBERS -->
         <div class="mb-6">
 
-            <p class="px-4 mb-2 text-xs font-bold
+            <p class="px-3 mb-2 text-[11px] font-bold
                       uppercase tracking-wider text-gray-400">
                 Members
             </p>
@@ -178,35 +194,29 @@
 
                 <a
                     href="{% url 'members:member_list' %}"
-                    class="flex items-center gap-3 px-4 py-2.5 rounded-lg transition
+                    class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
                            {% if request.resolver_match.url_name == 'member_list' or request.resolver_match.url_name == 'member_create' or request.resolver_match.url_name == 'member_update' %}
                                bg-purple-600 text-white
                            {% else %}
                                text-gray-600 hover:bg-purple-50 hover:text-purple-700
                            {% endif %}"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <circle cx="12" cy="8" r="3.5"/>
-                        <path d="M5 21a7 7 0 0 1 14 0"/>
-                    </svg>
-                    <span>Church Members</span>
+                    <i class="fa-solid fa-users w-5 text-center shrink-0" aria-hidden="true"></i>
+                    <span class="min-w-0 truncate">Church Members</span>
                 </a>
 
 
                 <a
                     href="{% url 'members:register_new_member' %}"
-                    class="flex items-center gap-3 px-4 py-2.5 rounded-lg transition
+                    class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
                            {% if request.resolver_match.url_name == 'register_new_member' %}
                                bg-purple-600 text-white
                            {% else %}
                                text-gray-600 hover:bg-purple-50 hover:text-purple-700
                            {% endif %}"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                        <circle cx="12" cy="12" r="9"/>
-                        <path d="M12 8v8M8 12h8"/>
-                    </svg>
-                    <span>Register Member</span>
+                    <i class="fa-solid fa-user-plus w-5 text-center shrink-0" aria-hidden="true"></i>
+                    <span class="min-w-0 truncate">Register Member</span>
                 </a>
 
             </div>
@@ -217,7 +227,7 @@
         <!-- MANAGEMENT -->
         <div class="mb-6">
 
-            <p class="px-4 mb-2 text-xs font-bold
+            <p class="px-3 mb-2 text-[11px] font-bold
                       uppercase tracking-wider text-gray-400">
                 Management
             </p>
@@ -230,21 +240,16 @@
 
                     <a
                         href="{% url 'members:association_list' %}"
-                        class="flex items-center gap-3 px-4 py-2.5 rounded-lg transition
+                        class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
                            {% if request.resolver_match.url_name == 'association_list' or request.resolver_match.url_name == 'association_create' or request.resolver_match.url_name == 'association_update' %}
                                bg-purple-600 text-white
                            {% else %}
                                text-gray-600 hover:bg-blue-mint hover:text-blue-700
                            {% endif %}"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <circle cx="8" cy="8" r="3"/>
-                            <circle cx="16" cy="8" r="3"/>
-                            <circle cx="12" cy="16" r="3"/>
-                            <path d="M10.5 10.5 12 13M13.5 10.5 12 13M8.5 10.5 10.5 14M15.5 10.5 13.5 14"/>
-                        </svg>
+                        <i class="fa-solid fa-people-group w-5 text-center shrink-0" aria-hidden="true"></i>
 
-                        <span>
+                        <span class="min-w-0 truncate">
                             Church Associations
                         </span>
                     </a>
@@ -257,18 +262,16 @@
 
                     <a
                         href="{% url 'members:leadership_list' %}"
-                        class="flex items-center gap-3 px-4 py-2.5 rounded-lg transition
+                        class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
                            {% if request.resolver_match.url_name == 'leadership_list' or request.resolver_match.url_name == 'leadership_create' or request.resolver_match.url_name == 'leadership_update' %}
                                bg-purple-600 text-white
                            {% else %}
                                text-gray-600 hover:bg-blue-mint hover:text-blue-700
                            {% endif %}"
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                            <path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1.1 6.2-5.6-3-5.6 3 1.1-6.2L3 9.6l6.2-.9L12 3Z"/>
-                        </svg>
+                        <i class="fa-solid fa-user-tie w-5 text-center shrink-0" aria-hidden="true"></i>
 
-                        <span>
+                        <span class="min-w-0 truncate">
                             Leadership Positions
                         </span>
                     </a>
@@ -284,7 +287,7 @@
 
 
     <!-- ACCOUNT -->
-    <div class="border-t border-gray-200 p-4">
+    <div class="shrink-0 border-t border-gray-200 bg-gray-100 p-3 sm:p-4">
 
         <div class="mb-3 px-3">
 
@@ -313,10 +316,7 @@
                    transition"
         >
 
-            <span><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <circle cx="12" cy="8" r="3.5"/>
-                <path d="M5 21a7 7 0 0 1 14 0"/>
-            </svg>
+            <i class="fa-solid fa-user w-5 text-center shrink-0" aria-hidden="true"></i>
 
             <span>
                 My Profile
@@ -342,11 +342,7 @@
                        transition"
             >
 
-                <span><svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M10 17l5-5-5-5"/>
-                <path d="M15 12H3"/>
-                <path d="M14 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/>
-            </svg>
+                <i class="fa-solid fa-right-from-bracket w-5 text-center shrink-0" aria-hidden="true"></i>
 
                 <span>
                     Logout
@@ -359,3 +355,78 @@
     </div>
 
 </aside>
+
+<style>
+    /* CCMIMS responsive sidebar layout */
+    #ccmimsSidebar {
+        min-height: 100dvh;
+        max-height: 100dvh;
+    }
+
+    #ccmimsSidebar nav {
+        min-height: 0;
+        overscroll-behavior: contain;
+        scrollbar-width: thin;
+    }
+
+    @media (min-width: 1024px) {
+        #ccmimsSidebar {
+            position: sticky;
+            top: 0;
+            height: 100dvh;
+            flex: 0 0 16rem;
+        }
+    }
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const sidebar = document.getElementById("ccmimsSidebar");
+    const overlay = document.getElementById("sidebarOverlay");
+    const openBtn = document.getElementById("sidebarOpen");
+    const closeBtn = document.getElementById("sidebarClose");
+
+    if (!sidebar || !overlay || !openBtn || !closeBtn) return;
+
+    function openSidebar() {
+        sidebar.classList.remove("-translate-x-full");
+        overlay.classList.remove("hidden");
+        openBtn.setAttribute("aria-expanded", "true");
+        document.body.classList.add("overflow-hidden");
+    }
+
+    function closeSidebar() {
+        sidebar.classList.add("-translate-x-full");
+        overlay.classList.add("hidden");
+        openBtn.setAttribute("aria-expanded", "false");
+        document.body.classList.remove("overflow-hidden");
+    }
+
+    openBtn.addEventListener("click", openSidebar);
+    closeBtn.addEventListener("click", closeSidebar);
+    overlay.addEventListener("click", closeSidebar);
+
+    document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") closeSidebar();
+    });
+
+    // Close the drawer after navigation on mobile.
+    sidebar.querySelectorAll("a").forEach(function (link) {
+        link.addEventListener("click", function () {
+            if (window.innerWidth < 1024) closeSidebar();
+        });
+    });
+
+    // Reset mobile drawer state when returning to desktop.
+    window.addEventListener("resize", function () {
+        if (window.innerWidth >= 1024) {
+            overlay.classList.add("hidden");
+            sidebar.classList.remove("-translate-x-full");
+            document.body.classList.remove("overflow-hidden");
+            openBtn.setAttribute("aria-expanded", "false");
+        } else if (!openBtn.getAttribute("aria-expanded") || openBtn.getAttribute("aria-expanded") === "false") {
+            sidebar.classList.add("-translate-x-full");
+        }
+    });
+});
+</script>
