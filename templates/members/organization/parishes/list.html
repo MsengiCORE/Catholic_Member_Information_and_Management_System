@@ -2,53 +2,79 @@
 
 {% block content %}
 
-<div class="p-6">
+<div class="min-h-screen bg-gray-200 p-3 sm:p-4 lg:p-6">
+    <div class="mx-auto w-full max-w-7xl">
 
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
+        <!-- Header -->
+        <div class="mb-5 flex flex-col gap-4 sm:mb-6 md:flex-row md:items-center md:justify-between">
+            <div class="flex min-w-0 items-start gap-3">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-100 text-purple-700 sm:h-11 sm:w-11">
+                    <i class="fa-solid fa-church text-lg sm:text-xl" aria-hidden="true"></i>
+                </div>
 
-        <div>
-            <h1 class="text-2xl font-bold text-base-content">
-                Parishes
-            </h1>
+                <div class="min-w-0">
+                    <h1 class="text-2xl font-bold leading-tight text-base-content sm:text-3xl">
+                        Parishes
+                    </h1>
+                    <p class="mt-1 text-sm text-base-content/60 sm:text-base">
+                        Manage parishes within the diocesan structure.
+                    </p>
+                </div>
+            </div>
 
-            <p class="text-base-content/60">
-                Manage parishes within the diocesan structure.
-            </p>
+            <a
+                href="{% url 'members:parish_create' %}"
+                class="btn btn-primary w-full shrink-0 sm:w-auto"
+            >
+                <i class="fa-solid fa-plus mr-2" aria-hidden="true"></i>
+                <span>Add Parish</span>
+            </a>
         </div>
 
-        <a
-            href="{% url 'members:parish_create' %}"
-            class="btn btn-primary"
-        >
-            + Add Parish
-        </a>
+        <!-- Parishes Table -->
+        <div class="w-full overflow-hidden rounded-xl bg-gray-100 shadow">
+            <div class="w-full overflow-x-auto">
+                <table id="parishesTable" class="table w-full min-w-225">
+                    <thead>
+                        <tr>
+                            <th>
+                                <i class="fa-solid fa-hashtag mr-1" aria-hidden="true"></i>
+                                #
+                            </th>
+                            <th>
+                                <i class="fa-solid fa-church mr-1" aria-hidden="true"></i>
+                                Parish
+                            </th>
+                            <th>
+                                <i class="fa-solid fa-sitemap mr-1" aria-hidden="true"></i>
+                                Deanery
+                            </th>
+                            <th>
+                                <i class="fa-solid fa-church mr-1" aria-hidden="true"></i>
+                                Diocese
+                            </th>
+                            <th>
+                                <i class="fa-align-left fa-solid mr-1" aria-hidden="true"></i>
+                                Description
+                            </th>
+                            <th>
+                                <i class="fa-solid fa-circle-check mr-1" aria-hidden="true"></i>
+                                Status
+                            </th>
+                            <th class="text-right">
+                                <i class="fa-solid fa-gear mr-1" aria-hidden="true"></i>
+                                Actions
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
     </div>
-
-
-    <div class="overflow-x-auto bg-gray-200 rounded-box shadow">
-
-        <table id="parishesTable" class="table">
-
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Parish</th>
-                    <th>Deanery</th>
-                    <th>Diocese</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-
-            <tbody>
-
-            </tbody>
-
-        </table>
-
-    </div>
-
 </div>
 
 {% endblock %}
@@ -58,9 +84,7 @@
 document.addEventListener("DOMContentLoaded", function () {
 
     new DataTable("#parishesTable", {
-
         processing: true,
-
         serverSide: true,
 
         ajax: {
@@ -69,10 +93,11 @@ document.addEventListener("DOMContentLoaded", function () {
         },
 
         pageLength: 10,
-
         lengthMenu: [10, 25, 50, 100],
-
         order: [[1, "asc"]],
+
+        autoWidth: false,
+        responsive: false,
 
         columns: [
 
@@ -81,80 +106,136 @@ document.addEventListener("DOMContentLoaded", function () {
                 data: null,
                 orderable: false,
                 searchable: false,
+                className: "whitespace-nowrap",
 
-                render: function (
-                    data,
-                    type,
-                    row,
-                    meta
-                ) {
+                render: function (data, type, row, meta) {
                     return (
-                        meta.row
-                        + meta.settings._iDisplayStart
-                        + 1
+                        meta.row +
+                        meta.settings._iDisplayStart +
+                        1
                     );
                 }
             },
 
             // Parish
             {
-                data: "name"
+                data: "name",
+
+                render: function (data) {
+                    return `
+                        <span class="inline-flex items-center gap-2 font-semibold">
+                            <i class="fa-solid fa-church text-purple-600" aria-hidden="true"></i>
+                            <span class="break-words">${data ?? "—"}</span>
+                        </span>
+                    `;
+                }
             },
 
             // Deanery
             {
-                data: "deanery"
+                data: "deanery",
+
+                render: function (data) {
+                    return `
+                        <span class="inline-flex items-center gap-2">
+                            <i class="fa-solid fa-sitemap text-purple-600" aria-hidden="true"></i>
+                            <span class="break-words">${data ?? "—"}</span>
+                        </span>
+                    `;
+                }
             },
 
             // Diocese
             {
-                data: "diocese"
+                data: "diocese",
+
+                render: function (data) {
+                    return `
+                        <span class="inline-flex items-center gap-2">
+                            <i class="fa-solid fa-church text-purple-600" aria-hidden="true"></i>
+                            <span class="break-words">${data ?? "—"}</span>
+                        </span>
+                    `;
+                }
             },
 
             // Description
             {
-                data: "description"
+                data: "description",
+
+                render: function (data) {
+                    if (data) {
+                        return `
+                            <span class="break-words">
+                                ${data}
+                            </span>
+                        `;
+                    }
+
+                    return `
+                        <span class="inline-flex items-center gap-1 text-gray-400">
+                            <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+                            <span>No description</span>
+                        </span>
+                    `;
+                }
             },
 
             // Status
             {
-                data: "status"
+                data: "status",
+
+                render: function (data) {
+                    const value = String(data ?? "").toLowerCase();
+
+                    if (value === "active") {
+                        return `
+                            <span class="badge badge-success gap-1 whitespace-nowrap">
+                                <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+                                Active
+                            </span>
+                        `;
+                    }
+
+                    if (value === "inactive") {
+                        return `
+                            <span class="badge badge-error gap-1 whitespace-nowrap">
+                                <i class="fa-solid fa-circle-xmark" aria-hidden="true"></i>
+                                Inactive
+                            </span>
+                        `;
+                    }
+
+                    return `
+                        <span class="badge gap-1 whitespace-nowrap">
+                            <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+                            ${data ?? "—"}
+                        </span>
+                    `;
+                }
             },
 
             // Actions
             {
                 data: null,
-
                 orderable: false,
-
                 searchable: false,
+                className: "text-right whitespace-nowrap",
 
-                className: "text-right",
-
-                render: function (
-                    data,
-                    type,
-                    row
-                ) {
-
-                    let html = `
-                        <div class="flex justify-end gap-2">
-                    `;
-
-                    html += `
-                        <a
-                            href="${row.edit_url}"
-                            class="btn btn-sm btn-outline"
-                        >
-                            Edit
-                        </a>
-                    `;
-
-                    html += `
+                render: function (data, type, row) {
+                    return `
+                        <div class="flex flex-wrap justify-end gap-2">
+                            <a
+                                href="${row.edit_url}"
+                                class="btn btn-sm btn-outline"
+                                title="Edit Parish"
+                                aria-label="Edit Parish"
+                            >
+                                <i class="fa-solid fa-pen-to-square mr-1" aria-hidden="true"></i>
+                                <span>Edit</span>
+                            </a>
                         </div>
                     `;
-
-                    return html;
                 }
             }
         ]

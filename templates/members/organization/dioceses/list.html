@@ -2,67 +2,82 @@
 
 {% block content %}
 
-<div class="p-6">
+<div class="min-h-screen bg-gray-200 p-3 sm:p-4 lg:p-6">
+    <div class="mx-auto w-full max-w-7xl">
 
-    <!-- Header -->
-    <div class="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
+        <!-- Header -->
+        <div class="mb-5 flex flex-col gap-4 sm:mb-6 md:flex-row md:items-center md:justify-between">
+            <div class="flex min-w-0 items-start gap-3">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-100 text-purple-700 sm:h-11 sm:w-11">
+                    <i class="fa-solid fa-church text-lg sm:text-xl" aria-hidden="true"></i>
+                </div>
 
-        <div>
-            <h1 class="text-2xl font-bold text-slate-800">
-                Dioceses
-            </h1>
+                <div class="min-w-0">
+                    <h1 class="text-2xl font-bold leading-tight text-slate-800 sm:text-3xl">
+                        Dioceses
+                    </h1>
+                    <p class="mt-1 text-sm text-slate-500 sm:text-base">
+                        Manage Catholic Church dioceses.
+                    </p>
+                </div>
+            </div>
 
-            <p class="mt-1 text-sm text-slate-500">
-                Manage Catholic Church dioceses.
-            </p>
+            {% if user.is_superuser %}
+                <a
+                    href="{% url 'members:diocese_create' %}"
+                    class="btn btn-primary w-full shrink-0 sm:w-auto"
+                >
+                    <i class="fa-solid fa-plus mr-2" aria-hidden="true"></i>
+                    <span>Add Diocese</span>
+                </a>
+            {% endif %}
         </div>
 
-        {% if user.is_superuser %}
-            <a
-                href="{% url 'members:diocese_create' %}"
-                class="btn btn-primary"
-            >
-                + Add Diocese
-            </a>
-        {% endif %}
+        <!-- Diocese Table -->
+        <div class="w-full overflow-hidden rounded-xl border border-slate-200 bg-gray-100 shadow-sm">
+            <div class="w-full overflow-x-auto">
+                <table id="diocesesTable" class="table w-full min-w-212.5">
+                    <thead>
+                        <tr>
+                            <th>
+                                <i class="fa-solid fa-hashtag mr-1" aria-hidden="true"></i>
+                            </th>
+                            <th>
+                                <i class="fa-solid fa-church mr-1" aria-hidden="true"></i>
+                                Diocese
+                            </th>
+                            <th>
+                                <i class="fa-solid fa-align-left mr-1" aria-hidden="true"></i>
+                                Description
+                            </th>
+                            <th>
+                                <i class="fa-solid fa-circle-check mr-1" aria-hidden="true"></i>
+                                Status
+                            </th>
+                            <th class="text-right">
+                                <i class="fa-solid fa-gear mr-1" aria-hidden="true"></i>
+                                Actions
+                            </th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
     </div>
-
-
-    <!-- Diocese Table -->
-    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-gray-200 shadow-sm">
-
-        <table id="diocesesTable" class="table w-full">
-
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Diocese</th>
-                    <th>Description</th>
-                    <th>Status</th>
-                    <th class="text-right">Actions</th>
-                </tr>
-            </thead>
-
-            <tbody>
-            </tbody>
-
-        </table>
-    </div>
-
 </div>
 
 {% endblock %}
 
 {% block extra_js %}
 <script>
-
 document.addEventListener("DOMContentLoaded", function () {
 
     new DataTable("#diocesesTable", {
-
         processing: true,
-
         serverSide: true,
 
         ajax: {
@@ -71,63 +86,114 @@ document.addEventListener("DOMContentLoaded", function () {
         },
 
         pageLength: 10,
-
         lengthMenu: [10, 25, 50, 100],
 
         order: [
             [1, "asc"]
         ],
 
+        autoWidth: false,
+        responsive: false,
+
         columns: [
 
+            // #
             {
                 data: null,
                 orderable: false,
                 searchable: false,
+                className: "whitespace-nowrap",
 
-                render: function (
-                    data,
-                    type,
-                    row,
-                    meta
-                ) {
-
+                render: function (data, type, row, meta) {
                     return (
-                        meta.row
-                        + meta.settings._iDisplayStart
-                        + 1
+                        meta.row +
+                        meta.settings._iDisplayStart +
+                        1
                     );
-
                 }
             },
 
+            // Diocese
             {
-                data: "name"
+                data: "name",
+
+                render: function (data) {
+                    return `
+                        <span class="inline-flex items-center gap-2 font-semibold">
+                            <i class="fa-solid fa-church text-purple-600" aria-hidden="true"></i>
+                            <span class="break-words">${data ?? "—"}</span>
+                        </span>
+                    `;
+                }
             },
 
+            // Description
             {
-                data: "description"
+                data: "description",
+
+                render: function (data) {
+                    if (data) {
+                        return `
+                            <span class="break-words">
+                                ${data}
+                            </span>
+                        `;
+                    }
+
+                    return `
+                        <span class="inline-flex items-center gap-1 text-gray-400">
+                            <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+                            <span>No description</span>
+                        </span>
+                    `;
+                }
             },
 
+            // Status
             {
-                data: "status"
+                data: "status",
+
+                render: function (data) {
+                    const value = String(data ?? "").toLowerCase();
+
+                    if (value === "active") {
+                        return `
+                            <span class="badge badge-success gap-1 whitespace-nowrap">
+                                <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+                                Active
+                            </span>
+                        `;
+                    }
+
+                    if (value === "inactive") {
+                        return `
+                            <span class="badge badge-error gap-1 whitespace-nowrap">
+                                <i class="fa-solid fa-circle-xmark" aria-hidden="true"></i>
+                                Inactive
+                            </span>
+                        `;
+                    }
+
+                    return `
+                        <span class="badge gap-1 whitespace-nowrap">
+                            <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+                            ${data ?? "—"}
+                        </span>
+                    `;
+                }
             },
 
+            // Actions
             {
                 data: null,
                 orderable: false,
                 searchable: false,
+                className: "text-right whitespace-nowrap",
 
-                className: "text-right",
-
-                render: function (
-                    data,
-                    type,
-                    row
-                ) {
+                render: function (data, type, row) {
 
                     let html = `
-                        <div class="flex justify-end gap-2">
+                        <div class="flex flex-wrap justify-end gap-2">
                     `;
 
                     {% if user.is_superuser or user.profile.role == "diocese_admin" %}
@@ -136,13 +202,15 @@ document.addEventListener("DOMContentLoaded", function () {
                         <a
                             href="/members/dioceses/${row.id}/edit/"
                             class="btn btn-sm btn-outline"
+                            title="Edit Diocese"
+                            aria-label="Edit Diocese"
                         >
-                            Edit
+                            <i class="fa-solid fa-pen-to-square mr-1" aria-hidden="true"></i>
+                            <span>Edit</span>
                         </a>
                     `;
 
                     {% endif %}
-
 
                     {% if user.is_superuser %}
 
@@ -163,8 +231,11 @@ document.addEventListener("DOMContentLoaded", function () {
                                 <button
                                     type="submit"
                                     class="btn btn-sm btn-warning"
+                                    title="Deactivate Diocese"
+                                    aria-label="Deactivate Diocese"
                                 >
-                                    Deactivate
+                                    <i class="fa-solid fa-toggle-off mr-1" aria-hidden="true"></i>
+                                    <span>Deactivate</span>
                                 </button>
                             </form>
                         `;
@@ -186,8 +257,11 @@ document.addEventListener("DOMContentLoaded", function () {
                                 <button
                                     type="submit"
                                     class="btn btn-sm btn-success"
+                                    title="Activate Diocese"
+                                    aria-label="Activate Diocese"
                                 >
-                                    Activate
+                                    <i class="fa-solid fa-toggle-on mr-1" aria-hidden="true"></i>
+                                    <span>Activate</span>
                                 </button>
                             </form>
                         `;
@@ -209,6 +283,5 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 });
-
 </script>
 {% endblock %}

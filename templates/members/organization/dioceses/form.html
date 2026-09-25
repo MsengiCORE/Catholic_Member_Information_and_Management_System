@@ -2,124 +2,119 @@
 
 {% block content %}
 
-<div class="p-6">
-
-    <div class="max-w-3xl mx-auto">
+<div class="min-h-screen bg-gray-200 p-3 sm:p-4 lg:p-6">
+    <div class="mx-auto w-full max-w-3xl">
 
         <!-- Header -->
-        <div class="mb-6">
+        <div class="mb-5 sm:mb-6">
+            <div class="flex items-start gap-3">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-100 text-purple-700 sm:h-11 sm:w-11">
+                    <i class="fa-solid fa-church text-lg sm:text-xl" aria-hidden="true"></i>
+                </div>
 
-            <h1 class="text-2xl font-bold text-slate-800">
-                {{ page_title }}
-            </h1>
+                <div class="min-w-0">
+                    <h1 class="text-2xl font-bold leading-tight text-slate-800 sm:text-3xl">
+                        {{ page_title }}
+                    </h1>
 
-            <p class="mt-1 text-sm text-slate-500">
-                Create or update Diocese information.
-            </p>
-
+                    <p class="mt-1 text-sm text-slate-500 sm:text-base">
+                        Create or update Diocese information.
+                    </p>
+                </div>
+            </div>
         </div>
 
-
-        <!-- Form -->
-        <div class="rounded-xl border border-slate-200 bg-gray-200 shadow-sm">
-
+        <!-- Form Card -->
+        <div class="w-full overflow-hidden rounded-xl border border-slate-200 bg-gray-100 shadow-sm">
             <form method="post">
-
                 {% csrf_token %}
 
-                <div class="p-6 space-y-6">
+                <div class="space-y-5 p-4 sm:space-y-6 sm:p-6 lg:p-7">
 
                     <!-- Name -->
                     <div>
-
                         <label
                             for="{{ form.name.id_for_label }}"
-                            class="mb-2 block text-sm font-medium text-slate-700"
+                            class="mb-2 block text-sm font-medium text-slate-700 sm:text-base"
                         >
+                            <i class="fa-solid fa-church mr-1 text-purple-600" aria-hidden="true"></i>
                             Diocese Name
                         </label>
 
                         {{ form.name }}
 
                         {% for error in form.name.errors %}
-                            <p class="mt-1 text-sm text-red-600">
-                                {{ error }}
+                            <p class="mt-1 flex items-start gap-1 text-sm text-red-600" role="alert">
+                                <i class="fa-solid fa-circle-exclamation mt-0.5 shrink-0" aria-hidden="true"></i>
+                                <span>{{ error }}</span>
                             </p>
                         {% endfor %}
-
                     </div>
-
 
                     <!-- Description -->
                     <div>
-
                         <label
                             for="{{ form.description.id_for_label }}"
-                            class="mb-2 block text-sm font-medium text-slate-700"
+                            class="mb-2 block text-sm font-medium text-slate-700 sm:text-base"
                         >
+                            <i class="fa-solid fa-align-left mr-1 text-purple-600" aria-hidden="true"></i>
                             Description
                         </label>
 
                         {{ form.description }}
 
                         {% for error in form.description.errors %}
-                            <p class="mt-1 text-sm text-red-600">
-                                {{ error }}
+                            <p class="mt-1 flex items-start gap-1 text-sm text-red-600" role="alert">
+                                <i class="fa-solid fa-circle-exclamation mt-0.5 shrink-0" aria-hidden="true"></i>
+                                <span>{{ error }}</span>
                             </p>
                         {% endfor %}
-
                     </div>
-
 
                     <!-- Active -->
                     <div>
-
-                        <label class="flex items-center gap-3 cursor-pointer">
-
+                        <label class="flex cursor-pointer items-center gap-3">
                             {{ form.is_active }}
 
-                            <span class="text-sm font-medium text-slate-700">
+                            <span class="text-sm font-medium text-slate-700 sm:text-base">
+                                <i class="fa-solid fa-circle-check mr-1 text-green-600" aria-hidden="true"></i>
                                 Diocese is active
                             </span>
-
                         </label>
 
                         {% for error in form.is_active.errors %}
-                            <p class="mt-1 text-sm text-red-600">
-                                {{ error }}
+                            <p class="mt-1 flex items-start gap-1 text-sm text-red-600" role="alert">
+                                <i class="fa-solid fa-circle-exclamation mt-0.5 shrink-0" aria-hidden="true"></i>
+                                <span>{{ error }}</span>
                             </p>
                         {% endfor %}
-
                     </div>
 
                 </div>
 
-
                 <!-- Actions -->
-                <div class="flex justify-end gap-3 border-t border-slate-200 bg-gray-200 px-6 py-4">
-
+                <div class="flex flex-col-reverse gap-3 border-t border-slate-200 bg-gray-100 px-4 py-4 sm:flex-row sm:justify-end sm:px-6">
                     <a
                         href="{% url 'members:diocese_list' %}"
-                        class="btn btn-ghost"
+                        class="btn btn-ghost w-full sm:w-auto"
                     >
+                        <i class="fa-solid fa-xmark mr-2" aria-hidden="true"></i>
                         Cancel
                     </a>
 
                     <button
                         type="submit"
-                        class="btn btn-primary"
+                        class="btn btn-primary w-full sm:w-auto"
                     >
+                        <i class="fa-solid fa-floppy-disk mr-2" aria-hidden="true"></i>
                         {{ submit_label }}
                     </button>
-
                 </div>
 
             </form>
-
         </div>
 
     </div>
-
 </div>
 
 {% endblock %}

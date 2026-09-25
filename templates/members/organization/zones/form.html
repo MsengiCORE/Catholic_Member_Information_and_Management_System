@@ -2,199 +2,180 @@
 
 {% block content %}
 
-<div class="p-6 max-w-3xl mx-auto">
-
-    <div class="mb-6">
-
-        <h1 class="text-2xl font-bold text-base-content">
-            {{ title }}
-        </h1>
-
-        <p class="text-base-content/60">
-            Configure the Zone within the organizational hierarchy.
-        </p>
-
-    </div>
-
-
-    <div class="card bg-gray-200 shadow">
-
-        <div class="card-body">
-
-            <form method="post">
-
-                {% csrf_token %}
-
-                {% if form.non_field_errors %}
-
-                    <div class="alert alert-error mb-4">
-                        {{ form.non_field_errors }}
-                    </div>
-
-                {% endif %}
-
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-
-
-                    <!-- Diocese -->
-
-                    <div class="form-control">
-
-                        <label class="label">
-                            <span class="label-text font-semibold">
-                                Diocese
-                            </span>
-                        </label>
-
-                        {{ form.diocese }}
-
-                        {% if form.diocese.errors %}
-                            <div class="text-error text-sm mt-1">
-                                {{ form.diocese.errors }}
-                            </div>
-                        {% endif %}
-
-                    </div>
-
-
-                    <!-- Deanery -->
-
-                    <div class="form-control">
-
-                        <label class="label">
-                            <span class="label-text font-semibold">
-                                Deanery
-                            </span>
-                        </label>
-
-                        {{ form.deanery }}
-
-                        {% if form.deanery.errors %}
-                            <div class="text-error text-sm mt-1">
-                                {{ form.deanery.errors }}
-                            </div>
-                        {% endif %}
-
-                    </div>
-
-
-                    <!-- Parish -->
-
-                    <div class="form-control md:col-span-2">
-
-                        <label class="label">
-                            <span class="label-text font-semibold">
-                                Parish
-                            </span>
-                        </label>
-
-                        {{ form.parish }}
-
-                        {% if form.parish.errors %}
-                            <div class="text-error text-sm mt-1">
-                                {{ form.parish.errors }}
-                            </div>
-                        {% endif %}
-
-                    </div>
-
-
-                    <!-- Zone Name -->
-
-                    <div class="form-control md:col-span-2">
-
-                        <label class="label">
-
-                            <span class="label-text font-semibold">
-                                Zone Name
-                            </span>
-
-                        </label>
-
-                        {{ form.name }}
-
-                        {% if form.name.errors %}
-
-                            <div class="text-error text-sm mt-1">
-                                {{ form.name.errors }}
-                            </div>
-
-                        {% endif %}
-
-                    </div>
-
-
-                    <!-- Description -->
-
-                    <div class="form-control md:col-span-2">
-
-                        <label class="label">
-
-                            <span class="label-text font-semibold">
-                                Description
-                            </span>
-
-                        </label>
-
-                        {{ form.description }}
-
-                        {% if form.description.errors %}
-
-                            <div class="text-error text-sm mt-1">
-                                {{ form.description.errors }}
-                            </div>
-
-                        {% endif %}
-
-                    </div>
-
-
-                    <!-- Active -->
-
-                    <div class="form-control md:col-span-2">
-
-                        <label class="label cursor-pointer justify-start gap-3">
-
-                            {{ form.is_active }}
-
-                            <span class="label-text">
-                                Zone is active
-                            </span>
-
-                        </label>
-
-                    </div>
-
+<div class="min-h-screen bg-gray-200 p-3 sm:p-4 lg:p-6">
+    <div class="mx-auto w-full max-w-4xl">
+
+        <!-- Header -->
+        <div class="mb-5 sm:mb-6">
+            <div class="flex items-start gap-3">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-100 text-purple-700 sm:h-11 sm:w-11">
+                    <i class="fa-solid fa-location-dot text-lg sm:text-xl" aria-hidden="true"></i>
                 </div>
 
-
-                <div class="flex justify-end gap-3 mt-6">
-
-                    <a
-                        href="{% url 'members:zone_list' %}"
-                        class="btn btn-ghost"
-                    >
-                        Cancel
-                    </a>
-
-                    <button
-                        type="submit"
-                        class="btn btn-primary"
-                    >
-                        {{ submit_text }}
-                    </button>
-
+                <div class="min-w-0">
+                    <h1 class="text-2xl font-bold leading-tight text-base-content sm:text-3xl">
+                        {{ title }}
+                    </h1>
+                    <p class="mt-1 text-sm text-base-content/60 sm:text-base">
+                        Configure the Zone within the organizational hierarchy.
+                    </p>
                 </div>
+            </div>
+        </div>
 
-            </form>
+        <!-- Form Card -->
+        <div class="card w-full overflow-hidden bg-gray-100 shadow">
+            <div class="card-body p-4 sm:p-6 lg:p-7">
 
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-error mb-5 flex items-start gap-3 text-sm sm:text-base"
+                             role="alert">
+                            <i class="fa-solid fa-circle-exclamation mt-0.5 shrink-0" aria-hidden="true"></i>
+                            <div class="min-w-0">
+                                {{ form.non_field_errors }}
+                            </div>
+                        </div>
+                    {% endif %}
+
+                    <div class="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6">
+
+                        <!-- Diocese -->
+                        <div class="form-control">
+                            <label for="{{ form.diocese.id_for_label }}" class="label">
+                                <span class="label-text font-semibold">
+                                    <i class="fa-solid fa-church mr-1 text-purple-600" aria-hidden="true"></i>
+                                    Diocese
+                                </span>
+                            </label>
+
+                            {{ form.diocese }}
+
+                            {% if form.diocese.errors %}
+                                <div class="mt-1 flex items-start gap-1 text-error text-sm" role="alert">
+                                    <i class="fa-solid fa-circle-exclamation mt-0.5 shrink-0" aria-hidden="true"></i>
+                                    <span>{{ form.diocese.errors }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Deanery -->
+                        <div class="form-control">
+                            <label for="{{ form.deanery.id_for_label }}" class="label">
+                                <span class="label-text font-semibold">
+                                    <i class="fa-solid fa-sitemap mr-1 text-purple-600" aria-hidden="true"></i>
+                                    Deanery
+                                </span>
+                            </label>
+
+                            {{ form.deanery }}
+
+                            {% if form.deanery.errors %}
+                                <div class="mt-1 flex items-start gap-1 text-error text-sm" role="alert">
+                                    <i class="fa-solid fa-circle-exclamation mt-0.5 shrink-0" aria-hidden="true"></i>
+                                    <span>{{ form.deanery.errors }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Parish -->
+                        <div class="form-control md:col-span-2">
+                            <label for="{{ form.parish.id_for_label }}" class="label">
+                                <span class="label-text font-semibold">
+                                    <i class="fa-solid fa-church mr-1 text-purple-600" aria-hidden="true"></i>
+                                    Parish
+                                </span>
+                            </label>
+
+                            {{ form.parish }}
+
+                            {% if form.parish.errors %}
+                                <div class="mt-1 flex items-start gap-1 text-error text-sm" role="alert">
+                                    <i class="fa-solid fa-circle-exclamation mt-0.5 shrink-0" aria-hidden="true"></i>
+                                    <span>{{ form.parish.errors }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Zone Name -->
+                        <div class="form-control md:col-span-2">
+                            <label for="{{ form.name.id_for_label }}" class="label">
+                                <span class="label-text font-semibold">
+                                    <i class="fa-solid fa-location-dot mr-1 text-purple-600" aria-hidden="true"></i>
+                                    Zone Name
+                                </span>
+                            </label>
+
+                            {{ form.name }}
+
+                            {% if form.name.errors %}
+                                <div class="mt-1 flex items-start gap-1 text-error text-sm" role="alert">
+                                    <i class="fa-solid fa-circle-exclamation mt-0.5 shrink-0" aria-hidden="true"></i>
+                                    <span>{{ form.name.errors }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Description -->
+                        <div class="form-control md:col-span-2">
+                            <label for="{{ form.description.id_for_label }}" class="label">
+                                <span class="label-text font-semibold">
+                                    <i class="fa-solid fa-align-left mr-1 text-purple-600" aria-hidden="true"></i>
+                                    Description
+                                </span>
+                            </label>
+
+                            {{ form.description }}
+
+                            {% if form.description.errors %}
+                                <div class="mt-1 flex items-start gap-1 text-error text-sm" role="alert">
+                                    <i class="fa-solid fa-circle-exclamation mt-0.5 shrink-0" aria-hidden="true"></i>
+                                    <span>{{ form.description.errors }}</span>
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Active -->
+                        <div class="form-control md:col-span-2">
+                            <label class="label cursor-pointer justify-start gap-3">
+                                {{ form.is_active }}
+
+                                <span class="label-text font-semibold">
+                                    <i class="fa-solid fa-circle-check mr-1 text-green-600" aria-hidden="true"></i>
+                                    Zone is active
+                                </span>
+                            </label>
+                        </div>
+
+                    </div>
+
+                    <!-- Actions -->
+                    <div class="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+                        <a
+                            href="{% url 'members:zone_list' %}"
+                            class="btn btn-ghost w-full sm:w-auto"
+                        >
+                            <i class="fa-solid fa-xmark mr-2" aria-hidden="true"></i>
+                            Cancel
+                        </a>
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary w-full sm:w-auto"
+                        >
+                            <i class="fa-solid fa-floppy-disk mr-2" aria-hidden="true"></i>
+                            {{ submit_text }}
+                        </button>
+                    </div>
+
+                </form>
+            </div>
         </div>
 
     </div>
-
 </div>
-
 
 <script>
 

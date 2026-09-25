@@ -2,150 +2,157 @@
 
 {% block content %}
 
-<div class="p-6">
+<div class="min-h-screen bg-gray-200 p-3 sm:p-4 lg:p-6">
+    <div class="mx-auto w-full max-w-7xl">
 
-    <div class="flex items-center justify-between mb-6">
+        <!-- Header -->
+        <div class="mb-5 flex flex-col gap-4 sm:mb-6 md:flex-row md:items-center md:justify-between">
+            <div class="flex min-w-0 items-start gap-3">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-100 text-purple-700 sm:h-11 sm:w-11">
+                    <i class="fa-solid fa-user-tie text-lg sm:text-xl" aria-hidden="true"></i>
+                </div>
 
-        <div>
-            <h1 class="text-2xl font-bold text-gray-800">
-                Leadership Positions
-            </h1>
+                <div class="min-w-0">
+                    <h1 class="text-2xl font-bold leading-tight text-gray-800 sm:text-3xl">
+                        Leadership Positions
+                    </h1>
+                    <p class="mt-1 text-sm text-gray-500 sm:text-base">
+                        Manage church leadership positions.
+                    </p>
+                </div>
+            </div>
 
-            <p class="text-gray-500 mt-1">
-                Manage church leadership positions.
-            </p>
+            {% if user.is_superuser or user.profile.role == "diocese_admin" %}
+                <a href="{% url 'members:leadership_create' %}"
+                   class="btn w-full shrink-0 bg-purple-600 text-white hover:bg-purple-700 sm:w-auto">
+                    <i class="fa-solid fa-plus mr-2" aria-hidden="true"></i>
+                    <span>Add Leadership Position</span>
+                </a>
+            {% endif %}
         </div>
 
-        {% if user.is_superuser or user.profile.role == "diocese_admin" %}
-            <a href="{% url 'members:leadership_create' %}"
-               class="btn bg-purple-600 hover:bg-purple-700 text-white">
-                + Add Leadership Position
-            </a>
-        {% endif %}
+        <!-- Table Card -->
+        <div class="w-full overflow-hidden rounded-xl bg-gray-100 p-3 shadow-sm sm:p-4 lg:p-5">
+            <div class="w-full overflow-x-auto rounded-lg">
+                <table id="leadershipTable"
+                       class="display w-full min-w-190">
+                    <thead>
+                        <tr>
+                            <th>
+                                <i class="fa-solid fa-hashtag mr-1" aria-hidden="true"></i>
+                            </th>
+                            <th>
+                                <i class="fa-solid fa-user-tie mr-1" aria-hidden="true"></i>
+                                Name
+                            </th>
+                            <th>
+                                <i class="fa-solid fa-align-left mr-1" aria-hidden="true"></i>
+                                Description
+                            </th>
+                            <th>
+                                <i class="fa-solid fa-circle-check mr-1" aria-hidden="true"></i>
+                                Status
+                            </th>
+                            <th>
+                                <i class="fa-solid fa-gear mr-1" aria-hidden="true"></i>
+                                Actions
+                            </th>
+                        </tr>
+                    </thead>
 
-    </div>
+                    <tbody>
+                        {% for position in positions %}
+                            <tr>
+                                <td>
+                                    {{ forloop.counter }}
+                                </td>
 
+                                <td>
+                                    <span class="inline-flex items-center gap-2 font-medium">
+                                        <i class="fa-solid fa-user-tie text-purple-600" aria-hidden="true"></i>
+                                        <span>{{ position.name }}</span>
+                                    </span>
+                                </td>
 
-    <div class="bg-gray-200 rounded-xl shadow-sm p-5">
+                                <td>
+                                    {% if position.description %}
+                                        <span class="wrap-break-word">
+                                            {{ position.description }}
+                                        </span>
+                                    {% else %}
+                                        <span class="inline-flex items-center gap-1 text-gray-400">
+                                            <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+                                            <span>—</span>
+                                        </span>
+                                    {% endif %}
+                                </td>
 
-        <div class="overflow-x-auto">
+                                <td>
+                                    {% if position.is_active %}
+                                        <span class="badge badge-success gap-1 whitespace-nowrap">
+                                            <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+                                            Active
+                                        </span>
+                                    {% else %}
+                                        <span class="badge badge-error gap-1 whitespace-nowrap">
+                                            <i class="fa-solid fa-circle-xmark" aria-hidden="true"></i>
+                                            Inactive
+                                        </span>
+                                    {% endif %}
+                                </td>
 
-            <table id="leadershipTable"
-                   class="display w-full">
+                                <td>
+                                    {% if user.is_superuser or user.profile.role == "diocese_admin" %}
+                                        <a href="{% url 'members:leadership_update' position.pk %}"
+                                           class="btn btn-sm btn-outline">
+                                            <i class="fa-solid fa-pen-to-square mr-1" aria-hidden="true"></i>
+                                            Edit
+                                        </a>
+                                    {% else %}
+                                        <span class="inline-flex items-center gap-1 text-sm text-gray-400">
+                                            <i class="fa-solid fa-eye" aria-hidden="true"></i>
+                                            View only
+                                        </span>
+                                    {% endif %}
+                                </td>
+                            </tr>
 
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>Name</th>
-                        <th>Description</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-
-                    {% for position in positions %}
-
-                    <tr>
-
-                        <td>{{ forloop.counter }}</td>
-
-                        <td>
-                            <span class="font-medium">
-                                {{ position.name }}
-                            </span>
-                        </td>
-
-                        <td>
-                            {{ position.description|default:"—" }}
-                        </td>
-
-                        <td>
-
-                            {% if position.is_active %}
-
-                                <span class="badge badge-success">
-                                    Active
-                                </span>
-
-                            {% else %}
-
-                                <span class="badge badge-error">
-                                    Inactive
-                                </span>
-
-                            {% endif %}
-
-                        </td>
-
-                        <td>
-
-                            {% if user.is_superuser or user.profile.role == "diocese_admin" %}
-
-                                <a href="{% url 'members:leadership_update' position.pk %}"
-                                   class="btn btn-sm btn-outline">
-                                    Edit
-                                </a>
-
-                            {% else %}
-
-                                <span class="text-gray-400">
-                                    View only
-                                </span>
-
-                            {% endif %}
-
-                        </td>
-
-                    </tr>
-
-                    {% empty %}
-
-                    <tr>
-                        <td colspan="5"
-                            class="text-center py-8 text-gray-500">
-                            No leadership positions found.
-                        </td>
-                    </tr>
-
-                    {% endfor %}
-
-                </tbody>
-
-            </table>
-
+                        {% empty %}
+                            <tr>
+                                <td colspan="5" class="py-8 text-center text-gray-500">
+                                    <div class="flex flex-col items-center justify-center gap-2">
+                                        <i class="fa-solid fa-user-tie text-2xl text-gray-400" aria-hidden="true"></i>
+                                        <span>No leadership positions found.</span>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
 
     </div>
-
 </div>
 
 {% endblock %}
 
 {% block extra_js %}
 <script>
-
 document.addEventListener("DOMContentLoaded", function () {
-
     new DataTable("#leadershipTable", {
-
         pageLength: 10,
-
         lengthMenu: [10, 25, 50, 100],
-
         order: [[1, "asc"]],
-
         columnDefs: [
             {
                 orderable: false,
                 targets: [4]
             }
-        ]
-
+        ],
+        responsive: false,
+        autoWidth: false
     });
-
 });
-
 </script>
 {% endblock %}

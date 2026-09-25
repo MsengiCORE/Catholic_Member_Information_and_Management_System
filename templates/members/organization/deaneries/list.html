@@ -2,60 +2,72 @@
 
 {% block content %}
 
-<div class="p-6">
+<div class="min-h-screen bg-gray-200 p-3 sm:p-4 lg:p-6">
+    <div class="mx-auto w-full max-w-7xl">
 
-    <!-- Header -->
-    <div class="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
+        <!-- Header -->
+        <div class="mb-5 flex flex-col gap-4 sm:mb-6 md:flex-row md:items-center md:justify-between">
+            <div class="flex min-w-0 items-start gap-3">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-100 text-purple-700 sm:h-11 sm:w-11">
+                    <i class="fa-solid fa-sitemap text-lg sm:text-xl" aria-hidden="true"></i>
+                </div>
 
-        <div>
+                <div class="min-w-0">
+                    <h1 class="text-2xl font-bold leading-tight text-slate-800 sm:text-3xl">
+                        Deaneries
+                    </h1>
+                    <p class="mt-1 text-sm text-slate-500 sm:text-base">
+                        Manage Deaneries within the church organizational structure.
+                    </p>
+                </div>
+            </div>
 
-            <h1 class="text-2xl font-bold text-slate-800">
-                Deaneries
-            </h1>
-
-            <p class="mt-1 text-sm text-slate-500">
-                Manage Deaneries within the church organizational structure.
-            </p>
-
+            {% if user.is_superuser or user.profile.role == "diocese_admin" %}
+                <a
+                    href="{% url 'members:deanery_create' %}"
+                    class="btn btn-primary w-full shrink-0 sm:w-auto"
+                >
+                    <i class="fa-solid fa-plus mr-2" aria-hidden="true"></i>
+                    <span>Add Deanery</span>
+                </a>
+            {% endif %}
         </div>
 
-        {% if user.is_superuser or user.profile.role == "diocese_admin" %}
+        <!-- Deanery Table -->
+        <div class="w-full overflow-hidden rounded-xl border border-slate-200 bg-gray-100 shadow-sm">
+            <div class="w-full overflow-x-auto">
+                <table id="deaneriesTable" class="table w-full min-w-200">
+                    <thead>
+                        <tr>
+                            <th>
+                                <i class="fa-solid fa-hashtag mr-1" aria-hidden="true"></i>
+                            </th>
+                            <th>
+                                <i class="fa-solid fa-sitemap mr-1" aria-hidden="true"></i>
+                                Deanery
+                            </th>
+                            <th>
+                                <i class="fa-solid fa-church mr-1" aria-hidden="true"></i>
+                                Diocese
+                            </th>
+                            <th>
+                                <i class="fa-solid fa-circle-check mr-1" aria-hidden="true"></i>
+                                Status
+                            </th>
+                            <th>
+                                <i class="fa-solid fa-gear mr-1" aria-hidden="true"></i>
+                                Actions
+                            </th>
+                        </tr>
+                    </thead>
 
-            <a
-                href="{% url 'members:deanery_create' %}"
-                class="btn btn-primary"
-            >
-                + Add Deanery
-            </a>
-
-        {% endif %}
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
     </div>
-
-
-    <!-- Deanery Table -->
-    <div class="overflow-x-auto rounded-xl border border-slate-200 bg-gray-200 shadow-sm">
-
-        <table id="deaneriesTable" class="table w-full">
-
-            <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Deanery</th>
-                    <th>Diocese</th>
-                    <th>Status</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-
-            <tbody>
-
-            </tbody>
-
-        </table>
-
-    </div>
-
 </div>
 
 {% endblock %}
@@ -65,9 +77,7 @@
 document.addEventListener("DOMContentLoaded", function () {
 
     new DataTable("#deaneriesTable", {
-
         processing: true,
-
         serverSide: true,
 
         ajax: {
@@ -76,10 +86,11 @@ document.addEventListener("DOMContentLoaded", function () {
         },
 
         pageLength: 10,
-
         lengthMenu: [10, 25, 50, 100],
-
         order: [[1, "asc"]],
+
+        autoWidth: false,
+        responsive: false,
 
         columns: [
 
@@ -88,75 +99,96 @@ document.addEventListener("DOMContentLoaded", function () {
                 data: null,
                 orderable: false,
                 searchable: false,
-
-                render: function (
-                    data,
-                    type,
-                    row,
-                    meta
-                ) {
+                className: "whitespace-nowrap",
+                render: function (data, type, row, meta) {
                     return (
-                        meta.row
-                        + meta.settings._iDisplayStart
-                        + 1
+                        meta.row +
+                        meta.settings._iDisplayStart +
+                        1
                     );
                 }
             },
 
             // Deanery
             {
-                data: "name"
+                data: "name",
+                render: function (data) {
+                    return `
+                        <span class="inline-flex items-center gap-2 font-semibold">
+                            <i class="fa-solid fa-sitemap text-purple-600" aria-hidden="true"></i>
+                            <span class="break-words">${data ?? "—"}</span>
+                        </span>
+                    `;
+                }
             },
 
             // Diocese
             {
-                data: "diocese"
-            },
-
-            // Description
-            {
-                data: "description"
+                data: "diocese",
+                render: function (data) {
+                    return `
+                        <span class="inline-flex items-center gap-2">
+                            <i class="fa-solid fa-church text-purple-600" aria-hidden="true"></i>
+                            <span class="break-words">${data ?? "—"}</span>
+                        </span>
+                    `;
+                }
             },
 
             // Status
             {
-                data: "status"
+                data: "status",
+                render: function (data) {
+                    const value = String(data ?? "").toLowerCase();
+
+                    if (value === "active") {
+                        return `
+                            <span class="badge badge-success gap-1 whitespace-nowrap">
+                                <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+                                Active
+                            </span>
+                        `;
+                    }
+
+                    if (value === "inactive") {
+                        return `
+                            <span class="badge badge-error gap-1 whitespace-nowrap">
+                                <i class="fa-solid fa-circle-xmark" aria-hidden="true"></i>
+                                Inactive
+                            </span>
+                        `;
+                    }
+
+                    return `
+                        <span class="badge gap-1 whitespace-nowrap">
+                            <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+                            ${data ?? "—"}
+                        </span>
+                    `;
+                }
             },
 
             // Actions
             {
                 data: null,
-
                 orderable: false,
-
                 searchable: false,
+                className: "text-right whitespace-nowrap",
 
-                className: "text-right",
-
-                render: function (
-                    data,
-                    type,
-                    row
-                ) {
-
-                    let html = `
+                render: function (data, type, row) {
+                    return `
                         <div class="flex justify-end gap-2">
-                    `;
-
-                    html += `
-                        <a
-                            href="${row.edit_url}"
-                            class="btn btn-sm btn-outline"
-                        >
-                            Edit
-                        </a>
-                    `;
-
-                    html += `
+                            <a
+                                href="${row.edit_url}"
+                                class="btn btn-sm btn-outline"
+                                title="Edit Deanery"
+                                aria-label="Edit Deanery"
+                            >
+                                <i class="fa-solid fa-pen-to-square mr-1" aria-hidden="true"></i>
+                                <span>Edit</span>
+                            </a>
                         </div>
                     `;
-
-                    return html;
                 }
             }
         ]
