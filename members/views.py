@@ -2889,10 +2889,77 @@ def member_update(request, pk):
 
 @login_required
 @never_cache
+def member_organization(request):
+
+    if not is_church_member(request.user):
+        raise PermissionDenied
+
+    try:
+        member = (
+            ChurchMember.objects
+            .select_related(
+                "small_christian_community__zone__parish__deanery__diocese"
+            )
+            .get(user=request.user)
+        )
+    except ChurchMember.DoesNotExist:
+        raise PermissionDenied
+
+    scc = member.small_christian_community
+
+    if scc is None:
+        context = {
+            "member": member,
+            "scc": None,
+            "families": Family.objects.none(),
+        }
+
+        return render(
+            request,
+            "members/organization/my_organization.html",
+            context,
+        )
+
+    families = (
+        Family.objects
+        .filter(
+            small_christian_community=scc,
+            is_active=True,
+        )
+        .order_by("name")
+    )
+
+    context = {
+        "member": member,
+        "scc": scc,
+        "zone": scc.zone,
+        "parish": scc.zone.parish,
+        "deanery": scc.zone.parish.deanery,
+        "diocese": scc.zone.parish.deanery.diocese,
+        "families": families,
+    }
+
+    return render(
+        request,
+        "members/organization/my_organization.html",
+        context,
+    )
+
+
+@login_required
+@never_cache
 def dashboard(request):
 
     try:
-        member = request.user.church_member
+        member = (
+            ChurchMember.objects
+            .select_related("small_christian_community")
+            .prefetch_related(
+                "church_associations",
+                "leadership_positions",
+            )
+            .get(user=request.user)
+        )
     except ChurchMember.DoesNotExist:
         member = None
 
@@ -2923,7 +2990,6 @@ def dashboard(request):
 
         "member_count": ChurchMember.objects.count(),
 
-        # Logged-in user's Church Member profile
         "member": member,
     }
 

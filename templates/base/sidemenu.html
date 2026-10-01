@@ -83,204 +83,235 @@
 
         </div>
 
+        {% if request.user.is_superuseror or user.profile.role == "diocese_admin" or user.profile.role == "parish_admin" or request.user.profile.role != "church_member" %}
+            <!-- ORGANIZATION -->
+            <div class="mb-6">
 
-        <!-- ORGANIZATION -->
-        <div class="mb-6">
+                <p class="px-3 mb-2 text-[11px] font-bold
+                        uppercase tracking-wider text-gray-400">
+                    Organization
+                </p>
 
-            <p class="px-3 mb-2 text-[11px] font-bold
-                      uppercase tracking-wider text-gray-400">
-                Organization
-            </p>
-
-            <div class="space-y-1">
-
-                <a
-                    href="{% url 'members:diocese_list' %}"
-                    class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
-                           {% if request.resolver_match.url_name == 'diocese_list' or request.resolver_match.url_name == 'diocese_create' or request.resolver_match.url_name == 'diocese_update' %}
-                               bg-purple-600 text-white
-                           {% else %}
-                               text-gray-600 hover:bg-green-mint hover:text-green-700
-                           {% endif %}"
-                >
-                    <i class="fa-solid fa-building-columns w-5 text-center shrink-0" aria-hidden="true"></i>
-                    <span class="min-w-0 truncate">Dioceses</span>
-                </a>
-
-
-                <a
-                    href="{% url 'members:deanery_list' %}"
-                    class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
-                           {% if request.resolver_match.url_name == 'deanery_list' or request.resolver_match.url_name == 'deanery_create' or request.resolver_match.url_name == 'deanery_update' %}
-                               bg-purple-600 text-white
-                           {% else %}
-                               text-gray-600 hover:bg-green-mint hover:text-green-700
-                           {% endif %}"
-                >
-                    <i class="fa-solid fa-sitemap w-5 text-center shrink-0" aria-hidden="true"></i>
-                    <span class="min-w-0 truncate">Deaneries</span>
-                </a>
-
-
-                <a
-                    href="{% url 'members:parish_list' %}"
-                    class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
-                           {% if request.resolver_match.url_name == 'parish_list' or request.resolver_match.url_name == 'parish_create' or request.resolver_match.url_name == 'parish_update' %}
-                               bg-purple-600 text-white
-                           {% else %}
-                               text-gray-600 hover:bg-green-mint hover:text-green-700
-                           {% endif %}"
-                >
-                    <i class="fa-solid fa-church w-5 text-center shrink-0" aria-hidden="true"></i>
-                    <span class="min-w-0 truncate">Parishes</span>
-                </a>
-
-
-                <a
-                    href="{% url 'members:zone_list' %}"
-                    class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
-                           {% if request.resolver_match.url_name == 'zone_list' or request.resolver_match.url_name == 'zone_create' or request.resolver_match.url_name == 'zone_update' %}
-                               bg-purple-600 text-white
-                           {% else %}
-                               text-gray-600 hover:bg-green-mint hover:text-green-700
-                           {% endif %}"
-                >
-                    <i class="fa-solid fa-location-dot w-5 text-center shrink-0" aria-hidden="true"></i>
-                    <span class="min-w-0 truncate">Zones</span>
-                </a>
-
-
-                <a
-                    href="{% url 'members:small_christian_community_list' %}"
-                    class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
-                           {% if request.resolver_match.url_name == 'small_christian_community_list' or request.resolver_match.url_name == 'small_christian_community_create' or request.resolver_match.url_name == 'small_christian_community_update' %}
-                               bg-purple-600 text-white
-                           {% else %}
-                               text-gray-600 hover:bg-green-mint hover:text-green-700
-                           {% endif %}"
-                >
-                    <i class="fa-solid fa-people-group w-5 text-center shrink-0" aria-hidden="true"></i>
-                    <span class="min-w-0 leading-5">Small Christian Communities</span>
-                </a>
-
-
-                <a
-                    href="{% url 'members:family_list' %}"
-                    class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
-                           {% if request.resolver_match.url_name == 'family_list' or request.resolver_match.url_name == 'family_create' or request.resolver_match.url_name == 'family_update' %}
-                               bg-purple-600 text-white
-                           {% else %}
-                               text-gray-600 hover:bg-green-mint hover:text-green-700
-                           {% endif %}"
-                >
-                    <i class="fa-solid fa-house-user w-5 text-center shrink-0" aria-hidden="true"></i>
-                    <span class="min-w-0 truncate">Families</span>
-                </a>
-
-            </div>
-
-        </div>
-
-
-        <!-- MEMBERS -->
-        <div class="mb-6">
-
-            <p class="px-3 mb-2 text-[11px] font-bold
-                      uppercase tracking-wider text-gray-400">
-                Members
-            </p>
-
-            <div class="space-y-1">
-
-                <a
-                    href="{% url 'members:member_list' %}"
-                    class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
-                           {% if request.resolver_match.url_name == 'member_list' or request.resolver_match.url_name == 'member_create' or request.resolver_match.url_name == 'member_update' %}
-                               bg-purple-600 text-white
-                           {% else %}
-                               text-gray-600 hover:bg-purple-50 hover:text-purple-700
-                           {% endif %}"
-                >
-                    <i class="fa-solid fa-users w-5 text-center shrink-0" aria-hidden="true"></i>
-                    <span class="min-w-0 truncate">Church Members</span>
-                </a>
-
-
-                <a
-                    href="{% url 'members:register_new_member' %}"
-                    class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
-                           {% if request.resolver_match.url_name == 'register_new_member' %}
-                               bg-purple-600 text-white
-                           {% else %}
-                               text-gray-600 hover:bg-purple-50 hover:text-purple-700
-                           {% endif %}"
-                >
-                    <i class="fa-solid fa-user-plus w-5 text-center shrink-0" aria-hidden="true"></i>
-                    <span class="min-w-0 truncate">Register Member</span>
-                </a>
-
-            </div>
-
-        </div>
-
-
-        <!-- MANAGEMENT -->
-        <div class="mb-6">
-
-            <p class="px-3 mb-2 text-[11px] font-bold
-                      uppercase tracking-wider text-gray-400">
-                Management
-            </p>
-
-            <div class="space-y-1">
-
-
-                <!-- Church Associations -->
-                {% if user.is_superuser or user.profile.role == "diocese_admin" %}
+                <div class="space-y-1">
 
                     <a
-                        href="{% url 'members:association_list' %}"
+                        href="{% url 'members:diocese_list' %}"
                         class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
-                           {% if request.resolver_match.url_name == 'association_list' or request.resolver_match.url_name == 'association_create' or request.resolver_match.url_name == 'association_update' %}
-                               bg-purple-600 text-white
-                           {% else %}
-                               text-gray-600 hover:bg-blue-mint hover:text-blue-700
-                           {% endif %}"
+                            {% if request.resolver_match.url_name == 'diocese_list' or request.resolver_match.url_name == 'diocese_create' or request.resolver_match.url_name == 'diocese_update' %}
+                                bg-purple-600 text-white
+                            {% else %}
+                                text-gray-600 hover:bg-green-mint hover:text-green-700
+                            {% endif %}"
+                    >
+                        <i class="fa-solid fa-building-columns w-5 text-center shrink-0" aria-hidden="true"></i>
+                        <span class="min-w-0 truncate">Dioceses</span>
+                    </a>
+
+
+                    <a
+                        href="{% url 'members:deanery_list' %}"
+                        class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
+                            {% if request.resolver_match.url_name == 'deanery_list' or request.resolver_match.url_name == 'deanery_create' or request.resolver_match.url_name == 'deanery_update' %}
+                                bg-purple-600 text-white
+                            {% else %}
+                                text-gray-600 hover:bg-green-mint hover:text-green-700
+                            {% endif %}"
+                    >
+                        <i class="fa-solid fa-sitemap w-5 text-center shrink-0" aria-hidden="true"></i>
+                        <span class="min-w-0 truncate">Deaneries</span>
+                    </a>
+
+
+                    <a
+                        href="{% url 'members:parish_list' %}"
+                        class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
+                            {% if request.resolver_match.url_name == 'parish_list' or request.resolver_match.url_name == 'parish_create' or request.resolver_match.url_name == 'parish_update' %}
+                                bg-purple-600 text-white
+                            {% else %}
+                                text-gray-600 hover:bg-green-mint hover:text-green-700
+                            {% endif %}"
+                    >
+                        <i class="fa-solid fa-church w-5 text-center shrink-0" aria-hidden="true"></i>
+                        <span class="min-w-0 truncate">Parishes</span>
+                    </a>
+
+
+                    <a
+                        href="{% url 'members:zone_list' %}"
+                        class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
+                            {% if request.resolver_match.url_name == 'zone_list' or request.resolver_match.url_name == 'zone_create' or request.resolver_match.url_name == 'zone_update' %}
+                                bg-purple-600 text-white
+                            {% else %}
+                                text-gray-600 hover:bg-green-mint hover:text-green-700
+                            {% endif %}"
+                    >
+                        <i class="fa-solid fa-location-dot w-5 text-center shrink-0" aria-hidden="true"></i>
+                        <span class="min-w-0 truncate">Zones</span>
+                    </a>
+
+
+                    <a
+                        href="{% url 'members:small_christian_community_list' %}"
+                        class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
+                            {% if request.resolver_match.url_name == 'small_christian_community_list' or request.resolver_match.url_name == 'small_christian_community_create' or request.resolver_match.url_name == 'small_christian_community_update' %}
+                                bg-purple-600 text-white
+                            {% else %}
+                                text-gray-600 hover:bg-green-mint hover:text-green-700
+                            {% endif %}"
                     >
                         <i class="fa-solid fa-people-group w-5 text-center shrink-0" aria-hidden="true"></i>
-
-                        <span class="min-w-0 truncate">
-                            Church Associations
-                        </span>
+                        <span class="min-w-0 leading-5">Small Christian Communities</span>
                     </a>
 
-                {% endif %}
-
-
-                <!-- Leadership Positions -->
-                {% if user.is_superuser or user.profile.role == "diocese_admin" %}
 
                     <a
-                        href="{% url 'members:leadership_list' %}"
+                        href="{% url 'members:family_list' %}"
                         class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
-                           {% if request.resolver_match.url_name == 'leadership_list' or request.resolver_match.url_name == 'leadership_create' or request.resolver_match.url_name == 'leadership_update' %}
-                               bg-purple-600 text-white
-                           {% else %}
-                               text-gray-600 hover:bg-blue-mint hover:text-blue-700
-                           {% endif %}"
+                            {% if request.resolver_match.url_name == 'family_list' or request.resolver_match.url_name == 'family_create' or request.resolver_match.url_name == 'family_update' %}
+                                bg-purple-600 text-white
+                            {% else %}
+                                text-gray-600 hover:bg-green-mint hover:text-green-700
+                            {% endif %}"
                     >
-                        <i class="fa-solid fa-user-tie w-5 text-center shrink-0" aria-hidden="true"></i>
-
-                        <span class="min-w-0 truncate">
-                            Leadership Positions
-                        </span>
+                        <i class="fa-solid fa-house-user w-5 text-center shrink-0" aria-hidden="true"></i>
+                        <span class="min-w-0 truncate">Families</span>
                     </a>
 
-                {% endif %}
+                </div>
 
             </div>
 
-        </div>
+
+            <!-- MEMBERS -->
+            <div class="mb-6">
+
+                <p class="px-3 mb-2 text-[11px] font-bold
+                        uppercase tracking-wider text-gray-400">
+                    Members
+                </p>
+
+                <div class="space-y-1">
+
+                    <a
+                        href="{% url 'members:member_list' %}"
+                        class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
+                            {% if request.resolver_match.url_name == 'member_list' or request.resolver_match.url_name == 'member_create' or request.resolver_match.url_name == 'member_update' %}
+                                bg-purple-600 text-white
+                            {% else %}
+                                text-gray-600 hover:bg-purple-50 hover:text-purple-700
+                            {% endif %}"
+                    >
+                        <i class="fa-solid fa-users w-5 text-center shrink-0" aria-hidden="true"></i>
+                        <span class="min-w-0 truncate">Church Members</span>
+                    </a>
+
+
+                    <a
+                        href="{% url 'members:register_new_member' %}"
+                        class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
+                            {% if request.resolver_match.url_name == 'register_new_member' %}
+                                bg-purple-600 text-white
+                            {% else %}
+                                text-gray-600 hover:bg-purple-50 hover:text-purple-700
+                            {% endif %}"
+                    >
+                        <i class="fa-solid fa-user-plus w-5 text-center shrink-0" aria-hidden="true"></i>
+                        <span class="min-w-0 truncate">Register Member</span>
+                    </a>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- MANAGEMENT -->
+            <div class="mb-6">
+
+                <p class="px-3 mb-2 text-[11px] font-bold
+                        uppercase tracking-wider text-gray-400">
+                    Management
+                </p>
+
+                <div class="space-y-1">
+
+
+                    <!-- Church Associations -->
+
+                        <a
+                            href="{% url 'members:association_list' %}"
+                            class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
+                            {% if request.resolver_match.url_name == 'association_list' or request.resolver_match.url_name == 'association_create' or request.resolver_match.url_name == 'association_update' %}
+                                bg-purple-600 text-white
+                            {% else %}
+                                text-gray-600 hover:bg-blue-mint hover:text-blue-700
+                            {% endif %}"
+                        >
+                            <i class="fa-solid fa-people-group w-5 text-center shrink-0" aria-hidden="true"></i>
+
+                            <span class="min-w-0 truncate">
+                                Church Associations
+                            </span>
+                        </a>
+
+
+                    <!-- Leadership Positions -->
+
+                        <a
+                            href="{% url 'members:leadership_list' %}"
+                            class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
+                            {% if request.resolver_match.url_name == 'leadership_list' or request.resolver_match.url_name == 'leadership_create' or request.resolver_match.url_name == 'leadership_update' %}
+                                bg-purple-600 text-white
+                            {% else %}
+                                text-gray-600 hover:bg-blue-mint hover:text-blue-700
+                            {% endif %}"
+                        >
+                            <i class="fa-solid fa-user-tie w-5 text-center shrink-0" aria-hidden="true"></i>
+
+                            <span class="min-w-0 truncate">
+                                Leadership Positions
+                            </span>
+                        </a>
+
+
+                </div>
+
+            </div>
+        {% endif %}
+
+        {% if request.user.profile.role == "church_member" %}
+            <div class="mb-6">
+
+                <p class="px-3 mb-2 text-[11px] font-bold
+                        uppercase tracking-wider text-gray-400">
+                    My Church
+
+                </p>
+
+                <div class="space-y-1">
+
+                    <a
+                        href="{% url 'members:member_organization' %}"
+                        class="flex min-w-0 items-center gap-3 px-4 py-2.5
+                            rounded-lg transition
+                            {% if request.resolver_match.url_name == 'member_organization' %}
+                                bg-purple-600 text-white
+                            {% else %}
+                                text-gray-600 hover:bg-green-mint hover:text-green-700
+                            {% endif %}"
+                    >
+                        <i
+                            class="fa-solid fa-sitemap w-5 text-center shrink-0"
+                            aria-hidden="true"
+                        ></i>
+
+                        <span>My Organization</span>
+                    </a>
+
+                </div>
+
+            </div>
+        {% endif %}
 
 
     </nav>

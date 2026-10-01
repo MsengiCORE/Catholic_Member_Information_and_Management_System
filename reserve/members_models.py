@@ -464,51 +464,6 @@ class ChurchMember(models.Model):
         choices=MARITAL_STATUS_CHOICES
     )
 
-    # Spouse relationship
-    #
-    # When both spouses are registered Church Members, this field links
-    # their two ChurchMember records. The existing spouse_* fields below
-    # are retained for spouse information when the spouse is not a
-    # registered Church Member.
-    spouse = models.OneToOneField(
-        "self",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name="spouse_member",
-    )
-
-    # Spouse Information (used when marital_status = married)
-    spouse_is_catholic = models.BooleanField(
-        null=True,
-        blank=True,
-    )
-
-    spouse_digital_offering_number = models.CharField(
-        max_length=50,
-        blank=True,
-    )
-
-    spouse_first_name = models.CharField(
-        max_length=100,
-        blank=True,
-    )
-
-    spouse_middle_name = models.CharField(
-        max_length=100,
-        blank=True,
-    )
-
-    spouse_last_name = models.CharField(
-        max_length=100,
-        blank=True,
-    )
-
-    spouse_phone_number = models.CharField(
-        max_length=20,
-        blank=True,
-    )
-
     # Contact Information
     phone_number = models.CharField(
         max_length=20
@@ -553,12 +508,6 @@ class ChurchMember(models.Model):
     baptism_status = models.CharField(
         max_length=15,
         choices=BAPTISM_STATUS_CHOICES
-    )
-
-    # Baptism certificate information (used when baptism_status = baptized)
-    baptism_certificate_number = models.CharField(
-        max_length=100,
-        blank=True,
     )
 
     # Church Organizational Hierarchy

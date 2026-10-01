@@ -1,6 +1,6 @@
 {% extends "base/base_with_menu.html" %}
 
-{% block title %}Dashboard | CCMIMS{% endblock %}
+{% block title %}Dashboard{% endblock %}
 
 {% block content %}
 
@@ -270,6 +270,81 @@
 
                     </div>
                 </div>
+
+
+                <!-- Spouse Information -->
+                {% if member.marital_status == "married" %}
+                    <div class="mb-6 rounded-2xl bg-purple-mint/35 p-5">
+                        <h3 class="mb-4 flex items-center gap-2 border-b border-primary/15 pb-2 text-base font-bold text-primary">
+                            <i class="fa-solid fa-ring text-primary" aria-hidden="true"></i>
+                            <span>Spouse Information</span>
+                        </h3>
+
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+                            <!-- Spouse Catholic Status -->
+                            <div>
+                                <div class="flex items-center gap-1.5 text-sm text-base-content/60">
+                                    <i class="fa-solid fa-church" aria-hidden="true"></i>
+                                    <span>Spouse Catholic Status</span>
+                                </div>
+                                <div class="mt-1 min-w-0 wrap-break-word rounded-xl bg-white/70 px-3 py-2 font-semibold">
+                                    {% if member.spouse_is_catholic %}
+                                        <span class="inline-flex items-center gap-1.5 text-success">
+                                            <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+                                            Catholic
+                                        </span>
+                                    {% else %}
+                                        <span class="inline-flex items-center gap-1.5 text-warning">
+                                            <i class="fa-solid fa-circle-xmark" aria-hidden="true"></i>
+                                            Not Catholic
+                                        </span>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            {% if member.spouse_is_catholic %}
+                                <!-- Spouse Digital Offering Number -->
+                                <div>
+                                    <div class="flex items-center gap-1.5 text-sm text-base-content/60">
+                                        <i class="fa-solid fa-hashtag" aria-hidden="true"></i>
+                                        <span>Spouse Digital Offering Number</span>
+                                    </div>
+                                    <div class="mt-1 min-w-0 wrap-break-word rounded-xl bg-white/70 px-3 py-2 font-semibold">
+                                        {{ member.spouse_digital_offering_number|default:"—" }}
+                                    </div>
+                                </div>
+                            {% else %}
+                                <!-- Spouse Full Name -->
+                                <div class="sm:col-span-2 lg:col-span-2">
+                                    <div class="flex items-center gap-1.5 text-sm text-base-content/60">
+                                        <i class="fa-solid fa-user-group" aria-hidden="true"></i>
+                                        <span>Spouse Name</span>
+                                    </div>
+                                    <div class="mt-1 min-w-0 wrap-break-word rounded-xl bg-white/70 px-3 py-2 font-semibold">
+                                        {{ member.spouse_first_name }}
+                                        {% if member.spouse_middle_name %}
+                                            {{ member.spouse_middle_name }}
+                                        {% endif %}
+                                        {{ member.spouse_last_name }}
+                                    </div>
+                                </div>
+
+                                <!-- Spouse Phone -->
+                                <div>
+                                    <div class="flex items-center gap-1.5 text-sm text-base-content/60">
+                                        <i class="fa-solid fa-phone" aria-hidden="true"></i>
+                                        <span>Spouse Phone Number</span>
+                                    </div>
+                                    <div class="mt-1 min-w-0 wrap-break-word rounded-xl bg-white/70 px-3 py-2 font-semibold">
+                                        {{ member.spouse_phone_number|default:"—" }}
+                                    </div>
+                                </div>
+                            {% endif %}
+
+                        </div>
+                    </div>
+                {% endif %}
 
 
                 <!-- Contact Information -->

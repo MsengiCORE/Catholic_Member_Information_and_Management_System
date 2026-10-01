@@ -965,22 +965,6 @@ class FamilyForm(forms.ModelForm):
         return cleaned_data
 
 class ChurchMemberForm(forms.ModelForm):
-
-    spouse_is_catholic = forms.TypedChoiceField(
-        choices=[
-            ("", "Select"),
-            ("true", "Yes"),
-            ("false", "No"),
-        ],
-        required=False,
-        coerce=lambda value: (
-            True if value == "true"
-            else False if value == "false"
-            else None
-        ),
-        widget=forms.HiddenInput(),
-    )
-    
     # ---------------------------------------------------------
     # CHURCH ORGANIZATIONAL HIERARCHY
     # Diocese → Deanery → Parish → Zone → SCC
@@ -1076,15 +1060,6 @@ class ChurchMemberForm(forms.ModelForm):
             "last_name",
             "date_of_birth",
             "marital_status",
-
-            # Spouse information
-            "spouse_is_catholic",
-            "spouse_digital_offering_number",
-            "spouse_first_name",
-            "spouse_middle_name",
-            "spouse_last_name",
-            "spouse_phone_number",
-
             "email",
             "house_number",
             "street",
@@ -1092,7 +1067,6 @@ class ChurchMemberForm(forms.ModelForm):
             "district",
             "region",
             "baptism_status",
-            "baptism_certificate_number",
 
             # Organizational hierarchy
             "diocese",
@@ -1113,12 +1087,6 @@ class ChurchMemberForm(forms.ModelForm):
             "last_name": "Last Name",
             "date_of_birth": "Date of Birth",
             "marital_status": "Marital Status",
-            "spouse_is_catholic": "Is Spouse Catholic?",
-            "spouse_digital_offering_number": "Spouse Digital Offering Number",
-            "spouse_first_name": "Spouse First Name",
-            "spouse_middle_name": "Spouse Middle Name",
-            "spouse_last_name": "Spouse Last Name",
-            "spouse_phone_number": "Spouse Phone Number",
             "email": "Email Address",
             "house_number": "House Number",
             "street": "Street",
@@ -1126,7 +1094,6 @@ class ChurchMemberForm(forms.ModelForm):
             "district": "District",
             "region": "Region",
             "baptism_status": "Baptism Status",
-            "baptism_certificate_number": "Baptism Certificate Number",
             "diocese": "Diocese",
             "deanery": "Deanery",
             "parish": "Parish",
@@ -1179,41 +1146,6 @@ class ChurchMemberForm(forms.ModelForm):
                 }
             ),
 
-            "spouse_digital_offering_number": forms.TextInput(
-                attrs={
-                    "class": "input input-bordered w-full bg-white",
-                    "placeholder": "Enter spouse digital offering number",
-                }
-            ),
-
-            "spouse_first_name": forms.TextInput(
-                attrs={
-                    "class": "input input-bordered w-full bg-white",
-                    "placeholder": "Enter spouse first name",
-                }
-            ),
-
-            "spouse_middle_name": forms.TextInput(
-                attrs={
-                    "class": "input input-bordered w-full bg-white",
-                    "placeholder": "Enter spouse middle name",
-                }
-            ),
-
-            "spouse_last_name": forms.TextInput(
-                attrs={
-                    "class": "input input-bordered w-full bg-white",
-                    "placeholder": "Enter spouse last name",
-                }
-            ),
-
-            "spouse_phone_number": forms.TextInput(
-                attrs={
-                    "class": "input input-bordered w-full bg-white",
-                    "placeholder": "Enter spouse phone number",
-                }
-            ),
-
             "email": forms.EmailInput(
                 attrs={
                     "class": "input input-bordered w-full bg-white",
@@ -1259,13 +1191,6 @@ class ChurchMemberForm(forms.ModelForm):
             "baptism_status": forms.Select(
                 attrs={
                     "class": "select select-bordered w-full bg-white",
-                }
-            ),
-
-            "baptism_certificate_number": forms.TextInput(
-                attrs={
-                    "class": "input input-bordered w-full bg-white",
-                    "placeholder": "Enter baptism certificate number",
                 }
             ),
 
@@ -1471,59 +1396,6 @@ class ChurchMemberForm(forms.ModelForm):
                     "does not belong to the selected Zone.",
                 )
 
-        # -----------------------------------------------------
-        # Married member → spouse information
-        # -----------------------------------------------------
-        marital_status = cleaned_data.get("marital_status")
-        spouse_is_catholic = cleaned_data.get("spouse_is_catholic")
-
-        if marital_status == "married":
-            if spouse_is_catholic is None:
-                self.add_error(
-                    "spouse_is_catholic",
-                    "Please indicate whether the spouse is Catholic.",
-                )
-            elif spouse_is_catholic:
-                if not cleaned_data.get("spouse_digital_offering_number", "").strip():
-                    self.add_error(
-                        "spouse_digital_offering_number",
-                        "Spouse digital offering number is required for a Catholic spouse.",
-                    )
-            else:
-                for field_name, label in (
-                    ("spouse_first_name", "Spouse first name"),
-                    ("spouse_last_name", "Spouse last name"),
-                    ("spouse_phone_number", "Spouse phone number"),
-                ):
-                    if not cleaned_data.get(field_name, "").strip():
-                        self.add_error(
-                            field_name,
-                            f"{label} is required when the spouse is not Catholic.",
-                        )
-
-        else:
-            # These fields are only meaningful for married members.
-            cleaned_data["spouse_is_catholic"] = None
-            cleaned_data["spouse_digital_offering_number"] = ""
-            cleaned_data["spouse_first_name"] = ""
-            cleaned_data["spouse_middle_name"] = ""
-            cleaned_data["spouse_last_name"] = ""
-            cleaned_data["spouse_phone_number"] = ""
-
-        # -----------------------------------------------------
-        # Baptized member → baptism certificate
-        # -----------------------------------------------------
-        baptism_status = cleaned_data.get("baptism_status")
-
-        if baptism_status == "baptized":
-            if not cleaned_data.get("baptism_certificate_number", "").strip():
-                self.add_error(
-                    "baptism_certificate_number",
-                    "Baptism certificate number is required for a baptized member.",
-                )
-        else:
-            cleaned_data["baptism_certificate_number"] = ""
-
         return cleaned_data
 
     def clean_digital_offering_number(self):
@@ -1587,43 +1459,6 @@ class ChurchMemberForm(forms.ModelForm):
             )
 
         return date_of_birth
-
-    def clean_spouse_digital_offering_number(self):
-        return self.cleaned_data.get(
-            "spouse_digital_offering_number", ""
-        ).strip()
-
-    def clean_spouse_first_name(self):
-        value = self.cleaned_data.get("spouse_first_name", "").strip()
-        if value and any(char.isdigit() for char in value):
-            raise forms.ValidationError(
-                "Spouse first name cannot contain numbers."
-            )
-        return value
-
-    def clean_spouse_middle_name(self):
-        value = self.cleaned_data.get("spouse_middle_name", "").strip()
-        if value and any(char.isdigit() for char in value):
-            raise forms.ValidationError(
-                "Spouse middle name cannot contain numbers."
-            )
-        return value
-
-    def clean_spouse_last_name(self):
-        value = self.cleaned_data.get("spouse_last_name", "").strip()
-        if value and any(char.isdigit() for char in value):
-            raise forms.ValidationError(
-                "Spouse last name cannot contain numbers."
-            )
-        return value
-
-    def clean_spouse_phone_number(self):
-        return self.cleaned_data.get("spouse_phone_number", "").strip()
-
-    def clean_baptism_certificate_number(self):
-        return self.cleaned_data.get(
-            "baptism_certificate_number", ""
-        ).strip()
 
     def clean_family(self):
         family = self.cleaned_data.get("family", "").strip()

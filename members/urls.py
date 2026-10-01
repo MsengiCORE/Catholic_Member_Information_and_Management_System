@@ -59,4 +59,6 @@ urlpatterns = [
     path("leadership/create/", views.leadership_create, name="leadership_create"),
     path("leadership/<uuid:pk>/edit/", views.leadership_update, name="leadership_update"),
     path("member-leadership/<uuid:pk>/leadership/", views.member_leadership, name="member_leadership"),
+
+    path("member-organization/", views.member_organization, name="member_organization"),
 ]
