@@ -136,13 +136,13 @@
             {% if families %}
                 <div class="overflow-x-auto">
                     <div class="min-w-xl">
-                        <div class="grid grid-cols-[auto_1fr] border-b border-gray-200 bg-gray-50 px-4 py-3 text-xs font-bold uppercase tracking-wider text-gray-500 sm:px-6">
+                        <div class="grid grid-cols-[auto_1fr] border-b border-gray-200 bg-gray-300 px-4 py-3 text-xs font-bold uppercase tracking-wider text-gray-500 sm:px-6">
                             <span class="pr-6">#</span>
                             <span>Family Name</span>
                         </div>
 
                         {% for family in families %}
-                            <div class="grid grid-cols-[auto_1fr] items-center border-b border-gray-100 px-4 py-3 last:border-b-0 hover:bg-gray-50 sm:px-6">
+                            <div class="grid grid-cols-[auto_1fr] items-center border-b border-gray-100 px-4 py-3 last:border-b-0 hover:bg-gray-300 sm:px-6">
                                 <span class="pr-6 text-sm text-gray-400">{{ forloop.counter }}</span>
                                 <div class="flex min-w-0 items-center gap-2">
                                     <i class="fa-solid fa-house text-green-600" aria-hidden="true"></i>
