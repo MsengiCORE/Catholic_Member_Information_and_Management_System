@@ -2941,7 +2941,7 @@ def member_organization(request):
 
     return render(
         request,
-        "members/organization/my_organization.html",
+        "members/member_organization.html",
         context,
     )
 
