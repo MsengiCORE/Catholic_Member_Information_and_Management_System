@@ -19,6 +19,27 @@
             max-width: 100%;
         }
     }
+
+    .member-detail-page .member-info-cards-stack {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .member-detail-page .member-info-card {
+        width: 100%;
+        min-width: 0;
+        border: 1px solid rgb(229 231 235) !important;
+        border-radius: 0.75rem !important;
+        background-color: rgb(255 255 255) !important;
+        box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.08) !important;
+    }
+
+    .member-detail-page .member-info-card > div {
+        min-width: 0;
+        border: 0 !important;
+        background-color: transparent !important;
+        box-shadow: none !important;
+    }
 </style>
 <style>
     .member-detail-page section,
@@ -43,13 +64,28 @@
     .member-detail-page .badge {
         line-height: 1.25rem;
     }
+
+    .member-detail-page .member-info-card {
+        border: 1px solid rgb(229 231 235) !important;
+        box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.08) !important;
+        border-radius: 0.75rem !important;
+        background-color: rgb(255 255 255) !important;
+    }
+
+    .member-detail-page .member-info-card::before,
+    .member-detail-page .member-info-card::after {
+        border: 0 !important;
+        box-shadow: none !important;
+        background-image: none !important;
+    }
+
 </style>
 
 {% endblock %}
 
 {% block content %}
 
-<div class="member-detail-page mx-auto w-full max-w-7xl px-3 py-4 sm:px-5 sm:py-6 lg:px-6 lg:py-8">
+<div class="member-detail-page mx-auto w-full max-w-7xl bg-gray-200 px-3 py-4 sm:px-5 sm:py-6 lg:px-6 lg:py-8">
 
     <!-- Header -->
     <div class="mb-5 flex flex-col gap-4 sm:mb-6 lg:flex-row lg:items-center lg:justify-between">
@@ -94,7 +130,7 @@
 
 
     <!-- Member Identity -->
-    <div class="mb-5 overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-sm sm:mb-6">
+    <div class="member-info-card overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-sm">
 
         <div class="flex flex-col md:flex-row md:items-center gap-5">
 
@@ -128,9 +164,13 @@
 
     </div>
 
+    <div class="h-5"></div>
+
+
+    <div class="member-info-cards-stack space-y-5 sm:space-y-6">
 
     <!-- Personal Information -->
-    <div class="mb-5 overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-sm sm:mb-6">
+    <div class="member-info-card overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-sm">
 
         <div class="p-4 sm:p-6">
 
@@ -211,7 +251,7 @@
 
 
     <!-- Contact Information -->
-    <div class="mb-5 overflow-hidden bg-gray-100 shadow-sm sm:mb-6">
+    <div class="member-info-card overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-sm">
 
         <div class="p-4 sm:p-6">
 
@@ -252,7 +292,7 @@
 
 
     <!-- Residence -->
-    <div class="mb-5 overflow-hidden bg-gray-100 shadow-sm sm:mb-6">
+    <div class="member-info-card overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-sm">
 
         <div class="p-4 sm:p-6">
 
@@ -340,7 +380,7 @@
     </div>
 
     <!-- Church Organizational Information -->
-    <div class="mb-5 overflow-hidden bg-gray-100 shadow-sm sm:mb-6">
+    <div class="member-info-card overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-sm">
 
         <div class="p-4 sm:p-6">
 
@@ -445,7 +485,7 @@
 
 
     <!-- Church Associations -->
-    <section class="mb-5 overflow-visible border-0 bg-transparent shadow-none sm:mb-6">
+    <div class="member-info-card overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-sm">
 
         <div class="p-4 sm:p-6">
 
@@ -488,11 +528,11 @@
 
         </div>
 
-    </section>
+    </div>
 
 
     <!-- Leadership Positions -->
-    <section class="mb-5 overflow-visible border-0 bg-transparent shadow-none sm:mb-6">
+    <div class="mb-5 overflow-hidden rounded-xl border border-gray-200 bg-gray-100 shadow-sm sm:mb-6">
 
         <div class="p-4 sm:p-6">
 
@@ -535,7 +575,9 @@
 
         </div>
 
-    </section>
+    </div>
+
+    </div>
 
 </div>
 
