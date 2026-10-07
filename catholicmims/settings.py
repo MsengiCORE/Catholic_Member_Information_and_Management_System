@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "base",
     "members",
     "accounts",
+    "rbac",
 ]
 
 TAILWIND_APP_NAME = "theme"

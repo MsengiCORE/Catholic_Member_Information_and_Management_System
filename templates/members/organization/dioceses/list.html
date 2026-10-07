@@ -1,6 +1,10 @@
 {% extends "base/base_with_menu.html" %}
 
+{% load rbac_tags %}
+
 {% block content %}
+
+{% if request.user|has_rbac_permission:"view_diocese" %}
 
 <div class="min-h-screen bg-gray-200 p-3 sm:p-4 lg:p-6">
     <div class="mx-auto w-full max-w-7xl">
@@ -22,7 +26,7 @@
                 </div>
             </div>
 
-            {% if user.is_superuser %}
+            {% if request.user|has_rbac_permission:"add_diocese" %}
                 <a
                     href="{% url 'members:diocese_create' %}"
                     class="btn btn-primary w-full shrink-0 sm:w-auto"
@@ -69,6 +73,22 @@
 
     </div>
 </div>
+
+{% else %}
+<div class="min-h-screen bg-gray-200 p-6">
+    <div class="mx-auto w-full max-w-xl rounded-2xl border border-error/20 bg-white p-8 text-center shadow-lg">
+        <i class="fa-solid fa-lock mb-4 text-4xl text-error" aria-hidden="true"></i>
+        <h1 class="text-2xl font-bold text-gray-900">Access Denied</h1>
+        <p class="mt-2 text-gray-500">
+            You do not have permission to view Dioceses.
+        </p>
+        <a href="{% url 'members:dashboard' %}" class="btn btn-primary mt-6">
+            <i class="fa-solid fa-arrow-left" aria-hidden="true"></i>
+            Back to Dashboard
+        </a>
+    </div>
+</div>
+{% endif %}
 
 {% endblock %}
 
@@ -196,7 +216,7 @@ document.addEventListener("DOMContentLoaded", function () {
                         <div class="flex flex-wrap justify-end gap-2">
                     `;
 
-                    {% if user.is_superuser or user.profile.role == "diocese_admin" %}
+                    {% if request.user|has_rbac_permission:"change_diocese" %}
 
                     html += `
                         <a
@@ -212,7 +232,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
                     {% endif %}
 
-                    {% if user.is_superuser %}
+                    {% if request.user|has_rbac_permission:"deactivate_diocese" %}
 
                     if (row.is_active) {
 

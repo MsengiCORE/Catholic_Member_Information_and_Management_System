@@ -1,4 +1,4 @@
-{% load static %}
+{% load static rbac_tags %}
 
 <!-- Mobile menu button -->
 <button
@@ -83,233 +83,270 @@
 
         </div>
 
-        {% if request.user.is_superuseror or user.profile.role == "diocese_admin" or user.profile.role == "parish_admin" or request.user.profile.role != "church_member" %}
-            <!-- ORGANIZATION -->
+        <!-- ORGANIZATION -->
+        {% if request.user|has_any_rbac_permission:"view_diocese,view_deanery,view_parish,view_zone,view_scc,view_family" %}
             <div class="mb-6">
 
-                <p class="px-3 mb-2 text-[11px] font-bold
-                        uppercase tracking-wider text-gray-400">
+                <p class="px-3 mb-2 text-[11px] font-bold uppercase tracking-wider text-gray-400">
                     Organization
                 </p>
 
                 <div class="space-y-1">
 
-                    <a
-                        href="{% url 'members:diocese_list' %}"
-                        class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
-                            {% if request.resolver_match.url_name == 'diocese_list' or request.resolver_match.url_name == 'diocese_create' or request.resolver_match.url_name == 'diocese_update' %}
-                                bg-purple-600 text-white
-                            {% else %}
-                                text-gray-600 hover:bg-green-mint hover:text-green-700
-                            {% endif %}"
-                    >
-                        <i class="fa-solid fa-building-columns w-5 text-center shrink-0" aria-hidden="true"></i>
-                        <span class="min-w-0 truncate">Dioceses</span>
-                    </a>
+                    {% if request.user|has_rbac_permission:"view_diocese" %}
+                        <a
+                            href="{% url 'members:diocese_list' %}"
+                            class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
+                                {% if request.resolver_match.url_name == 'diocese_list' or request.resolver_match.url_name == 'diocese_create' or request.resolver_match.url_name == 'diocese_update' %}
+                                    bg-purple-600 text-white
+                                {% else %}
+                                    text-gray-600 hover:bg-green-mint hover:text-green-700
+                                {% endif %}"
+                        >
+                            <i class="fa-solid fa-building-columns w-5 text-center shrink-0" aria-hidden="true"></i>
+                            <span class="min-w-0 truncate">Dioceses</span>
+                        </a>
+                    {% endif %}
+
+                    {% if request.user|has_rbac_permission:"view_deanery" %}
+                        <a
+                            href="{% url 'members:deanery_list' %}"
+                            class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
+                                {% if request.resolver_match.url_name == 'deanery_list' or request.resolver_match.url_name == 'deanery_create' or request.resolver_match.url_name == 'deanery_update' %}
+                                    bg-purple-600 text-white
+                                {% else %}
+                                    text-gray-600 hover:bg-green-mint hover:text-green-700
+                                {% endif %}"
+                        >
+                            <i class="fa-solid fa-sitemap w-5 text-center shrink-0" aria-hidden="true"></i>
+                            <span class="min-w-0 truncate">Deaneries</span>
+                        </a>
+                    {% endif %}
+
+                    {% if request.user|has_rbac_permission:"view_parish" %}
+                        <a
+                            href="{% url 'members:parish_list' %}"
+                            class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
+                                {% if request.resolver_match.url_name == 'parish_list' or request.resolver_match.url_name == 'parish_create' or request.resolver_match.url_name == 'parish_update' %}
+                                    bg-purple-600 text-white
+                                {% else %}
+                                    text-gray-600 hover:bg-green-mint hover:text-green-700
+                                {% endif %}"
+                        >
+                            <i class="fa-solid fa-church w-5 text-center shrink-0" aria-hidden="true"></i>
+                            <span class="min-w-0 truncate">Parishes</span>
+                        </a>
+                    {% endif %}
+
+                    {% if request.user|has_rbac_permission:"view_zone" %}
+                        <a
+                            href="{% url 'members:zone_list' %}"
+                            class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
+                                {% if request.resolver_match.url_name == 'zone_list' or request.resolver_match.url_name == 'zone_create' or request.resolver_match.url_name == 'zone_update' %}
+                                    bg-purple-600 text-white
+                                {% else %}
+                                    text-gray-600 hover:bg-green-mint hover:text-green-700
+                                {% endif %}"
+                        >
+                            <i class="fa-solid fa-location-dot w-5 text-center shrink-0" aria-hidden="true"></i>
+                            <span class="min-w-0 truncate">Zones</span>
+                        </a>
+                    {% endif %}
+
+                    {% if request.user|has_rbac_permission:"view_scc" %}
+                        <a
+                            href="{% url 'members:small_christian_community_list' %}"
+                            class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
+                                {% if request.resolver_match.url_name == 'small_christian_community_list' or request.resolver_match.url_name == 'small_christian_community_create' or request.resolver_match.url_name == 'small_christian_community_update' %}
+                                    bg-purple-600 text-white
+                                {% else %}
+                                    text-gray-600 hover:bg-green-mint hover:text-green-700
+                                {% endif %}"
+                        >
+                            <i class="fa-solid fa-people-group w-5 text-center shrink-0" aria-hidden="true"></i>
+                            <span class="min-w-0 leading-5">Small Christian Communities</span>
+                        </a>
+                    {% endif %}
+
+                    {% if request.user|has_rbac_permission:"view_family" %}
+                        <a
+                            href="{% url 'members:family_list' %}"
+                            class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
+                                {% if request.resolver_match.url_name == 'family_list' or request.resolver_match.url_name == 'family_create' or request.resolver_match.url_name == 'family_update' %}
+                                    bg-purple-600 text-white
+                                {% else %}
+                                    text-gray-600 hover:bg-green-mint hover:text-green-700
+                                {% endif %}"
+                        >
+                            <i class="fa-solid fa-house-user w-5 text-center shrink-0" aria-hidden="true"></i>
+                            <span class="min-w-0 truncate">Families</span>
+                        </a>
+                    {% endif %}
+
+                </div>
+            </div>
+        {% endif %}
 
 
+        <!-- MEMBERS -->
+        {% if request.user|has_any_rbac_permission:"view_member,add_member,change_member" %}
+            <div class="mb-6">
+
+                <p class="px-3 mb-2 text-[11px] font-bold uppercase tracking-wider text-gray-400">
+                    Members
+                </p>
+
+                <div class="space-y-1">
+
+                    {% if request.user|has_rbac_permission:"view_member" %}
+                        <a
+                            href="{% url 'members:member_list' %}"
+                            class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
+                                {% if request.resolver_match.url_name == 'member_list' or request.resolver_match.url_name == 'member_create' or request.resolver_match.url_name == 'member_update' %}
+                                    bg-purple-600 text-white
+                                {% else %}
+                                    text-gray-600 hover:bg-purple-50 hover:text-purple-700
+                                {% endif %}"
+                        >
+                            <i class="fa-solid fa-users w-5 text-center shrink-0" aria-hidden="true"></i>
+                            <span class="min-w-0 truncate">Church Members</span>
+                        </a>
+                    {% endif %}
+
+                    {% if request.user|has_rbac_permission:"add_member" %}
+                        <a
+                            href="{% url 'members:register_new_member' %}"
+                            class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
+                                {% if request.resolver_match.url_name == 'register_new_member' %}
+                                    bg-purple-600 text-white
+                                {% else %}
+                                    text-gray-600 hover:bg-purple-50 hover:text-purple-700
+                                {% endif %}"
+                        >
+                            <i class="fa-solid fa-user-plus w-5 text-center shrink-0" aria-hidden="true"></i>
+                            <span class="min-w-0 truncate">Register Member</span>
+                        </a>
+                    {% endif %}
+
+                </div>
+            </div>
+        {% endif %}
+
+
+        <!-- MANAGEMENT -->
+        {% if request.user|has_any_rbac_permission:"view_association,add_association,change_association,view_leadership,add_leadership,change_leadership" %}
+            <div class="mb-6">
+
+                <p class="px-3 mb-2 text-[11px] font-bold uppercase tracking-wider text-gray-400">
+                    Management
+                </p>
+
+                <div class="space-y-1">
+
+                    {% if request.user|has_rbac_permission:"view_association" %}
+                        <a
+                            href="{% url 'members:association_list' %}"
+                            class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
+                                {% if request.resolver_match.url_name == 'association_list' or request.resolver_match.url_name == 'association_create' or request.resolver_match.url_name == 'association_update' %}
+                                    bg-purple-600 text-white
+                                {% else %}
+                                    text-gray-600 hover:bg-blue-mint hover:text-blue-700
+                                {% endif %}"
+                        >
+                            <i class="fa-solid fa-people-group w-5 text-center shrink-0" aria-hidden="true"></i>
+                            <span class="min-w-0 truncate">Church Associations</span>
+                        </a>
+                    {% endif %}
+
+                    {% if request.user|has_rbac_permission:"view_leadership" %}
+                        <a
+                            href="{% url 'members:leadership_list' %}"
+                            class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
+                                {% if request.resolver_match.url_name == 'leadership_list' or request.resolver_match.url_name == 'leadership_create' or request.resolver_match.url_name == 'leadership_update' %}
+                                    bg-purple-600 text-white
+                                {% else %}
+                                    text-gray-600 hover:bg-blue-mint hover:text-blue-700
+                                {% endif %}"
+                        >
+                            <i class="fa-solid fa-user-tie w-5 text-center shrink-0" aria-hidden="true"></i>
+                            <span class="min-w-0 truncate">Leadership Positions</span>
+                        </a>
+                    {% endif %}
+
+                </div>
+            </div>
+        {% endif %}
+
+
+        <!-- MY CHURCH -->
+        {% if request.user|has_rbac_permission:"view_my_organization" %}
+            <div class="mb-6">
+
+                <p class="px-3 mb-2 text-[11px] font-bold uppercase tracking-wider text-gray-400">
+                    My Church
+                </p>
+
+                <div class="space-y-1">
+
                     <a
-                        href="{% url 'members:deanery_list' %}"
+                        href="{% url 'members:my_organization' %}"
                         class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
-                            {% if request.resolver_match.url_name == 'deanery_list' or request.resolver_match.url_name == 'deanery_create' or request.resolver_match.url_name == 'deanery_update' %}
+                            {% if request.resolver_match.url_name == 'my_organization' %}
                                 bg-purple-600 text-white
                             {% else %}
                                 text-gray-600 hover:bg-green-mint hover:text-green-700
                             {% endif %}"
                     >
                         <i class="fa-solid fa-sitemap w-5 text-center shrink-0" aria-hidden="true"></i>
-                        <span class="min-w-0 truncate">Deaneries</span>
-                    </a>
-
-
-                    <a
-                        href="{% url 'members:parish_list' %}"
-                        class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
-                            {% if request.resolver_match.url_name == 'parish_list' or request.resolver_match.url_name == 'parish_create' or request.resolver_match.url_name == 'parish_update' %}
-                                bg-purple-600 text-white
-                            {% else %}
-                                text-gray-600 hover:bg-green-mint hover:text-green-700
-                            {% endif %}"
-                    >
-                        <i class="fa-solid fa-church w-5 text-center shrink-0" aria-hidden="true"></i>
-                        <span class="min-w-0 truncate">Parishes</span>
-                    </a>
-
-
-                    <a
-                        href="{% url 'members:zone_list' %}"
-                        class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
-                            {% if request.resolver_match.url_name == 'zone_list' or request.resolver_match.url_name == 'zone_create' or request.resolver_match.url_name == 'zone_update' %}
-                                bg-purple-600 text-white
-                            {% else %}
-                                text-gray-600 hover:bg-green-mint hover:text-green-700
-                            {% endif %}"
-                    >
-                        <i class="fa-solid fa-location-dot w-5 text-center shrink-0" aria-hidden="true"></i>
-                        <span class="min-w-0 truncate">Zones</span>
-                    </a>
-
-
-                    <a
-                        href="{% url 'members:small_christian_community_list' %}"
-                        class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
-                            {% if request.resolver_match.url_name == 'small_christian_community_list' or request.resolver_match.url_name == 'small_christian_community_create' or request.resolver_match.url_name == 'small_christian_community_update' %}
-                                bg-purple-600 text-white
-                            {% else %}
-                                text-gray-600 hover:bg-green-mint hover:text-green-700
-                            {% endif %}"
-                    >
-                        <i class="fa-solid fa-people-group w-5 text-center shrink-0" aria-hidden="true"></i>
-                        <span class="min-w-0 leading-5">Small Christian Communities</span>
-                    </a>
-
-
-                    <a
-                        href="{% url 'members:family_list' %}"
-                        class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
-                            {% if request.resolver_match.url_name == 'family_list' or request.resolver_match.url_name == 'family_create' or request.resolver_match.url_name == 'family_update' %}
-                                bg-purple-600 text-white
-                            {% else %}
-                                text-gray-600 hover:bg-green-mint hover:text-green-700
-                            {% endif %}"
-                    >
-                        <i class="fa-solid fa-house-user w-5 text-center shrink-0" aria-hidden="true"></i>
-                        <span class="min-w-0 truncate">Families</span>
+                        <span class="min-w-0 truncate">My Organization</span>
                     </a>
 
                 </div>
-
-            </div>
-
-
-            <!-- MEMBERS -->
-            <div class="mb-6">
-
-                <p class="px-3 mb-2 text-[11px] font-bold
-                        uppercase tracking-wider text-gray-400">
-                    Members
-                </p>
-
-                <div class="space-y-1">
-
-                    <a
-                        href="{% url 'members:member_list' %}"
-                        class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
-                            {% if request.resolver_match.url_name == 'member_list' or request.resolver_match.url_name == 'member_create' or request.resolver_match.url_name == 'member_update' %}
-                                bg-purple-600 text-white
-                            {% else %}
-                                text-gray-600 hover:bg-purple-50 hover:text-purple-700
-                            {% endif %}"
-                    >
-                        <i class="fa-solid fa-users w-5 text-center shrink-0" aria-hidden="true"></i>
-                        <span class="min-w-0 truncate">Church Members</span>
-                    </a>
-
-
-                    <a
-                        href="{% url 'members:register_new_member' %}"
-                        class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
-                            {% if request.resolver_match.url_name == 'register_new_member' %}
-                                bg-purple-600 text-white
-                            {% else %}
-                                text-gray-600 hover:bg-purple-50 hover:text-purple-700
-                            {% endif %}"
-                    >
-                        <i class="fa-solid fa-user-plus w-5 text-center shrink-0" aria-hidden="true"></i>
-                        <span class="min-w-0 truncate">Register Member</span>
-                    </a>
-
-
-                </div>
-
-            </div>
-
-
-            <!-- MANAGEMENT -->
-            <div class="mb-6">
-
-                <p class="px-3 mb-2 text-[11px] font-bold
-                        uppercase tracking-wider text-gray-400">
-                    Management
-                </p>
-
-                <div class="space-y-1">
-
-
-                    <!-- Church Associations -->
-
-                        <a
-                            href="{% url 'members:association_list' %}"
-                            class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
-                            {% if request.resolver_match.url_name == 'association_list' or request.resolver_match.url_name == 'association_create' or request.resolver_match.url_name == 'association_update' %}
-                                bg-purple-600 text-white
-                            {% else %}
-                                text-gray-600 hover:bg-blue-mint hover:text-blue-700
-                            {% endif %}"
-                        >
-                            <i class="fa-solid fa-people-group w-5 text-center shrink-0" aria-hidden="true"></i>
-
-                            <span class="min-w-0 truncate">
-                                Church Associations
-                            </span>
-                        </a>
-
-
-                    <!-- Leadership Positions -->
-
-                        <a
-                            href="{% url 'members:leadership_list' %}"
-                            class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition
-                            {% if request.resolver_match.url_name == 'leadership_list' or request.resolver_match.url_name == 'leadership_create' or request.resolver_match.url_name == 'leadership_update' %}
-                                bg-purple-600 text-white
-                            {% else %}
-                                text-gray-600 hover:bg-blue-mint hover:text-blue-700
-                            {% endif %}"
-                        >
-                            <i class="fa-solid fa-user-tie w-5 text-center shrink-0" aria-hidden="true"></i>
-
-                            <span class="min-w-0 truncate">
-                                Leadership Positions
-                            </span>
-                        </a>
-
-
-                </div>
-
             </div>
         {% endif %}
 
-        {% if request.user.profile.role == "church_member" %}
+
+        <!-- REQUESTS -->
+        {% if request.user|has_any_rbac_permission:"submit_marriage_request,submit_transfer_request,submit_travel_certificate_request,view_marriage_request,view_transfer_request,view_travel_certificate_request" %}
             <div class="mb-6">
 
-                <p class="px-3 mb-2 text-[11px] font-bold
-                        uppercase tracking-wider text-gray-400">
-                    My Church
-
+                <p class="px-3 mb-2 text-[11px] font-bold uppercase tracking-wider text-gray-400">
+                    Requests
                 </p>
 
                 <div class="space-y-1">
 
-                    <a
-                        href="{% url 'members:member_organization' %}"
-                        class="flex min-w-0 items-center gap-3 px-4 py-2.5
-                            rounded-lg transition
-                            {% if request.resolver_match.url_name == 'member_organization' %}
-                                bg-purple-600 text-white
-                            {% else %}
-                                text-gray-600 hover:bg-green-mint hover:text-green-700
-                            {% endif %}"
-                    >
-                        <i
-                            class="fa-solid fa-sitemap w-5 text-center shrink-0"
-                            aria-hidden="true"
-                        ></i>
+                    {% if request.user|has_rbac_permission:"submit_marriage_request" %}
+                        <a
+                            href="#"
+                            class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition text-gray-600 hover:bg-purple-50 hover:text-purple-700"
+                        >
+                            <i class="fa-solid fa-ring w-5 text-center shrink-0" aria-hidden="true"></i>
+                            <span class="min-w-0 truncate">Marriage</span>
+                        </a>
+                    {% endif %}
 
-                        <span>My Organization</span>
-                    </a>
+                    {% if request.user|has_rbac_permission:"submit_transfer_request" %}
+                        <a
+                            href="#"
+                            class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition text-gray-600 hover:bg-blue-mint hover:text-blue-700"
+                        >
+                            <i class="fa-solid fa-right-left w-5 text-center shrink-0" aria-hidden="true"></i>
+                            <span class="min-w-0 truncate">Transfer Request</span>
+                        </a>
+                    {% endif %}
+
+                    {% if request.user|has_rbac_permission:"submit_travel_certificate_request" %}
+                        <a
+                            href="#"
+                            class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition text-gray-600 hover:bg-green-mint hover:text-green-700"
+                        >
+                            <i class="fa-solid fa-file-circle-check w-5 text-center shrink-0" aria-hidden="true"></i>
+                            <span class="min-w-0 truncate">Travel Certificate</span>
+                        </a>
+                    {% endif %}
 
                 </div>
-
             </div>
         {% endif %}
 
@@ -326,12 +363,20 @@
                 {{ user.username }}
             </p>
 
-            {% if user.profile %}
+            {% rbac_user_roles user as user_roles %}
 
+            {% if user.is_superuser %}
                 <p class="text-xs text-gray-500">
-                    {{ user.profile.get_role_display }}
+                    Superuser
                 </p>
-
+            {% elif user_roles %}
+                <div class="mt-0.5 space-y-0.5">
+                    {% for user_role in user_roles %}
+                        <p class="text-xs text-gray-500">
+                            {{ user_role.role__name }}
+                        </p>
+                    {% endfor %}
+                </div>
             {% endif %}
 
         </div>

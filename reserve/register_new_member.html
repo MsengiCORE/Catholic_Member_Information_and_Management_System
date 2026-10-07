@@ -1,0 +1,976 @@
+{% extends "base/base_with_menu.html" %}
+
+{% block title %}Register New Member{% endblock %}
+
+{% block extra_css %}
+<style>
+    /* Responsive Django form controls */
+    #id_digital_offering_number,
+    #id_first_name,
+    #id_middle_name,
+    #id_last_name,
+    #id_date_of_birth,
+    #id_marital_status,
+    #id_baptism_status,
+    #id_diocese,
+    #id_deanery,
+    #id_parish,
+    #id_zone,
+    #id_small_christian_community,
+    #id_family,
+    #id_email,
+    #id_house_number,
+    #id_street,
+    #id_ward,
+    #id_district,
+    #id_region {
+        width: 100%;
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    #id_church_associations,
+    #id_leadership_positions {
+        max-width: 100%;
+    }
+
+    @media (max-width: 639px) {
+        input,
+        select,
+        textarea {
+            max-width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<div class="min-h-full bg-gray-200 px-3 py-6 sm:px-5 sm:py-8 lg:px-8 lg:py-10">
+
+    <div class="mx-auto w-full max-w-5xl">
+
+        <!-- Page Header -->
+        <div class="mx-auto mb-6 w-full max-w-4xl text-center sm:mb-8">
+            <div class="mb-3 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-semibold text-primary sm:text-sm">
+                <i class="fa-solid fa-users" aria-hidden="true"></i>
+                <span>Church Member Management</span>
+            </div>
+
+            <h1 class="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl lg:text-4xl">
+                Register Church Member
+            </h1>
+
+            <p class="mx-auto mt-2 max-w-2xl text-sm leading-6 text-slate-600 sm:text-base">
+                Enter the member's information below to create a new Church member record.
+            </p>
+        </div>
+
+
+        <!-- Form Card -->
+        <div class="mx-auto w-full overflow-hidden rounded-2xl border border-slate-200 bg-gray-100 shadow-lg">
+
+            <!-- Card Header -->
+            <div class="border-b border-slate-200 bg-gray-100 px-4 py-4 sm:px-6 sm:py-5">
+                <h2 class="flex items-center gap-2 text-base font-semibold text-slate-900 sm:text-lg">
+                    <i class="fa-solid fa-id-card text-primary" aria-hidden="true"></i>
+                    <span>Member Information</span>
+                </h2>
+
+                <p class="mt-1 text-sm text-slate-500">
+                    Fields marked with
+                    <span class="ml-0.5 text-red-500" title="Required">*</span>
+                    are required.
+                </p>
+            </div>
+
+
+            <form method="post" novalidate>
+
+                {% csrf_token %}
+
+                <div class="space-y-8 bg-gray-50 p-4 sm:p-6 lg:p-8">
+
+                    <!-- Non-field Errors -->
+                    {% if form.non_field_errors %}
+                        <div class="flex gap-3 rounded-lg border border-red-200 bg-red-50 p-4">
+                            <i class="fa-solid fa-circle-exclamation mt-0.5 text-red-600" aria-hidden="true"></i>
+                            <div>
+                            {% for error in form.non_field_errors %}
+                                <p class="text-sm text-red-700">
+                                    {{ error }}
+                                </p>
+                            {% endfor %}
+                            </div>
+                        </div>
+                    {% endif %}
+
+
+                    <!-- Identification -->
+                    <section>
+
+                        <div class="mb-5">
+                            <h3 class="flex items-center gap-2 text-base font-semibold text-slate-900">
+                                <i class="fa-solid fa-hashtag text-primary" aria-hidden="true"></i>
+                                <span>Identification</span>
+                            </h3>
+
+                            <p class="mt-1 text-sm text-slate-500">
+                                Enter the member's unique digital offering number.
+                            </p>
+                        </div>
+
+                        <div class="max-w-md">
+
+                            <label
+                                for="{{ form.digital_offering_number.id_for_label }}"
+                                class="mb-2 block text-sm font-medium text-slate-700"
+                            >
+                                Digital Offering Number
+                                <span class="ml-0.5 text-red-500" title="Required">*</span>
+                            </label>
+
+                            {{ form.digital_offering_number }}
+
+                            {% for error in form.digital_offering_number.errors %}
+                                <p class="mt-1 text-sm text-red-600">
+                                    {{ error }}
+                                </p>
+                            {% endfor %}
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- Personal Information -->
+                    <section>
+
+                        <div class="mb-5">
+                            <h3 class="flex items-center gap-2 text-base font-semibold text-slate-900">
+                                <i class="fa-solid fa-user text-primary" aria-hidden="true"></i>
+                                <span>Personal Information</span>
+                            </h3>
+
+                            <p class="mt-1 text-sm text-slate-500">
+                                Provide the member's basic personal information.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-5 md:grid-cols-3">
+
+                            <!-- First Name -->
+                            <div>
+                                <label
+                                    for="{{ form.first_name.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    First Name
+                                    <span class="ml-0.5 text-red-500" title="Required">*</span>
+                                </label>
+
+                                {{ form.first_name }}
+
+                                {% for error in form.first_name.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+
+                            <!-- Middle Name -->
+                            <div>
+                                <label
+                                    for="{{ form.middle_name.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    Middle Name
+                                </label>
+
+                                {{ form.middle_name }}
+
+                                {% for error in form.middle_name.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+
+                            <!-- Last Name -->
+                            <div>
+                                <label
+                                    for="{{ form.last_name.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    Last Name
+                                    <span class="ml-0.5 text-red-500" title="Required">*</span>
+                                </label>
+
+                                {{ form.last_name }}
+
+                                {% for error in form.last_name.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+
+                            <!-- Date of Birth -->
+                            <div>
+                                <label
+                                    for="{{ form.date_of_birth.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    Date of Birth
+                                    <span class="ml-0.5 text-red-500" title="Required">*</span>
+                                </label>
+
+                                {{ form.date_of_birth }}
+
+                                {% for error in form.date_of_birth.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+
+                            <!-- Marital Status -->
+                            <div>
+                                <label
+                                    for="{{ form.marital_status.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    Marital Status
+                                    <span class="ml-0.5 text-red-500" title="Required">*</span>
+                                </label>
+
+                                {{ form.marital_status }}
+
+                                {% for error in form.marital_status.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+
+                            <!-- Baptism Status -->
+                            <div>
+                                <label
+                                    for="{{ form.baptism_status.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    Baptism Status
+                                    <span class="ml-0.5 text-red-500" title="Required">*</span>
+                                </label>
+
+                                {{ form.baptism_status }}
+
+                                {% for error in form.baptism_status.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+                        </div>
+
+                    </section>
+
+                    <!-- Church Organizational Information -->
+                    <section>
+
+                        <div class="mb-5">
+                            <h3 class="flex items-center gap-2 text-base font-semibold text-slate-900">
+                                <i class="fa-solid fa-sitemap text-primary" aria-hidden="true"></i>
+                                <span>Church Organizational Information</span>
+                            </h3>
+
+                            <p class="mt-1 text-sm text-slate-500">
+                                Select the member's position within the church organizational
+                                hierarchy.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+
+                            <!-- Diocese -->
+                            <div>
+                                <label
+                                    for="{{ form.diocese.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    Diocese
+                                    <span class="ml-0.5 text-red-500" title="Required">*</span>
+                                </label>
+
+                                {{ form.diocese }}
+
+                                {% for error in form.diocese.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+
+                            <!-- Deanery -->
+                            <div>
+                                <label
+                                    for="{{ form.deanery.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    Deanery
+                                    <span class="ml-0.5 text-red-500" title="Required">*</span>
+                                </label>
+
+                                {{ form.deanery }}
+
+                                {% for error in form.deanery.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+
+                            <!-- Parish -->
+                            <div>
+                                <label
+                                    for="{{ form.parish.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    Parish
+                                    <span class="ml-0.5 text-red-500" title="Required">*</span>
+                                </label>
+
+                                {{ form.parish }}
+
+                                {% for error in form.parish.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+
+                            <!-- Zone -->
+                            <div>
+                                <label
+                                    for="{{ form.zone.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    Zone
+                                    <span class="ml-0.5 text-red-500" title="Required">*</span>
+                                </label>
+
+                                {{ form.zone }}
+
+                                {% for error in form.zone.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+
+                            <!-- Small Christian Community -->
+                            <div>
+                                <label
+                                    for="{{ form.small_christian_community.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    Small Christian Community
+                                    <span class="ml-0.5 text-red-500" title="Required">*</span>
+                                </label>
+
+                                {{ form.small_christian_community }}
+
+                                {% for error in form.small_christian_community.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+
+                            <!-- Family -->
+                            <div>
+                                <label
+                                    for="{{ form.family.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    Family
+                                </label>
+
+                                {{ form.family }}
+
+                                <p class="mt-1 text-xs text-slate-500">
+                                    Enter the family name. If it does not already exist under
+                                    the selected Small Christian Community, it will be created.
+                                </p>
+
+                                {% for error in form.family.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- Contact Information -->
+                    <section>
+
+                        <div class="mb-5">
+                            <h3 class="flex items-center gap-2 text-base font-semibold text-slate-900">
+                                <i class="fa-solid fa-address-book text-primary" aria-hidden="true"></i>
+                                <span>Contact Information</span>
+                            </h3>
+
+                            <p class="mt-1 text-sm text-slate-500">
+                                Provide the member's contact details.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+
+                            <!-- Email -->
+                            <div>
+                                <label
+                                    for="{{ form.email.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    Email Address
+                                </label>
+
+                                {{ form.email }}
+
+                                {% for error in form.email.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- Residence Information -->
+                    <section>
+
+                        <div class="mb-5">
+                            <h3 class="flex items-center gap-2 text-base font-semibold text-slate-900">
+                                <i class="fa-solid fa-house text-primary" aria-hidden="true"></i>
+                                <span>Residence Information</span>
+                            </h3>
+
+                            <p class="mt-1 text-sm text-slate-500">
+                                Provide the member's current residence details.
+                            </p>
+                        </div>
+
+                        <div class="grid grid-cols-1 gap-5 md:grid-cols-2">
+
+                            <!-- House Number -->
+                            <div>
+                                <label
+                                    for="{{ form.house_number.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    House Number
+                                </label>
+
+                                {{ form.house_number }}
+
+                                {% for error in form.house_number.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+
+                            <!-- Street -->
+                            <div>
+                                <label
+                                    for="{{ form.street.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    Street
+                                </label>
+
+                                {{ form.street }}
+
+                                {% for error in form.street.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+
+                            <!-- Ward -->
+                            <div>
+                                <label
+                                    for="{{ form.ward.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    Ward
+                                </label>
+
+                                {{ form.ward }}
+
+                                {% for error in form.ward.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+
+                            <!-- District -->
+                            <div>
+                                <label
+                                    for="{{ form.district.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    District
+                                </label>
+
+                                {{ form.district }}
+
+                                {% for error in form.district.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+
+                            <!-- Region -->
+                            <div class="md:col-span-2">
+                                <label
+                                    for="{{ form.region.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-slate-700"
+                                >
+                                    Region
+                                </label>
+
+                                {{ form.region }}
+
+                                {% for error in form.region.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+
+                        </div>
+
+                    </section>
+
+
+                    <!-- Church Information -->
+                    <section>
+
+                        <div class="mb-5">
+                            <h3 class="flex items-center gap-2 text-base font-semibold text-slate-900">
+                                <i class="fa-solid fa-church text-primary" aria-hidden="true"></i>
+                                <span>Church Information</span>
+                            </h3>
+
+                            <p class="mt-1 text-sm text-slate-500">
+                                Select the member's church associations and
+                                leadership positions.
+                            </p>
+                        </div>
+
+
+                        <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+
+                            <!-- Church Associations -->
+                            <div class="rounded-xl">
+
+                                <label
+                                    class="mb-3 block text-sm font-medium text-slate-700"
+                                >
+                                    Church Associations
+                                </label>
+
+                                <div class="space-y-3 rounded-xl border border-slate-200 p-4">
+
+                                    {% for checkbox in form.church_associations %}
+                                        <label class="flex cursor-pointer items-center gap-3 rounded-lg p-2 hover:bg-gray-300">
+
+                                            {{ checkbox.tag }}
+
+                                            <span class="text-sm text-slate-700">
+                                                {{ checkbox.choice_label }}
+                                            </span>
+
+                                        </label>
+                                    {% empty %}
+                                        <p class="text-sm text-slate-500">
+                                            No church associations are currently available.
+                                        </p>
+                                    {% endfor %}
+
+                                </div>
+
+                                {% for error in form.church_associations.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+
+                            </div>
+
+
+                            <!-- Leadership Positions -->
+                            <div class="rounded-xl">
+
+                                <label
+                                    class="mb-3 block text-sm font-medium text-slate-700"
+                                >
+                                    Leadership Positions
+                                </label>
+
+                                <div class="space-y-3 rounded-xl border border-slate-200 p-4">
+
+                                    {% for checkbox in form.leadership_positions %}
+                                        <label class="flex cursor-pointer items-center gap-3 rounded-lg p-2 hover:bg-gray-300">
+
+                                            {{ checkbox.tag }}
+
+                                            <span class="text-sm text-slate-700">
+                                                {{ checkbox.choice_label }}
+                                            </span>
+
+                                        </label>
+                                    {% empty %}
+                                        <p class="text-sm text-slate-500">
+                                            No leadership positions are currently available.
+                                        </p>
+                                    {% endfor %}
+
+                                </div>
+
+                                {% for error in form.leadership_positions.errors %}
+                                    <p class="mt-1 text-sm text-red-600">
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+                </div>
+
+
+                <!-- Form Actions -->
+                <div class="flex flex-col-reverse gap-3 border-t border-slate-200 bg-gray-100 px-4 py-4 sm:flex-row sm:justify-end sm:px-6 sm:py-5">
+
+                    <a
+                        href="{% url 'members:member_list' %}"
+                        class="btn btn-ghost w-full sm:w-auto"
+                    >
+                        <i class="fa-solid fa-xmark" aria-hidden="true"></i>
+                        Cancel
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary w-full sm:w-auto"
+                    >
+                        <i class="fa-solid fa-user-plus" aria-hidden="true"></i>
+                        Register Member
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const dioceseSelect = document.getElementById("id_diocese");
+    const deanerySelect = document.getElementById("id_deanery");
+    const parishSelect = document.getElementById("id_parish");
+    const zoneSelect = document.getElementById("id_zone");
+    const sccSelect = document.getElementById(
+        "id_small_christian_community"
+    );
+
+
+    function resetSelect(select, placeholder) {
+        select.innerHTML = "";
+
+        const option = document.createElement("option");
+        option.value = "";
+        option.textContent = placeholder;
+
+        select.appendChild(option);
+        select.disabled = true;
+    }
+
+
+    function populateSelect(select, data, placeholder) {
+        select.innerHTML = "";
+
+        const defaultOption = document.createElement("option");
+        defaultOption.value = "";
+        defaultOption.textContent = placeholder;
+
+        select.appendChild(defaultOption);
+
+        data.forEach(function (item) {
+            const option = document.createElement("option");
+
+            option.value = item.id;
+            option.textContent = item.name;
+
+            select.appendChild(option);
+        });
+
+        select.disabled = false;
+    }
+
+
+    // Initial state
+    resetSelect(
+        deanerySelect,
+        "Select Deanery"
+    );
+
+    resetSelect(
+        parishSelect,
+        "Select Parish"
+    );
+
+    resetSelect(
+        zoneSelect,
+        "Select Zone"
+    );
+
+    resetSelect(
+        sccSelect,
+        "Select Small Christian Community"
+    );
+
+
+    // ---------------------------------------------------------
+    // Diocese → Deanery
+    // ---------------------------------------------------------
+
+    dioceseSelect.addEventListener("change", function () {
+
+        const dioceseId = this.value;
+
+        resetSelect(
+            deanerySelect,
+            "Select Deanery"
+        );
+
+        resetSelect(
+            parishSelect,
+            "Select Parish"
+        );
+
+        resetSelect(
+            zoneSelect,
+            "Select Zone"
+        );
+
+        resetSelect(
+            sccSelect,
+            "Select Small Christian Community"
+        );
+
+        if (!dioceseId) {
+            return;
+        }
+
+        fetch(
+            "{% url 'members:get_deaneries' %}?diocese="
+            + encodeURIComponent(dioceseId)
+        )
+        .then(response => response.json())
+        .then(data => {
+
+            populateSelect(
+                deanerySelect,
+                data,
+                "Select Deanery"
+            );
+
+        })
+        .catch(error => {
+            console.error(
+                "Error loading deaneries:",
+                error
+            );
+        });
+    });
+
+
+    // ---------------------------------------------------------
+    // Deanery → Parish
+    // ---------------------------------------------------------
+
+    deanerySelect.addEventListener("change", function () {
+
+        const deaneryId = this.value;
+
+        resetSelect(
+            parishSelect,
+            "Select Parish"
+        );
+
+        resetSelect(
+            zoneSelect,
+            "Select Zone"
+        );
+
+        resetSelect(
+            sccSelect,
+            "Select Small Christian Community"
+        );
+
+        if (!deaneryId) {
+            return;
+        }
+
+        fetch(
+            "{% url 'members:get_parishes' %}?deanery="
+            + encodeURIComponent(deaneryId)
+        )
+        .then(response => response.json())
+        .then(data => {
+
+            populateSelect(
+                parishSelect,
+                data,
+                "Select Parish"
+            );
+
+        })
+        .catch(error => {
+            console.error(
+                "Error loading parishes:",
+                error
+            );
+        });
+    });
+
+
+    // ---------------------------------------------------------
+    // Parish → Zone
+    // ---------------------------------------------------------
+
+    parishSelect.addEventListener("change", function () {
+
+        const parishId = this.value;
+
+        resetSelect(
+            zoneSelect,
+            "Select Zone"
+        );
+
+        resetSelect(
+            sccSelect,
+            "Select Small Christian Community"
+        );
+
+        if (!parishId) {
+            return;
+        }
+
+        fetch(
+            "{% url 'members:get_zones' %}?parish="
+            + encodeURIComponent(parishId)
+        )
+        .then(response => response.json())
+        .then(data => {
+
+            populateSelect(
+                zoneSelect,
+                data,
+                "Select Zone"
+            );
+
+        })
+        .catch(error => {
+            console.error(
+                "Error loading zones:",
+                error
+            );
+        });
+    });
+
+
+    // ---------------------------------------------------------
+    // Zone → Small Christian Community
+    // ---------------------------------------------------------
+
+    zoneSelect.addEventListener("change", function () {
+
+        const zoneId = this.value;
+
+        resetSelect(
+            sccSelect,
+            "Select Small Christian Community"
+        );
+
+        if (!zoneId) {
+            return;
+        }
+
+        fetch(
+            "{% url 'members:get_small_christian_communities' %}?zone="
+            + encodeURIComponent(zoneId)
+        )
+        .then(response => response.json())
+        .then(data => {
+
+            populateSelect(
+                sccSelect,
+                data,
+                "Select Small Christian Community"
+            );
+
+        })
+        .catch(error => {
+            console.error(
+                "Error loading Small Christian Communities:",
+                error
+            );
+        });
+    });
+
+});
+</script>
+
+{% endblock %}

@@ -2859,6 +2859,398 @@ VALUES
 )
 ON CONFLICT (name) DO NOTHING;
 
+
+INSERT INTO rbac_role
+    (id, name, code, description, is_active, created_at, updated_at)
+VALUES
+    (
+        gen_random_uuid(),
+        'Diocese Administrator',
+        'diocese_admin',
+        'Administrator responsible for a Diocese and its organizational hierarchy.',
+        TRUE,
+        NOW(),
+        NOW()
+    ),
+    (
+        gen_random_uuid(),
+        'Parish Administrator',
+        'parish_admin',
+        'Administrator responsible for a Parish and its organizational hierarchy.',
+        TRUE,
+        NOW(),
+        NOW()
+    ),
+    (
+        gen_random_uuid(),
+        'SCC / Community Leader',
+        'scc_leader',
+        'Leader responsible for a Small Christian Community and its members.',
+        TRUE,
+        NOW(),
+        NOW()
+    ),
+    (
+        gen_random_uuid(),
+        'Church Member',
+        'church_member',
+        'Registered church member with personal, organizational and request access.',
+        TRUE,
+        NOW(),
+        NOW()
+    )
+ON CONFLICT (code) DO NOTHING;
+
+
+INSERT INTO rbac_permission
+    (id, name, code, description, is_active, created_at, updated_at)
+VALUES
+
+    -- =====================================================
+    -- DIOCESE
+    -- =====================================================
+
+    (gen_random_uuid(), 'View Diocese', 'view_diocese',
+    'View Diocese information.', TRUE, NOW(), NOW()),
+
+    (gen_random_uuid(), 'Add Diocese', 'add_diocese',
+    'Create a Diocese.', TRUE, NOW(), NOW()),
+
+    (gen_random_uuid(), 'Change Diocese', 'change_diocese',
+    'Update Diocese information.', TRUE, NOW(), NOW()),
+
+    (gen_random_uuid(), 'Deactivate Diocese', 'deactivate_diocese',
+    'Activate or deactivate a Diocese.', TRUE, NOW(), NOW()),
+
+
+    -- =====================================================
+    -- DEANERY
+    -- =====================================================
+
+    (gen_random_uuid(), 'View Deanery', 'view_deanery',
+    'View Deanery information.', TRUE, NOW(), NOW()),
+
+    (gen_random_uuid(), 'Add Deanery', 'add_deanery',
+    'Create a Deanery.', TRUE, NOW(), NOW()),
+
+    (gen_random_uuid(), 'Change Deanery', 'change_deanery',
+    'Update Deanery information.', TRUE, NOW(), NOW()),
+
+
+    -- =====================================================
+    -- PARISH
+    -- =====================================================
+
+    (gen_random_uuid(), 'View Parish', 'view_parish',
+    'View Parish information.', TRUE, NOW(), NOW()),
+
+    (gen_random_uuid(), 'Add Parish', 'add_parish',
+    'Create a Parish.', TRUE, NOW(), NOW()),
+
+    (gen_random_uuid(), 'Change Parish', 'change_parish',
+    'Update Parish information.', TRUE, NOW(), NOW()),
+
+
+    -- =====================================================
+    -- ZONE
+    -- =====================================================
+
+    (gen_random_uuid(), 'View Zone', 'view_zone',
+    'View Zone information.', TRUE, NOW(), NOW()),
+
+    (gen_random_uuid(), 'Add Zone', 'add_zone',
+    'Create a Zone.', TRUE, NOW(), NOW()),
+
+    (gen_random_uuid(), 'Change Zone', 'change_zone',
+    'Update Zone information.', TRUE, NOW(), NOW()),
+
+
+    -- =====================================================
+    -- SCC
+    -- =====================================================
+
+    (gen_random_uuid(), 'View SCC', 'view_scc',
+    'View Small Christian Community information.', TRUE, NOW(), NOW()),
+
+    (gen_random_uuid(), 'Add SCC', 'add_scc',
+    'Create a Small Christian Community.', TRUE, NOW(), NOW()),
+
+    (gen_random_uuid(), 'Change SCC', 'change_scc',
+    'Update Small Christian Community information.', TRUE, NOW(), NOW()),
+
+
+    -- =====================================================
+    -- FAMILY
+    -- =====================================================
+
+    (gen_random_uuid(), 'View Family', 'view_family',
+    'View Family information.', TRUE, NOW(), NOW()),
+
+    (gen_random_uuid(), 'Add Family', 'add_family',
+    'Create a Family.', TRUE, NOW(), NOW()),
+
+    (gen_random_uuid(), 'Change Family', 'change_family',
+    'Update Family information.', TRUE, NOW(), NOW()),
+
+
+    -- =====================================================
+    -- CHURCH MEMBERS
+    -- =====================================================
+
+    (gen_random_uuid(), 'View Church Member', 'view_member',
+    'View church member information.', TRUE, NOW(), NOW()),
+
+    (gen_random_uuid(), 'Add Church Member', 'add_member',
+    'Register a church member.', TRUE, NOW(), NOW()),
+
+    (gen_random_uuid(), 'Change Church Member', 'change_member',
+    'Update church member information.', TRUE, NOW(), NOW()),
+
+
+    -- =====================================================
+    -- CHURCH ASSOCIATIONS
+    -- =====================================================
+
+    (gen_random_uuid(), 'View Church Association', 'view_association',
+    'View church associations.', TRUE, NOW(), NOW()),
+
+    (gen_random_uuid(), 'Add Church Association', 'add_association',
+    'Create a church association.', TRUE, NOW(), NOW()),
+
+    (gen_random_uuid(), 'Change Church Association', 'change_association',
+    'Update a church association.', TRUE, NOW(), NOW()),
+
+
+    -- =====================================================
+    -- LEADERSHIP
+    -- =====================================================
+
+    (gen_random_uuid(), 'View Leadership Position', 'view_leadership',
+    'View leadership positions.', TRUE, NOW(), NOW()),
+
+    (gen_random_uuid(), 'Add Leadership Position', 'add_leadership',
+    'Create a leadership position.', TRUE, NOW(), NOW()),
+
+    (gen_random_uuid(), 'Change Leadership Position', 'change_leadership',
+    'Update a leadership position.', TRUE, NOW(), NOW()),
+
+
+    -- =====================================================
+    -- MEMBER REQUESTS
+    -- =====================================================
+
+    (gen_random_uuid(), 'Submit Marriage Request', 'submit_marriage_request',
+    'Submit a marriage request.', TRUE, NOW(), NOW()),
+
+    (gen_random_uuid(), 'View Marriage Request', 'view_marriage_request',
+    'View marriage requests.', TRUE, NOW(), NOW()),
+
+    (gen_random_uuid(), 'Review Marriage Request', 'review_marriage_request',
+    'Review marriage requests.', TRUE, NOW(), NOW()),
+
+
+    (gen_random_uuid(), 'Submit Transfer Request', 'submit_transfer_request',
+    'Submit a request to transfer to another church area.', TRUE, NOW(), NOW()),
+
+    (gen_random_uuid(), 'View Transfer Request', 'view_transfer_request',
+    'View transfer requests.', TRUE, NOW(), NOW()),
+
+    (gen_random_uuid(), 'Review Transfer Request', 'review_transfer_request',
+    'Review transfer requests.', TRUE, NOW(), NOW()),
+
+
+    (gen_random_uuid(), 'Submit Travel Certificate Request',
+    'submit_travel_certificate_request',
+    'Request a travel certificate.', TRUE, NOW(), NOW()),
+
+    (gen_random_uuid(), 'View Travel Certificate Request',
+    'view_travel_certificate_request',
+    'View travel certificate requests.', TRUE, NOW(), NOW()),
+
+    (gen_random_uuid(), 'Approve Travel Certificate Request',
+    'approve_travel_certificate_request',
+    'Approve or reject travel certificate requests.', TRUE, NOW(), NOW())
+
+ON CONFLICT (code) DO NOTHING;
+
+
+INSERT INTO rbac_rolepermission
+    (id, role_id, permission_id, created_at)
+SELECT
+    gen_random_uuid(),
+    r.id,
+    p.id,
+    NOW()
+FROM rbac_role r
+CROSS JOIN rbac_permission p
+WHERE r.code = 'church_member'
+AND p.code IN (
+    'view_diocese',
+    'view_deanery',
+    'view_parish',
+    'view_zone',
+    'view_scc',
+    'view_family',
+    'view_member',
+    'submit_marriage_request',
+    'view_marriage_request',
+    'submit_transfer_request',
+    'view_transfer_request',
+    'submit_travel_certificate_request',
+    'view_travel_certificate_request'
+)
+ON CONFLICT DO NOTHING;
+
+
+INSERT INTO rbac_rolepermission
+    (id, role_id, permission_id, created_at)
+SELECT
+    gen_random_uuid(),
+    r.id,
+    p.id,
+    NOW()
+FROM rbac_role r
+CROSS JOIN rbac_permission p
+WHERE r.code = 'diocese_admin'
+AND p.code IN (
+    'view_diocese',
+    'add_diocese',
+    'change_diocese',
+    'deactivate_diocese',
+
+    'view_deanery',
+    'add_deanery',
+    'change_deanery',
+
+    'view_parish',
+    'add_parish',
+    'change_parish',
+
+    'view_zone',
+    'add_zone',
+    'change_zone',
+
+    'view_scc',
+    'add_scc',
+    'change_scc',
+
+    'view_family',
+    'add_family',
+    'change_family',
+
+    'view_member',
+    'add_member',
+    'change_member',
+
+    'view_association',
+    'add_association',
+    'change_association',
+
+    'view_leadership',
+    'add_leadership',
+    'change_leadership',
+
+    'view_marriage_request',
+    'review_marriage_request',
+
+    'view_transfer_request',
+    'review_transfer_request',
+
+    'view_travel_certificate_request',
+    'approve_travel_certificate_request'
+)
+ON CONFLICT DO NOTHING;
+
+INSERT INTO rbac_rolepermission
+    (id, role_id, permission_id, created_at)
+SELECT
+    gen_random_uuid(),
+    r.id,
+    p.id,
+    NOW()
+FROM rbac_role r
+CROSS JOIN rbac_permission p
+WHERE r.code = 'parish_admin'
+AND p.code IN (
+    'view_diocese',
+
+    'view_deanery',
+
+    'view_parish',
+    'change_parish',
+
+    'view_zone',
+    'add_zone',
+    'change_zone',
+
+    'view_scc',
+    'add_scc',
+    'change_scc',
+
+    'view_family',
+    'add_family',
+    'change_family',
+
+    'view_member',
+    'add_member',
+    'change_member',
+
+    'view_association',
+
+    'view_leadership',
+
+    'view_marriage_request',
+    'review_marriage_request',
+
+    'view_transfer_request',
+    'review_transfer_request',
+
+    'view_travel_certificate_request',
+    'approve_travel_certificate_request'
+)
+ON CONFLICT DO NOTHING;
+
+
+INSERT INTO rbac_rolepermission
+    (id, role_id, permission_id, created_at)
+SELECT
+    gen_random_uuid(),
+    r.id,
+    p.id,
+    NOW()
+FROM rbac_role r
+CROSS JOIN rbac_permission p
+WHERE r.code = 'scc_leader'
+AND p.code IN (
+    'view_diocese',
+    'view_deanery',
+    'view_parish',
+    'view_zone',
+    'view_scc',
+
+    'view_family',
+    'add_family',
+    'change_family',
+
+    'view_member',
+    'add_member',
+    'change_member',
+
+    'view_association',
+
+    'view_leadership',
+
+    'view_marriage_request',
+    'review_marriage_request',
+
+    'view_transfer_request',
+    'review_transfer_request',
+
+    'view_travel_certificate_request',
+    'approve_travel_certificate_request'
+)
+ON CONFLICT DO NOTHING;
+
 -- ============================================================
 -- FINAL CCMIMS ORGANIZATION DATA VERIFICATION
 -- ============================================================

@@ -1,0 +1,172 @@
+{% extends "base/base_with_menu.html" %}
+
+{% block title %}My Organization{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-200 p-3 sm:p-4 lg:p-6">
+    <div class="mx-auto w-full max-w-7xl space-y-5 sm:space-y-6">
+
+        <!-- Header -->
+        <div class="rounded-2xl border border-gray-200 bg-gray-100 p-4 shadow-sm sm:p-6">
+            <div class="flex items-start gap-3 sm:gap-4">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-purple-100 text-purple-700 sm:h-12 sm:w-12">
+                    <i class="fa-solid fa-sitemap text-lg sm:text-xl" aria-hidden="true"></i>
+                </div>
+
+                <div class="min-w-0">
+                    <h1 class="text-xl font-bold text-gray-900 sm:text-2xl">
+                        My Organization
+                    </h1>
+                    <p class="mt-1 text-sm leading-6 text-gray-500">
+                        Your position within the Catholic Church organizational hierarchy.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        {% if member %}
+            <!-- Member summary -->
+            <div class="rounded-2xl border border-gray-200 bg-gray-100 p-4 shadow-sm sm:p-6">
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                    <div class="min-w-0">
+                        <p class="text-xs font-semibold uppercase tracking-wider text-gray-400">
+                            Church Member
+                        </p>
+                        <h2 class="mt-1 wrap-break-word text-lg font-bold text-gray-900 sm:text-xl">
+                            {{ member.first_name }}{% if member.middle_name %} {{ member.middle_name }}{% endif %} {{ member.last_name }}
+                        </h2>
+                    </div>
+
+                    <div class="inline-flex w-fit items-center gap-2 rounded-full bg-green-mint px-3 py-2 text-sm font-semibold text-green-700">
+                        <i class="fa-solid fa-eye" aria-hidden="true"></i>
+                        <span>View Only</span>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Hierarchy -->
+        <div class="rounded-2xl border border-gray-200 bg-gray-100 p-4 shadow-sm sm:p-6">
+            <div class="mb-5 flex items-center gap-3">
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-blue-mint text-blue-700">
+                    <i class="fa-solid fa-diagram-project" aria-hidden="true"></i>
+                </div>
+                <div class="min-w-0">
+                    <h2 class="text-lg font-bold text-gray-900 sm:text-xl">My Church Hierarchy</h2>
+                    <p class="text-sm text-gray-500">The organization you belong to.</p>
+                </div>
+            </div>
+
+            {% if scc %}
+                <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+                    <!-- Diocese -->
+                    <div class="rounded-xl border border-purple-200 bg-purple-mint p-4">
+                        <div class="mb-2 flex items-center gap-2 text-purple-700">
+                            <i class="fa-solid fa-building-columns" aria-hidden="true"></i>
+                            <span class="text-xs font-bold uppercase tracking-wider">Diocese</span>
+                        </div>
+                        <p class="wrap-break-word font-semibold text-gray-900">{{ diocese.name }}</p>
+                    </div>
+
+                    <!-- Deanery -->
+                    <div class="rounded-xl border border-blue-200 bg-blue-mint p-4">
+                        <div class="mb-2 flex items-center gap-2 text-blue-700">
+                            <i class="fa-solid fa-sitemap" aria-hidden="true"></i>
+                            <span class="text-xs font-bold uppercase tracking-wider">Deanery</span>
+                        </div>
+                        <p class="wrap-break-word font-semibold text-gray-900">{{ deanery.name }}</p>
+                    </div>
+
+                    <!-- Parish -->
+                    <div class="rounded-xl border border-green-200 bg-green-mint p-4">
+                        <div class="mb-2 flex items-center gap-2 text-green-700">
+                            <i class="fa-solid fa-church" aria-hidden="true"></i>
+                            <span class="text-xs font-bold uppercase tracking-wider">Parish</span>
+                        </div>
+                        <p class="wrap-break-word font-semibold text-gray-900">{{ parish.name }}</p>
+                    </div>
+
+                    <!-- Zone -->
+                    <div class="rounded-xl border border-blue-200 bg-blue-mint p-4">
+                        <div class="mb-2 flex items-center gap-2 text-blue-700">
+                            <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+                            <span class="text-xs font-bold uppercase tracking-wider">Zone</span>
+                        </div>
+                        <p class="wrap-break-word font-semibold text-gray-900">{{ zone.name }}</p>
+                    </div>
+
+                    <!-- SCC -->
+                    <div class="rounded-xl border border-green-200 bg-green-mint p-4 sm:col-span-2 lg:col-span-2">
+                        <div class="mb-2 flex items-center gap-2 text-green-700">
+                            <i class="fa-solid fa-people-group" aria-hidden="true"></i>
+                            <span class="text-xs font-bold uppercase tracking-wider">Small Christian Community</span>
+                        </div>
+                        <p class="wrap-break-word font-semibold text-gray-900">{{ scc.name }}</p>
+                    </div>
+                </div>
+            {% else %}
+                <div class="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800" role="alert">
+                    <div class="flex items-start gap-2">
+                        <i class="fa-solid fa-circle-exclamation mt-0.5 shrink-0" aria-hidden="true"></i>
+                        <p>
+                            Your Church Member account is not currently assigned to a Small Christian Community.
+                        </p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+
+        <!-- Families in SCC -->
+        <div class="rounded-2xl border border-gray-200 bg-gray-100 shadow-sm">
+            <div class="border-b border-gray-200 p-4 sm:p-6">
+                <div class="flex items-start gap-3">
+                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-green-mint text-green-700">
+                        <i class="fa-solid fa-house-user" aria-hidden="true"></i>
+                    </div>
+                    <div class="min-w-0">
+                        <h2 class="text-lg font-bold text-gray-900 sm:text-xl">Families in My SCC</h2>
+                        <p class="mt-1 text-sm text-gray-500">
+                            Families registered under your Small Christian Community.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            {% if families %}
+                <div class="overflow-x-auto">
+                    <div class="min-w-xl">
+                        <div class="grid grid-cols-[auto_1fr] border-b border-gray-200 bg-gray-300 px-4 py-3 text-xs font-bold uppercase tracking-wider text-gray-500 sm:px-6">
+                            <span class="pr-6">#</span>
+                            <span>Family Name</span>
+                        </div>
+
+                        {% for family in families %}
+                            <div class="grid grid-cols-[auto_1fr] items-center border-b border-gray-100 px-4 py-3 last:border-b-0 hover:bg-gray-300 sm:px-6">
+                                <span class="pr-6 text-sm text-gray-400">{{ forloop.counter }}</span>
+                                <div class="flex min-w-0 items-center gap-2">
+                                    <i class="fa-solid fa-house text-green-600" aria-hidden="true"></i>
+                                    <span class="wrap-break-word text-sm font-medium text-gray-800 sm:text-base">
+                                        {{ family.name }}
+                                    </span>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="p-6 text-center">
+                    <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-400">
+                        <i class="fa-solid fa-house-circle-exclamation text-lg" aria-hidden="true"></i>
+                    </div>
+                    <p class="mt-3 text-sm font-medium text-gray-700">No families found</p>
+                    <p class="mt-1 text-sm text-gray-500">
+                        There are currently no active families recorded under your SCC.
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+{% endblock %}
