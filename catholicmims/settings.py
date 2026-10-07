@@ -44,10 +44,11 @@ INSTALLED_APPS = [
     'theme',
 
     # Local apps
-    "base",
-    "members",
-    "accounts",
-    "rbac",
+    "base.apps.BaseConfig",
+    "accounts.apps.AccountsConfig",
+    "rbac.apps.RbacConfig",
+    "members.apps.MembersConfig",
+    "member_requests.apps.MemberRequestsConfig",
 ]
 
 TAILWIND_APP_NAME = "theme"

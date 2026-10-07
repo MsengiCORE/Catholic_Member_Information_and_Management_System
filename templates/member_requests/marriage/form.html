@@ -1,0 +1,404 @@
+{% extends "base/base_with_menu.html" %}
+{% load rbac_tags %}
+
+{% block title %}New Marriage Request{% endblock %}
+
+{% block content %}
+
+{% if request.user|has_rbac_permission:"submit_marriage_request" %}
+
+<div class="min-h-screen bg-gray-200 p-3 sm:p-4 lg:p-6">
+
+    <div class="mx-auto w-full max-w-4xl">
+
+        <!-- Header -->
+        <div class="mb-6">
+
+            <div class="flex items-center gap-3">
+
+                <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-pink-100 text-pink-600">
+                    <i class="fa-solid fa-ring text-lg" aria-hidden="true"></i>
+                </div>
+
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900 sm:text-3xl">
+                        Marriage Request
+                    </h1>
+
+                    <p class="mt-1 text-sm text-gray-500">
+                        Submit a request for marriage processing.
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Form -->
+        <div class="rounded-2xl border border-gray-200 bg-gray-100 shadow-sm">
+
+            <form method="post" novalidate>
+
+                {% csrf_token %}
+
+
+                {% if form.non_field_errors %}
+                    <div class="mx-4 mt-4 alert alert-error sm:mx-6">
+                        <i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i>
+
+                        <div>
+                            {% for error in form.non_field_errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+
+
+                <!-- Proposed Spouse -->
+                <div class="border-b border-gray-200 p-4 sm:p-6">
+
+                    <div class="mb-5">
+                        <h2 class="text-lg font-semibold text-gray-900">
+                            Proposed Spouse
+                        </h2>
+
+                        <p class="mt-1 text-sm text-gray-500">
+                            Provide information about the person you intend to marry.
+                        </p>
+                    </div>
+
+
+                    <div class="grid grid-cols-1 gap-5">
+
+                        <div>
+
+                            <label
+                                for="{{ form.proposed_spouse_is_catholic.id_for_label }}"
+                                class="mb-2 block text-sm font-medium text-gray-700"
+                            >
+                                {{ form.proposed_spouse_is_catholic.label }}
+                                <span class="text-error">*</span>
+                            </label>
+
+                            {{ form.proposed_spouse_is_catholic }}
+
+                            {% if form.proposed_spouse_is_catholic.errors %}
+                                <p class="mt-1 text-sm text-error">
+                                    {{ form.proposed_spouse_is_catholic.errors.0 }}
+                                </p>
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Catholic spouse -->
+                    <div
+                        id="catholicSpouseSection"
+                        class="mt-5 hidden rounded-xl border border-purple-200 bg-purple-50 p-4"
+                    >
+
+                        <div class="mb-4 flex items-center gap-2">
+
+                            <i class="fa-solid fa-church text-purple-600" aria-hidden="true"></i>
+
+                            <h3 class="font-semibold text-purple-900">
+                                Catholic Spouse Information
+                            </h3>
+
+                        </div>
+
+
+                        <div>
+
+                            <label
+                                for="{{ form.proposed_spouse_digital_offering_number.id_for_label }}"
+                                class="mb-2 block text-sm font-medium text-gray-700"
+                            >
+                                {{ form.proposed_spouse_digital_offering_number.label }}
+                                <span class="text-error">*</span>
+                            </label>
+
+                            {{ form.proposed_spouse_digital_offering_number }}
+
+                            {% if form.proposed_spouse_digital_offering_number.errors %}
+                                <p class="mt-1 text-sm text-error">
+                                    {{ form.proposed_spouse_digital_offering_number.errors.0 }}
+                                </p>
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Non-Catholic spouse -->
+                    <div
+                        id="nonCatholicSpouseSection"
+                        class="mt-5 hidden rounded-xl border border-blue-200 bg-blue-50 p-4"
+                    >
+
+                        <div class="mb-4 flex items-center gap-2">
+
+                            <i class="fa-solid fa-user text-blue-600" aria-hidden="true"></i>
+
+                            <h3 class="font-semibold text-blue-900">
+                                Spouse Information
+                            </h3>
+
+                        </div>
+
+
+                        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+
+                            <div>
+
+                                <label
+                                    for="{{ form.proposed_spouse_first_name.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-gray-700"
+                                >
+                                    {{ form.proposed_spouse_first_name.label }}
+                                    <span class="text-error">*</span>
+                                </label>
+
+                                {{ form.proposed_spouse_first_name }}
+
+                                {% if form.proposed_spouse_first_name.errors %}
+                                    <p class="mt-1 text-sm text-error">
+                                        {{ form.proposed_spouse_first_name.errors.0 }}
+                                    </p>
+                                {% endif %}
+
+                            </div>
+
+
+                            <div>
+
+                                <label
+                                    for="{{ form.proposed_spouse_middle_name.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-gray-700"
+                                >
+                                    {{ form.proposed_spouse_middle_name.label }}
+                                </label>
+
+                                {{ form.proposed_spouse_middle_name }}
+
+                            </div>
+
+
+                            <div>
+
+                                <label
+                                    for="{{ form.proposed_spouse_last_name.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-gray-700"
+                                >
+                                    {{ form.proposed_spouse_last_name.label }}
+                                    <span class="text-error">*</span>
+                                </label>
+
+                                {{ form.proposed_spouse_last_name }}
+
+                                {% if form.proposed_spouse_last_name.errors %}
+                                    <p class="mt-1 text-sm text-error">
+                                        {{ form.proposed_spouse_last_name.errors.0 }}
+                                    </p>
+                                {% endif %}
+
+                            </div>
+
+
+                            <div>
+
+                                <label
+                                    for="{{ form.proposed_spouse_phone_number.id_for_label }}"
+                                    class="mb-2 block text-sm font-medium text-gray-700"
+                                >
+                                    {{ form.proposed_spouse_phone_number.label }}
+                                    <span class="text-error">*</span>
+                                </label>
+
+                                {{ form.proposed_spouse_phone_number }}
+
+                                {% if form.proposed_spouse_phone_number.errors %}
+                                    <p class="mt-1 text-sm text-error">
+                                        {{ form.proposed_spouse_phone_number.errors.0 }}
+                                    </p>
+                                {% endif %}
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Marriage Details -->
+                <div class="border-b border-gray-200 p-4 sm:p-6">
+
+                    <div class="mb-5">
+
+                        <h2 class="text-lg font-semibold text-gray-900">
+                            Marriage Details
+                        </h2>
+
+                        <p class="mt-1 text-sm text-gray-500">
+                            Provide the proposed marriage date and any additional information.
+                        </p>
+
+                    </div>
+
+
+                    <div class="grid grid-cols-1 gap-5">
+
+                        <div>
+
+                            <label
+                                for="{{ form.proposed_marriage_date.id_for_label }}"
+                                class="mb-2 block text-sm font-medium text-gray-700"
+                            >
+                                {{ form.proposed_marriage_date.label }}
+                            </label>
+
+                            {{ form.proposed_marriage_date }}
+
+                            {% if form.proposed_marriage_date.errors %}
+                                <p class="mt-1 text-sm text-error">
+                                    {{ form.proposed_marriage_date.errors.0 }}
+                                </p>
+                            {% endif %}
+
+                        </div>
+
+
+                        <div>
+
+                            <label
+                                for="{{ form.reason.id_for_label }}"
+                                class="mb-2 block text-sm font-medium text-gray-700"
+                            >
+                                {{ form.reason.label }}
+                            </label>
+
+                            {{ form.reason }}
+
+                            {% if form.reason.errors %}
+                                <p class="mt-1 text-sm text-error">
+                                    {{ form.reason.errors.0 }}
+                                </p>
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Actions -->
+                <div class="flex flex-col-reverse gap-3 p-4 sm:flex-row sm:justify-end sm:p-6">
+
+                    <a
+                        href="{% url 'member_requests:marriage_list' %}"
+                        class="btn btn-ghost w-full sm:w-auto"
+                    >
+                        <i class="fa-solid fa-xmark mr-2" aria-hidden="true"></i>
+                        Cancel
+                    </a>
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary w-full sm:w-auto"
+                    >
+                        <i class="fa-solid fa-paper-plane mr-2" aria-hidden="true"></i>
+                        Submit Marriage Request
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const catholicField =
+        document.getElementById(
+            "{{ form.proposed_spouse_is_catholic.id_for_label }}"
+        );
+
+    const catholicSection =
+        document.getElementById("catholicSpouseSection");
+
+    const nonCatholicSection =
+        document.getElementById("nonCatholicSpouseSection");
+
+
+    function updateSpouseFields() {
+
+        const value = catholicField.value;
+
+        catholicSection.classList.add("hidden");
+        nonCatholicSection.classList.add("hidden");
+
+        if (value === "True" || value === "true") {
+            catholicSection.classList.remove("hidden");
+        }
+
+        if (value === "False" || value === "false") {
+            nonCatholicSection.classList.remove("hidden");
+        }
+    }
+
+
+    catholicField.addEventListener(
+        "change",
+        updateSpouseFields
+    );
+
+    updateSpouseFields();
+
+});
+</script>
+
+{% else %}
+
+<div class="min-h-screen bg-gray-200 p-6">
+
+    <div class="mx-auto w-full max-w-xl rounded-2xl border border-error/20 bg-gray-100 p-8 text-center shadow-lg">
+
+        <i class="fa-solid fa-lock mb-4 text-4xl text-error" aria-hidden="true"></i>
+
+        <h1 class="text-2xl font-bold text-gray-900">
+            Access Denied
+        </h1>
+
+        <p class="mt-2 text-gray-500">
+            You do not have permission to submit marriage requests.
+        </p>
+
+        <a
+            href="{% url 'members:dashboard' %}"
+            class="btn btn-primary mt-6"
+        >
+            <i class="fa-solid fa-arrow-left mr-2" aria-hidden="true"></i>
+            Back to Dashboard
+        </a>
+
+    </div>
+
+</div>
+
+{% endif %}
+
+{% endblock %}

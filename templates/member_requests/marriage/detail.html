@@ -1,0 +1,564 @@
+{% extends "base/base_with_menu.html" %}
+{% load rbac_tags %}
+
+{% block title %}Marriage Request{% endblock %}
+
+{% block content %}
+
+{% if request.user|has_rbac_permission:"view_marriage_request" %}
+
+<div class="min-h-screen bg-gray-200 p-3 sm:p-4 lg:p-6">
+
+    <div class="mx-auto w-full max-w-5xl">
+
+        <!-- Header -->
+        <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+
+            <div class="flex items-center gap-3">
+
+                <div class="flex h-11 w-11 items-center justify-center rounded-xl bg-pink-100 text-pink-600">
+                    <i class="fa-solid fa-ring text-lg" aria-hidden="true"></i>
+                </div>
+
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">
+                        Marriage Request
+                    </h1>
+
+                    <p class="mt-1 text-sm text-gray-500">
+                        Request details and review information.
+                    </p>
+                </div>
+
+            </div>
+
+            <a
+                href="{% url 'member_requests:marriage_list' %}"
+                class="btn btn-ghost w-full sm:w-auto"
+            >
+                <i class="fa-solid fa-arrow-left mr-2" aria-hidden="true"></i>
+                Back
+            </a>
+
+        </div>
+
+
+        <!-- Status -->
+        <div class="mb-6 rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+
+            <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+
+                <div>
+                    <p class="text-xs font-medium uppercase tracking-wide text-gray-400">
+                        Request Status
+                    </p>
+
+                    <div class="mt-2">
+
+                        {% if marriage_request.status == "pending" %}
+
+                            <span class="badge badge-warning gap-2">
+                                <i class="fa-solid fa-clock" aria-hidden="true"></i>
+                                Pending
+                            </span>
+
+                        {% elif marriage_request.status == "under_review" %}
+
+                            <span class="badge badge-info gap-2">
+                                <i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i>
+                                Under Review
+                            </span>
+
+                        {% elif marriage_request.status == "approved" %}
+
+                            <span class="badge badge-success gap-2">
+                                <i class="fa-solid fa-circle-check" aria-hidden="true"></i>
+                                Approved
+                            </span>
+
+                        {% elif marriage_request.status == "rejected" %}
+
+                            <span class="badge badge-error gap-2">
+                                <i class="fa-solid fa-circle-xmark" aria-hidden="true"></i>
+                                Rejected
+                            </span>
+
+                        {% endif %}
+
+                    </div>
+                </div>
+
+
+                <div class="text-left sm:text-right">
+
+                    <p class="text-xs text-gray-400">
+                        Submitted
+                    </p>
+
+                    <p class="mt-1 text-sm font-medium text-gray-700">
+                        {{ marriage_request.submitted_at|date:"d M Y H:i" }}
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+
+            <!-- Applicant -->
+            <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+
+                <div class="mb-5 flex items-center gap-3">
+
+                    <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-100 text-purple-700">
+                        <i class="fa-solid fa-user" aria-hidden="true"></i>
+                    </div>
+
+                    <div>
+                        <h2 class="font-semibold text-gray-900">
+                            Church Member
+                        </h2>
+
+                        <p class="text-sm text-gray-500">
+                            Applicant information
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="space-y-4">
+
+                    <div>
+                        <p class="text-xs text-gray-400">
+                            Full Name
+                        </p>
+
+                        <p class="mt-1 font-medium text-gray-900">
+                            {{ marriage_request.church_member.first_name }}
+                            {{ marriage_request.church_member.middle_name }}
+                            {{ marriage_request.church_member.last_name }}
+                        </p>
+                    </div>
+
+
+                    <div>
+                        <p class="text-xs text-gray-400">
+                            Digital Offering Number
+                        </p>
+
+                        <p class="mt-1 font-medium text-gray-900">
+                            {{ marriage_request.church_member.digital_offering_number }}
+                        </p>
+                    </div>
+
+
+                    <div>
+                        <p class="text-xs text-gray-400">
+                            Phone
+                        </p>
+
+                        <p class="mt-1 font-medium text-gray-900">
+                            {{ marriage_request.church_member.phone_number|default:"Not provided" }}
+                        </p>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Spouse -->
+            <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
+
+                <div class="mb-5 flex items-center gap-3">
+
+                    <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-pink-100 text-pink-600">
+                        <i class="fa-solid fa-heart" aria-hidden="true"></i>
+                    </div>
+
+                    <div>
+                        <h2 class="font-semibold text-gray-900">
+                            Proposed Spouse
+                        </h2>
+
+                        <p class="text-sm text-gray-500">
+                            Spouse information
+                        </p>
+                    </div>
+
+                </div>
+
+
+                {% if marriage_request.proposed_spouse_is_catholic %}
+
+                    <div class="space-y-4">
+
+                        <div>
+                            <p class="text-xs text-gray-400">
+                                Catholic Status
+                            </p>
+
+                            <p class="mt-1 font-medium text-green-600">
+                                <i class="fa-solid fa-circle-check mr-1" aria-hidden="true"></i>
+                                Catholic
+                            </p>
+                        </div>
+
+
+                        <div>
+                            <p class="text-xs text-gray-400">
+                                Digital Offering Number
+                            </p>
+
+                            <p class="mt-1 font-medium text-gray-900">
+                                {{ marriage_request.proposed_spouse_digital_offering_number }}
+                            </p>
+                        </div>
+
+                    </div>
+
+                {% else %}
+
+                    <div class="space-y-4">
+
+                        <div>
+                            <p class="text-xs text-gray-400">
+                                Catholic Status
+                            </p>
+
+                            <p class="mt-1 font-medium text-gray-700">
+                                Non-Catholic
+                            </p>
+                        </div>
+
+
+                        <div>
+                            <p class="text-xs text-gray-400">
+                                Full Name
+                            </p>
+
+                            <p class="mt-1 font-medium text-gray-900">
+                                {{ marriage_request.proposed_spouse_first_name }}
+                                {{ marriage_request.proposed_spouse_middle_name }}
+                                {{ marriage_request.proposed_spouse_last_name }}
+                            </p>
+                        </div>
+
+
+                        <div>
+                            <p class="text-xs text-gray-400">
+                                Phone
+                            </p>
+
+                            <p class="mt-1 font-medium text-gray-900">
+                                {{ marriage_request.proposed_spouse_phone_number }}
+                            </p>
+                        </div>
+
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+
+            <!-- Marriage Details -->
+            <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm lg:col-span-2">
+
+                <div class="mb-5 flex items-center gap-3">
+
+                    <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 text-blue-600">
+                        <i class="fa-solid fa-calendar-days" aria-hidden="true"></i>
+                    </div>
+
+                    <div>
+                        <h2 class="font-semibold text-gray-900">
+                            Marriage Details
+                        </h2>
+
+                        <p class="text-sm text-gray-500">
+                            Proposed marriage information
+                        </p>
+                    </div>
+
+                </div>
+
+
+                <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+
+                    <div>
+                        <p class="text-xs text-gray-400">
+                            Proposed Marriage Date
+                        </p>
+
+                        <p class="mt-1 font-medium text-gray-900">
+                            {% if marriage_request.proposed_marriage_date %}
+                                {{ marriage_request.proposed_marriage_date|date:"d M Y" }}
+                            {% else %}
+                                Not specified
+                            {% endif %}
+                        </p>
+                    </div>
+
+
+                    <div>
+                        <p class="text-xs text-gray-400">
+                            Submitted By
+                        </p>
+
+                        <p class="mt-1 font-medium text-gray-900">
+                            {{ marriage_request.applicant.email }}
+                        </p>
+                    </div>
+
+
+                    {% if marriage_request.reason %}
+
+                        <div class="sm:col-span-2">
+
+                            <p class="text-xs text-gray-400">
+                                Additional Information
+                            </p>
+
+                            <p class="mt-2 whitespace-pre-line rounded-xl bg-gray-50 p-4 text-sm leading-6 text-gray-700">
+                                {{ marriage_request.reason }}
+                            </p>
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <!-- Review -->
+            {% if marriage_request.reviewed_by or marriage_request.review_comment %}
+
+                <div class="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm lg:col-span-2">
+
+                    <div class="mb-5 flex items-center gap-3">
+
+                        <div class="flex h-10 w-10 items-center justify-center rounded-lg bg-green-100 text-green-600">
+                            <i class="fa-solid fa-clipboard-check" aria-hidden="true"></i>
+                        </div>
+
+                        <div>
+                            <h2 class="font-semibold text-gray-900">
+                                Review Information
+                            </h2>
+
+                            <p class="text-sm text-gray-500">
+                                Administrative review
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2">
+
+                        {% if marriage_request.reviewed_by %}
+
+                            <div>
+                                <p class="text-xs text-gray-400">
+                                    Reviewed By
+                                </p>
+
+                                <p class="mt-1 font-medium text-gray-900">
+                                    {{ marriage_request.reviewed_by.email }}
+                                </p>
+                            </div>
+
+                        {% endif %}
+
+
+                        {% if marriage_request.reviewed_at %}
+
+                            <div>
+                                <p class="text-xs text-gray-400">
+                                    Reviewed At
+                                </p>
+
+                                <p class="mt-1 font-medium text-gray-900">
+                                    {{ marriage_request.reviewed_at|date:"d M Y H:i" }}
+                                </p>
+                            </div>
+
+                        {% endif %}
+
+
+                        {% if marriage_request.review_comment %}
+
+                            <div class="sm:col-span-2">
+
+                                <p class="text-xs text-gray-400">
+                                    Review Comment
+                                </p>
+
+                                <p class="mt-2 whitespace-pre-line rounded-xl bg-gray-50 p-4 text-sm leading-6 text-gray-700">
+                                    {{ marriage_request.review_comment }}
+                                </p>
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+
+        <!-- Review Actions -->
+        {% if request.user|has_rbac_permission:"review_marriage_request" %}
+
+            {% if marriage_request.status == "pending" %}
+
+                <div class="mt-6 rounded-2xl border border-blue-200 bg-blue-50 p-5">
+
+                    <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+
+                        <div>
+                            <h3 class="font-semibold text-blue-900">
+                                Ready for Review
+                            </h3>
+
+                            <p class="mt-1 text-sm text-blue-700">
+                                Start the review process for this request.
+                            </p>
+                        </div>
+
+
+                        <form
+                            method="post"
+                            action="{% url 'member_requests:marriage_start_review' marriage_request.pk %}"
+                        >
+                            {% csrf_token %}
+
+                            <button
+                                type="submit"
+                                class="btn btn-info w-full sm:w-auto"
+                            >
+                                <i class="fa-solid fa-magnifying-glass mr-2" aria-hidden="true"></i>
+                                Start Review
+                            </button>
+                        </form>
+
+                    </div>
+
+                </div>
+
+            {% elif marriage_request.status == "under_review" %}
+
+                <div class="mt-6 rounded-2xl border border-amber-200 bg-amber-50 p-5">
+
+                    <div class="mb-5">
+
+                        <h3 class="font-semibold text-amber-900">
+                            Review Decision
+                        </h3>
+
+                        <p class="mt-1 text-sm text-amber-700">
+                            Approve or reject this marriage request.
+                        </p>
+
+                    </div>
+
+
+                    <div class="flex flex-col gap-3 sm:flex-row">
+
+                        <form
+                            method="post"
+                            action="{% url 'member_requests:marriage_approve' marriage_request.pk %}"
+                            class="w-full sm:w-auto"
+                        >
+                            {% csrf_token %}
+
+                            <button
+                                type="submit"
+                                class="btn btn-success w-full"
+                            >
+                                <i class="fa-solid fa-circle-check mr-2" aria-hidden="true"></i>
+                                Approve
+                            </button>
+
+                        </form>
+
+
+                        <form
+                            method="post"
+                            action="{% url 'member_requests:marriage_reject' marriage_request.pk %}"
+                            class="flex w-full flex-col gap-3 sm:flex-1"
+                        >
+                            {% csrf_token %}
+
+                            <textarea
+                                name="review_comment"
+                                class="textarea textarea-bordered w-full"
+                                rows="2"
+                                placeholder="Reason for rejection..."
+                                required
+                            ></textarea>
+
+                            <button
+                                type="submit"
+                                class="btn btn-error w-full"
+                            >
+                                <i class="fa-solid fa-circle-xmark mr-2" aria-hidden="true"></i>
+                                Reject Request
+                            </button>
+
+                        </form>
+
+                    </div>
+
+                </div>
+
+            {% endif %}
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+{% else %}
+
+<div class="min-h-screen bg-gray-200 p-6">
+
+    <div class="mx-auto w-full max-w-xl rounded-2xl border border-error/20 bg-white p-8 text-center shadow-lg">
+
+        <i class="fa-solid fa-lock mb-4 text-4xl text-error" aria-hidden="true"></i>
+
+        <h1 class="text-2xl font-bold text-gray-900">
+            Access Denied
+        </h1>
+
+        <p class="mt-2 text-gray-500">
+            You do not have permission to view this marriage request.
+        </p>
+
+        <a
+            href="{% url 'members:dashboard' %}"
+            class="btn btn-primary mt-6"
+        >
+            <i class="fa-solid fa-arrow-left mr-2" aria-hidden="true"></i>
+            Back to Dashboard
+        </a>
+
+    </div>
+
+</div>
+
+{% endif %}
+
+{% endblock %}

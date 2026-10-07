@@ -318,8 +318,13 @@
 
                     {% if request.user|has_rbac_permission:"submit_marriage_request" %}
                         <a
-                            href="#"
-                            class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition text-gray-600 hover:bg-purple-50 hover:text-purple-700"
+                            href="{% url 'member_requests:marriage_create' %}"
+                            class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition text-gray-600 hover:bg-purple-50 hover:text-purple-700
+                            {% if request.resolver_match.url_name == 'marriage_create' %}
+                                bg-purple-600 text-white
+                            {% else %}
+                                text-gray-600 hover:bg-green-mint hover:text-green-700
+                            {% endif %}"
                         >
                             <i class="fa-solid fa-ring w-5 text-center shrink-0" aria-hidden="true"></i>
                             <span class="min-w-0 truncate">Marriage</span>
