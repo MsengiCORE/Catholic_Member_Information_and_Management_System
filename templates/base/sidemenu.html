@@ -7,9 +7,9 @@
     class="fixed left-4 top-4 z-50 flex h-11 w-11 items-center justify-center rounded-xl
            bg-purple-600 text-white shadow-lg transition hover:bg-purple-700
            focus:outline-none focus:ring-2 focus:ring-purple-400 lg:hidden"
-    aria-label="Open navigation"
-    aria-controls="ccmimsSidebar"
-    aria-expanded="false"
+            aria-label="Open navigation"
+            aria-controls="ccmimsSidebar"
+            aria-expanded="false"
 >
     <i class="fa-solid fa-bars text-lg" aria-hidden="true"></i>
 </button>
@@ -23,9 +23,10 @@
 
 <aside
     id="ccmimsSidebar"
-    class="fixed inset-y-0 left-0 z-50 flex h-screen w-[min(18rem,85vw)] -translate-x-full flex-col
-           border-r border-gray-300 bg-gray-100 shadow-2xl transition-transform duration-300 ease-out
-           lg:sticky lg:top-0 lg:z-40 lg:h-screen lg:w-64 lg:translate-x-0 lg:shadow-none"
+    class="fixed inset-y-0 left-0 z-50 flex h-dvh w-[min(18rem,85vw)] -translate-x-full
+           flex-col overflow-hidden border-r border-gray-300 bg-gray-100 shadow-2xl
+           transition-transform duration-300 ease-out
+           lg:sticky lg:top-0 lg:z-40 lg:h-dvh lg:w-64 lg:translate-x-0 lg:shadow-none"
     aria-label="Main navigation"
 >
     <!-- Mobile close button -->
@@ -57,7 +58,7 @@
 
 
     <!-- Navigation -->
-    <nav class="min-h-0 flex-1 overflow-y-auto px-3 py-5 sm:px-4 sm:py-6">
+    <nav class="min-h-0 flex-1 overflow-y-auto px-3 py-5 pb-6 sm:px-4 sm:py-6">
 
 
         <!-- DASHBOARD -->
@@ -336,7 +337,7 @@
                             href="{% url 'member_requests:transfer_list' %}"
                             class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition text-gray-600 hover:bg-blue-mint hover:text-blue-700
                             {% if request.resolver_match.url_name == 'transfer_list' %}
-                                bg-blue-600 text-white
+                                bg-purple-600 text-white
                             {% else %}
                                 text-gray-600 hover:bg-green-mint hover:text-green-700
                             {% endif %}"
@@ -365,7 +366,7 @@
 
 
     <!-- ACCOUNT -->
-    <div class="shrink-0 border-t border-gray-200 bg-gray-100 p-3 sm:p-4">
+    <div class="mt-auto shrink-0 border-t border-gray-200 bg-gray-100 p-3 sm:p-4">
 
         <div class="mb-3 px-3">
 

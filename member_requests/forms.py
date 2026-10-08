@@ -243,12 +243,31 @@ class TransferRequestForm(forms.ModelForm):
 
         self.current_scc = current_scc
 
-        # IMPORTANT:
-        # Do not load all SCC records here.
-        # The destination SCC will be selected through AJAX.
-        self.fields["destination_scc"].queryset = (
-            SmallChristianCommunity.objects.none()
+        destination_queryset = (
+            SmallChristianCommunity.objects
+            .filter(is_active=True)
+            .select_related(
+                "zone__parish__deanery__diocese"
+            )
         )
+
+        if self.is_bound:
+            destination_id = self.data.get("destination_scc")
+
+            if destination_id:
+                self.fields["destination_scc"].queryset = (
+                    destination_queryset.filter(pk=destination_id)
+                )
+            else:
+                self.fields["destination_scc"].queryset = (
+                    SmallChristianCommunity.objects.none()
+                )
+        else:
+            # GET request:
+            # Do not load all SCCs.
+            self.fields["destination_scc"].queryset = (
+                SmallChristianCommunity.objects.none()
+            )
 
     def clean_destination_scc(self):
         destination_scc = self.cleaned_data.get("destination_scc")

@@ -7,7 +7,7 @@
 
 {% if request.user|has_rbac_permission:"submit_marriage_request" %}
 
-<div class="min-h-screen bg-gray-200 p-3 sm:p-4 lg:p-6">
+<div class="min-h-dvh bg-gray-200 p-3 sm:p-4 lg:p-6">
 
     <div class="mx-auto w-full max-w-4xl">
 
@@ -36,7 +36,7 @@
 
 
         <!-- Form -->
-        <div class="rounded-2xl border border-gray-200 bg-gray-100 shadow-sm">
+        <div class="rounded-2xl border border-gray-300 bg-gray-100 shadow-sm">
 
             <form method="post" novalidate>
 
@@ -373,7 +373,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 {% else %}
 
-<div class="min-h-screen bg-gray-200 p-6">
+<div class="min-h-dvh bg-gray-200 p-6">
 
     <div class="mx-auto w-full max-w-xl rounded-2xl border border-error/20 bg-gray-100 p-8 text-center shadow-lg">
 

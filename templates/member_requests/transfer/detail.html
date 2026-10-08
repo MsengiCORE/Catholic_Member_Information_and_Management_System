@@ -1,0 +1,538 @@
+{% extends "base/base_with_menu.html" %}
+{% load static %}
+{% load rbac_tags %}
+
+{% block title %}Transfer Request Details{% endblock %}
+
+{% block content %}
+
+<div class="min-h-dvh bg-gray-200 px-4 py-6 sm:px-6 lg:px-8">
+
+    <div class="mx-auto max-w-5xl">
+
+        <!-- Header -->
+        <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+
+            <div>
+
+                <div class="mb-2 flex items-center gap-2 text-sm text-base-content/60">
+
+                    <a
+                        href="{% url 'member_requests:transfer_list' %}"
+                        class="transition-colors hover:text-primary"
+                    >
+                        Transfer Requests
+                    </a>
+
+                    <i class="fa-solid fa-chevron-right text-xs"></i>
+
+                    <span>Details</span>
+
+                </div>
+
+                <h1 class="text-2xl font-bold text-base-content sm:text-3xl">
+                    Transfer Request Details
+                </h1>
+
+                <p class="mt-1 text-sm text-base-content/60">
+                    View the details and current status of this transfer request.
+                </p>
+
+            </div>
+
+
+            <a
+                href="{% url 'member_requests:transfer_list' %}"
+                class="btn btn-ghost"
+            >
+                <i class="fa-solid fa-arrow-left"></i>
+                Back to Requests
+            </a>
+
+        </div>
+
+
+        <!-- Status -->
+        <div class="mb-6 card border border-gray-300 bg-gray-100 shadow-sm">
+
+            <div class="card-body">
+
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+
+                    <div>
+
+                        <p class="text-xs font-semibold uppercase tracking-wide text-base-content/50">
+                            Request Status
+                        </p>
+
+                        <div class="mt-2">
+
+                            {% if transfer_request.status == "pending" %}
+
+                                <span class="badge badge-warning gap-2 px-4 py-3">
+                                    <i class="fa-solid fa-clock"></i>
+                                    Pending
+                                </span>
+
+                            {% elif transfer_request.status == "under_review" %}
+
+                                <span class="badge badge-info gap-2 px-4 py-3">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                    Under Review
+                                </span>
+
+                            {% elif transfer_request.status == "approved" %}
+
+                                <span class="badge badge-success gap-2 px-4 py-3">
+                                    <i class="fa-solid fa-circle-check"></i>
+                                    Approved
+                                </span>
+
+                            {% elif transfer_request.status == "rejected" %}
+
+                                <span class="badge badge-error gap-2 px-4 py-3">
+                                    <i class="fa-solid fa-circle-xmark"></i>
+                                    Rejected
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge badge-ghost">
+                                    {{ transfer_request.get_status_display }}
+                                </span>
+
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="text-left sm:text-right">
+
+                        <p class="text-xs font-semibold uppercase tracking-wide text-base-content/50">
+                            Submitted
+                        </p>
+
+                        <p class="mt-1 text-sm font-medium">
+                            {{ transfer_request.submitted_at|date:"d M Y, H:i" }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Member Information -->
+        <div class="mb-6 card border border-gray-300 bg-gray-100 shadow-sm">
+
+            <div class="card-body">
+
+                <div class="mb-5 flex items-center gap-3">
+
+                    <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-100">
+
+                        <i class="fa-solid fa-user text-blue-700"></i>
+
+                    </div>
+
+                    <div>
+
+                        <h2 class="text-lg font-semibold">
+                            Church Member
+                        </h2>
+
+                        <p class="text-sm text-base-content/60">
+                            Member associated with this transfer request.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+
+                    <div>
+
+                        <p class="text-xs font-semibold uppercase tracking-wide text-base-content/50">
+                            Member Name
+                        </p>
+
+                        <p class="mt-1 font-semibold">
+                            {{ transfer_request.church_member.first_name }}
+                            {{ transfer_request.church_member.middle_name }}
+                            {{ transfer_request.church_member.last_name }}
+                        </p>
+
+                    </div>
+
+
+                    <div>
+
+                        <p class="text-xs font-semibold uppercase tracking-wide text-base-content/50">
+                            Digital Offering Number
+                        </p>
+
+                        <p class="mt-1 font-semibold">
+                            {{ transfer_request.church_member.digital_offering_number|default:"—" }}
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Transfer Information -->
+        <div class="mb-6 card border border-gray-300 bg-gray-100 shadow-sm">
+
+            <div class="card-body">
+
+                <div class="mb-5 flex items-center gap-3">
+
+                    <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-green-100">
+
+                        <i class="fa-solid fa-right-left text-green-700"></i>
+
+                    </div>
+
+                    <div>
+
+                        <h2 class="text-lg font-semibold">
+                            Transfer Information
+                        </h2>
+
+                        <p class="text-sm text-base-content/60">
+                            Current and requested destination SCC.
+                        </p>
+
+                    </div>
+
+                </div>
+
+
+                <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+
+
+                    <!-- Current SCC -->
+                    <div class="rounded-xl border border-base-300 bg-base-200 p-5">
+
+                        <div class="mb-4 flex items-center gap-2">
+
+                            <i class="fa-solid fa-location-dot text-warning"></i>
+
+                            <h3 class="font-semibold">
+                                Current SCC
+                            </h3>
+
+                        </div>
+
+
+                        <p class="text-lg font-semibold">
+                            {{ transfer_request.current_scc.name }}
+                        </p>
+
+
+                        <div class="mt-4 space-y-2 text-sm text-base-content/70">
+
+                            <p>
+                                <span class="font-medium text-base-content">
+                                    Diocese:
+                                </span>
+
+                                {{ transfer_request.current_scc.zone.parish.deanery.diocese.name }}
+                            </p>
+
+                            <p>
+                                <span class="font-medium text-base-content">
+                                    Deanery:
+                                </span>
+
+                                {{ transfer_request.current_scc.zone.parish.deanery.name }}
+                            </p>
+
+                            <p>
+                                <span class="font-medium text-base-content">
+                                    Parish:
+                                </span>
+
+                                {{ transfer_request.current_scc.zone.parish.name }}
+                            </p>
+
+                            <p>
+                                <span class="font-medium text-base-content">
+                                    Zone:
+                                </span>
+
+                                {{ transfer_request.current_scc.zone.name }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Destination SCC -->
+                    <div class="rounded-xl border border-primary/30 bg-primary/5 p-5">
+
+                        <div class="mb-4 flex items-center gap-2">
+
+                            <i class="fa-solid fa-location-arrow text-primary"></i>
+
+                            <h3 class="font-semibold">
+                                Requested Destination
+                            </h3>
+
+                        </div>
+
+
+                        <p class="text-lg font-semibold text-primary">
+                            {{ transfer_request.destination_scc.name }}
+                        </p>
+
+
+                        <div class="mt-4 space-y-2 text-sm text-base-content/70">
+
+                            <p>
+                                <span class="font-medium text-base-content">
+                                    Diocese:
+                                </span>
+
+                                {{ transfer_request.destination_scc.zone.parish.deanery.diocese.name }}
+                            </p>
+
+                            <p>
+                                <span class="font-medium text-base-content">
+                                    Deanery:
+                                </span>
+
+                                {{ transfer_request.destination_scc.zone.parish.deanery.name }}
+                            </p>
+
+                            <p>
+                                <span class="font-medium text-base-content">
+                                    Parish:
+                                </span>
+
+                                {{ transfer_request.destination_scc.zone.parish.name }}
+                            </p>
+
+                            <p>
+                                <span class="font-medium text-base-content">
+                                    Zone:
+                                </span>
+
+                                {{ transfer_request.destination_scc.zone.name }}
+                            </p>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Reason -->
+        <div class="mb-6 card border border-gray-300 bg-gray-100 shadow-sm">
+
+            <div class="card-body">
+
+                <h2 class="text-lg font-semibold">
+                    Reason for Transfer
+                </h2>
+
+                <div class="mt-4 rounded-xl border border-gray-300 bg-gray-100 p-5">
+
+                    <p class="whitespace-pre-line text-sm leading-7">
+                        {{ transfer_request.reason }}
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- Review Information -->
+        {% if transfer_request.reviewed_by or transfer_request.review_comment %}
+
+            <div class="mb-6 card border border-gray-300 bg-gray-100 shadow-sm">
+
+                <div class="card-body">
+
+                    <h2 class="text-lg font-semibold">
+                        Review Information
+                    </h2>
+
+
+                    <div class="mt-4 grid grid-cols-1 gap-5 md:grid-cols-2">
+
+                        {% if transfer_request.reviewed_by %}
+
+                            <div>
+
+                                <p class="text-xs font-semibold uppercase tracking-wide text-base-content/50">
+                                    Reviewed By
+                                </p>
+
+                                <p class="mt-1 font-medium">
+                                    {{ transfer_request.reviewed_by.get_full_name|default:transfer_request.reviewed_by.email }}
+                                </p>
+
+                            </div>
+
+                        {% endif %}
+
+
+                        {% if transfer_request.reviewed_at %}
+
+                            <div>
+
+                                <p class="text-xs font-semibold uppercase tracking-wide text-base-content/50">
+                                    Reviewed At
+                                </p>
+
+                                <p class="mt-1 font-medium">
+                                    {{ transfer_request.reviewed_at|date:"d M Y, H:i" }}
+                                </p>
+
+                            </div>
+
+                        {% endif %}
+
+                    </div>
+
+
+                    {% if transfer_request.review_comment %}
+
+                        <div class="mt-5">
+
+                            <p class="text-xs font-semibold uppercase tracking-wide text-base-content/50">
+                                Review Comment
+                            </p>
+
+                            <div class="mt-2 rounded-xl border border-gray-300 bg-gray-100 p-4">
+
+                                <p class="whitespace-pre-line text-sm leading-7">
+                                    {{ transfer_request.review_comment }}
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+        {% endif %}
+
+
+        <!-- Actions -->
+        <div class="card border border-gray-300 bg-gray-100 shadow-sm">
+
+            <div class="card-body">
+
+                <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+
+                    <a
+                        href="{% url 'member_requests:transfer_list' %}"
+                        class="btn btn-ghost"
+                    >
+                        <i class="fa-solid fa-arrow-left"></i>
+                        Back to Requests
+                    </a>
+
+
+                    <div class="flex flex-col gap-2 sm:flex-row">
+
+
+                        {% if transfer_request.status == "pending" %}
+
+                            {% if request.user|has_rbac_permission:"review_transfer_request" %}
+
+                                <form
+                                    method="post"
+                                    action="{% url 'member_requests:transfer_start_review' transfer_request.pk %}"
+                                >
+
+                                    {% csrf_token %}
+
+                                    <button
+                                        type="submit"
+                                        class="btn btn-info w-full sm:w-auto"
+                                    >
+                                        <i class="fa-solid fa-magnifying-glass"></i>
+                                        Start Review
+                                    </button>
+
+                                </form>
+
+                            {% endif %}
+
+                        {% endif %}
+
+
+                        {% if transfer_request.status == "under_review" %}
+
+                            {% if request.user|has_rbac_permission:"review_transfer_request" %}
+
+                                <form
+                                    method="post"
+                                    action="{% url 'member_requests:transfer_approve' transfer_request.pk %}"
+                                    onsubmit="return confirm('Are you sure you want to approve this transfer request?');"
+                                >
+
+                                    {% csrf_token %}
+
+                                    <button
+                                        type="submit"
+                                        class="btn btn-success w-full sm:w-auto"
+                                    >
+                                        <i class="fa-solid fa-check"></i>
+                                        Approve Transfer
+                                    </button>
+
+                                </form>
+
+
+                                <a
+                                    href="{% url 'member_requests:transfer_reject' transfer_request.pk %}"
+                                    class="btn btn-error w-full sm:w-auto"
+                                >
+                                    <i class="fa-solid fa-xmark"></i>
+                                    Reject
+                                </a>
+
+                            {% endif %}
+
+                        {% endif %}
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
