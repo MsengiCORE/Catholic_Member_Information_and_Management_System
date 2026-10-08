@@ -318,9 +318,9 @@
 
                     {% if request.user|has_rbac_permission:"submit_marriage_request" %}
                         <a
-                            href="{% url 'member_requests:marriage_create' %}"
+                            href="{% url 'member_requests:marriage_list' %}"
                             class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition text-gray-600 hover:bg-purple-50 hover:text-purple-700
-                            {% if request.resolver_match.url_name == 'marriage_create' %}
+                            {% if request.resolver_match.url_name == 'marriage_list' %}
                                 bg-purple-600 text-white
                             {% else %}
                                 text-gray-600 hover:bg-green-mint hover:text-green-700
@@ -333,8 +333,13 @@
 
                     {% if request.user|has_rbac_permission:"submit_transfer_request" %}
                         <a
-                            href="#"
-                            class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition text-gray-600 hover:bg-blue-mint hover:text-blue-700"
+                            href="{% url 'member_requests:transfer_list' %}"
+                            class="flex min-w-0 items-center gap-3 px-4 py-2.5 rounded-lg transition text-gray-600 hover:bg-blue-mint hover:text-blue-700
+                            {% if request.resolver_match.url_name == 'transfer_list' %}
+                                bg-blue-600 text-white
+                            {% else %}
+                                text-gray-600 hover:bg-green-mint hover:text-green-700
+                            {% endif %}"
                         >
                             <i class="fa-solid fa-right-left w-5 text-center shrink-0" aria-hidden="true"></i>
                             <span class="min-w-0 truncate">Transfer Request</span>

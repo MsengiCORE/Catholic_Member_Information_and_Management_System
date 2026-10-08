@@ -201,15 +201,11 @@ def can_access_request(user, request_object):
         request_object.church_member,
     )
 
+
 def can_access_transfer_request(user, transfer_request):
     """
-    Check whether a user can access a transfer request.
-
-    Access is allowed when:
-    - the user is the applicant, or
-    - the user can access the member, or
-    - the user can access the destination/current SCC
-      according to their organizational scope.
+    Determines whether the authenticated user can access
+    a specific transfer request.
     """
 
     if not user or not user.is_authenticated:
@@ -218,14 +214,38 @@ def can_access_transfer_request(user, transfer_request):
     if user.is_superuser:
         return True
 
+    # The applicant can access their own request.
     if transfer_request.applicant_id == user.id:
         return True
 
-    if user_can_access_member(
+    # Authorized users can access requests belonging
+    # to members within their organizational scope.
+    if not user_has_permission(
+        user,
+        "view_transfer_request",
+    ):
+        return False
+
+    return user_can_access_member(
         user,
         transfer_request.church_member,
-    ):
+    )
+
+
+def can_review_transfer_request(user, transfer_request):
+    if not user or not user.is_authenticated:
+        return False
+
+    if user.is_superuser:
         return True
 
-    return False
+    if not user_has_permission(
+        user,
+        "review_transfer_request",
+    ):
+        return False
 
+    return user_can_access_member(
+        user,
+        transfer_request.church_member,
+    )

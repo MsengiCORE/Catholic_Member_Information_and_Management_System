@@ -1,6 +1,7 @@
 from django import forms
 from django.core.exceptions import ValidationError
 from django.utils import timezone
+from members.models import SmallChristianCommunity
 
 from .models import (
     MarriageRequest,
@@ -204,6 +205,9 @@ class MarriageRequestForm(forms.ModelForm):
 class TransferRequestForm(forms.ModelForm):
     """
     Form used by a Church Member to submit a transfer request.
+
+    Destination SCCs are loaded through an AJAX search endpoint
+    instead of loading all SCC records into the HTML page.
     """
 
     class Meta:
@@ -217,15 +221,14 @@ class TransferRequestForm(forms.ModelForm):
             "destination_scc": forms.Select(
                 attrs={
                     "class": "select select-bordered w-full",
+                    "id": "id_destination_scc",
                 }
             ),
             "reason": forms.Textarea(
                 attrs={
                     "class": "textarea textarea-bordered w-full",
                     "rows": 5,
-                    "placeholder": (
-                        "Explain why you want to transfer..."
-                    ),
+                    "placeholder": "Explain why you want to transfer...",
                 }
             ),
         }
@@ -240,22 +243,15 @@ class TransferRequestForm(forms.ModelForm):
 
         self.current_scc = current_scc
 
-        # The current SCC is supplied by the view.
-        # Only active SCCs can be selected as destinations.
+        # IMPORTANT:
+        # Do not load all SCC records here.
+        # The destination SCC will be selected through AJAX.
         self.fields["destination_scc"].queryset = (
-            self.fields["destination_scc"]
-            .queryset
-            .filter(is_active=True)
-            .select_related(
-                "zone__parish__deanery__diocese"
-            )
-            .order_by("name")
+            SmallChristianCommunity.objects.none()
         )
 
     def clean_destination_scc(self):
-        destination_scc = self.cleaned_data.get(
-            "destination_scc"
-        )
+        destination_scc = self.cleaned_data.get("destination_scc")
 
         if not destination_scc:
             raise ValidationError(
@@ -268,6 +264,11 @@ class TransferRequestForm(forms.ModelForm):
         ):
             raise ValidationError(
                 "Destination SCC must be different from your current SCC."
+            )
+
+        if not destination_scc.is_active:
+            raise ValidationError(
+                "The selected destination SCC is not active."
             )
 
         return destination_scc

@@ -1,10 +1,12 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
 from django.core.exceptions import PermissionDenied
 from django.db import transaction
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods, require_POST
+from django.http import JsonResponse
 
 from .forms import (
     MarriageRequestForm,
@@ -16,6 +18,7 @@ from .models import (
     TransferRequest,
     TravelCertificateRequest,
 )
+from members.models import ChurchMember, SmallChristianCommunity
 from .permissions import (
     can_approve_travel_certificate_requests,
     can_review_marriage_requests,
@@ -80,7 +83,8 @@ def _ensure_status(request_object, allowed_statuses):
 # MARRIAGE REQUESTS
 # ============================================================
 
-@login_required
+@never_cache
+@login_required(login_url="accounts:login")
 def marriage_request_list(request):
     """
     Display marriage requests accessible to the current user.
@@ -131,7 +135,8 @@ def marriage_request_list(request):
     )
 
 
-@login_required
+@never_cache
+@login_required(login_url="accounts:login")
 def marriage_request_create(request):
     """
     Submit a new marriage request.
@@ -182,7 +187,8 @@ def marriage_request_create(request):
     )
 
 
-@login_required
+@never_cache
+@login_required(login_url="accounts:login")
 def marriage_request_detail(request, pk):
     """
     Display one marriage request.
@@ -219,7 +225,8 @@ def marriage_request_detail(request, pk):
     )
 
 
-@login_required
+@never_cache
+@login_required(login_url="accounts:login")
 @require_POST
 def marriage_request_start_review(request, pk):
     """
@@ -277,7 +284,8 @@ def marriage_request_start_review(request, pk):
     )
 
 
-@login_required
+@never_cache
+@login_required(login_url="accounts:login")
 @require_POST
 def marriage_request_approve(request, pk):
     """
@@ -336,7 +344,8 @@ def marriage_request_approve(request, pk):
     )
 
 
-@login_required
+@never_cache
+@login_required(login_url="accounts:login")
 @require_POST
 def marriage_request_reject(request, pk):
     """
@@ -417,7 +426,8 @@ def marriage_request_reject(request, pk):
 # TRANSFER REQUESTS
 # ============================================================
 
-@login_required
+@never_cache
+@login_required(login_url="accounts:login")
 def transfer_request_list(request):
     """
     Display transfer requests accessible to the current user.
@@ -440,10 +450,12 @@ def transfer_request_list(request):
         .order_by("-submitted_at")
     )
 
+    member = get_user_church_member(request.user)
+
     if request.user.is_superuser:
         pass
 
-    elif hasattr(request.user, "church_member"):
+    elif member:
         queryset = queryset.filter(
             applicant=request.user
         )
@@ -464,7 +476,70 @@ def transfer_request_list(request):
     )
 
 
-@login_required
+@never_cache
+@login_required(login_url="accounts:login")
+def transfer_scc_search(request):
+    """
+    Search active SCCs for the transfer request form.
+
+    Only a small number of matching records are returned,
+    preventing thousands of SCCs from being loaded at once.
+    """
+
+    if not can_submit_transfer_request(request.user):
+        raise PermissionDenied(
+            "You do not have permission to submit transfer requests."
+        )
+
+    query = request.GET.get("q", "").strip()
+
+    if len(query) < 2:
+        return JsonResponse(
+            {
+                "results": []
+            }
+        )
+
+    sccs = (
+        SmallChristianCommunity.objects
+        .filter(
+            is_active=True,
+            name__icontains=query,
+        )
+        .select_related(
+            "zone__parish__deanery__diocese"
+        )
+        .order_by("name")[:20]
+    )
+
+    results = []
+
+    for scc in sccs:
+        results.append(
+            {
+                "id": str(scc.pk),
+                "name": scc.name,
+                "zone": scc.zone.name,
+                "parish": scc.zone.parish.name,
+                "deanery": scc.zone.parish.deanery.name,
+                "diocese": scc.zone.parish.deanery.diocese.name,
+                "label": (
+                    f"{scc.name} — "
+                    f"{scc.zone.parish.name} — "
+                    f"{scc.zone.name}"
+                ),
+            }
+        )
+
+    return JsonResponse(
+        {
+            "results": results
+        }
+    )
+
+
+@never_cache
+@login_required(login_url="accounts:login")
 def transfer_request_create(request):
     """
     Submit a new transfer request.
@@ -532,7 +607,8 @@ def transfer_request_create(request):
     )
 
 
-@login_required
+@never_cache
+@login_required(login_url="accounts:login")
 def transfer_request_detail(request, pk):
     """
     Display one transfer request.
@@ -571,7 +647,8 @@ def transfer_request_detail(request, pk):
     )
 
 
-@login_required
+@never_cache
+@login_required(login_url="accounts:login")
 @require_POST
 def transfer_request_start_review(request, pk):
     """
@@ -630,13 +707,15 @@ def transfer_request_start_review(request, pk):
     )
 
 
-@login_required
+@never_cache
+@login_required(login_url="accounts:login")
 @require_POST
 def transfer_request_approve(request, pk):
     """
     Approve a transfer request.
 
-    Approval moves the member to the destination SCC.
+    Approval performs the actual transfer of the
+    Church Member to the destination SCC.
     """
 
     if not can_review_transfer_requests(request.user):
@@ -646,17 +725,28 @@ def transfer_request_approve(request, pk):
 
     with transaction.atomic():
 
-        transfer_request = get_object_or_404(
-            TransferRequest.objects.select_for_update(),
-            pk=pk,
+        transfer_request = (
+            TransferRequest.objects
+            .select_for_update()
+            .select_related(
+                "current_scc",
+                "destination_scc",
+            )
+            .filter(pk=pk)
+            .first()
         )
 
-        if not can_access_transfer_request(
+        if not transfer_request:
+            raise PermissionDenied(
+                "Transfer request not found."
+            )
+
+        if not can_review_transfer_requests(
             request.user,
             transfer_request,
         ):
             raise PermissionDenied(
-                "You do not have access to this transfer request."
+                "You do not have access to review this transfer request."
             )
 
         _ensure_status(
@@ -666,9 +756,17 @@ def transfer_request_approve(request, pk):
             ],
         )
 
-        member = transfer_request.church_member
+        # Lock the ChurchMember as well.
+        member = (
+            ChurchMember.objects
+            .select_for_update()
+            .get(
+                pk=transfer_request.church_member_id
+            )
+        )
 
-        # Ensure the member has not already moved elsewhere.
+        # The member must still be in the SCC
+        # recorded when the request was submitted.
         if (
             member.small_christian_community_id
             != transfer_request.current_scc_id
@@ -676,6 +774,12 @@ def transfer_request_approve(request, pk):
             raise PermissionDenied(
                 "The member's current SCC has changed. "
                 "This transfer request can no longer be approved."
+            )
+
+        # Destination must still be active.
+        if not transfer_request.destination_scc.is_active:
+            raise PermissionDenied(
+                "The destination SCC is no longer active."
             )
 
         # Perform the actual transfer.
@@ -689,6 +793,7 @@ def transfer_request_approve(request, pk):
             ]
         )
 
+        # Mark request as approved.
         transfer_request.status = (
             TransferRequest.STATUS_APPROVED
         )
@@ -716,7 +821,8 @@ def transfer_request_approve(request, pk):
     )
 
 
-@login_required
+@never_cache
+@login_required(login_url="accounts:login")
 @require_POST
 def transfer_request_reject(request, pk):
     """
@@ -797,7 +903,8 @@ def transfer_request_reject(request, pk):
 # TRAVEL CERTIFICATE REQUESTS
 # ============================================================
 
-@login_required
+@never_cache
+@login_required(login_url="accounts:login")
 def travel_certificate_request_list(request):
     """
     Display travel certificate requests accessible to the user.
@@ -844,7 +951,8 @@ def travel_certificate_request_list(request):
     )
 
 
-@login_required
+@never_cache
+@login_required(login_url="accounts:login")
 def travel_certificate_request_create(request):
     """
     Submit a new travel certificate request.
@@ -898,7 +1006,8 @@ def travel_certificate_request_create(request):
     )
 
 
-@login_required
+@never_cache
+@login_required(login_url="accounts:login")
 def travel_certificate_request_detail(request, pk):
     """
     Display one travel certificate request.
@@ -937,7 +1046,8 @@ def travel_certificate_request_detail(request, pk):
     )
 
 
-@login_required
+@never_cache
+@login_required(login_url="accounts:login")
 @require_POST
 def travel_certificate_request_start_review(
     request,
@@ -1002,7 +1112,8 @@ def travel_certificate_request_start_review(
     )
 
 
-@login_required
+@never_cache
+@login_required(login_url="accounts:login")
 @require_POST
 def travel_certificate_request_approve(
     request,
@@ -1078,7 +1189,8 @@ def travel_certificate_request_approve(
     )
 
 
-@login_required
+@never_cache
+@login_required(login_url="accounts:login")
 @require_POST
 def travel_certificate_request_reject(
     request,

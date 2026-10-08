@@ -1,0 +1,621 @@
+{% extends "base/base_with_menu.html" %}
+{% load static %}
+{% load rbac_tags %}
+
+{% block title %}{{ title|default:"Transfer Request" }}{% endblock %}
+
+{% block content %}
+
+<div class="min-h-screen bg-base-200 px-4 py-6 sm:px-6 lg:px-8">
+
+    <div class="mx-auto max-w-5xl">
+
+        <!-- Header -->
+        <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+
+            <div>
+                <div class="mb-2 flex items-center gap-2 text-sm text-base-content/60">
+                    <a
+                        href="{% url 'member_requests:transfer_list' %}"
+                        class="hover:text-primary transition-colors"
+                    >
+                        Transfer Requests
+                    </a>
+
+                    <i class="fa-solid fa-chevron-right text-xs"></i>
+
+                    <span>New Request</span>
+                </div>
+
+                <h1 class="text-2xl font-bold text-base-content sm:text-3xl">
+                    New Transfer Request
+                </h1>
+
+                <p class="mt-1 text-sm text-base-content/60">
+                    Submit a request to transfer this church member to another
+                    Small Christian Community.
+                </p>
+            </div>
+
+            <a
+                href="{% url 'member_requests:transfer_list' %}"
+                class="btn btn-ghost"
+            >
+                <i class="fa-solid fa-arrow-left"></i>
+                Back
+            </a>
+
+        </div>
+
+
+        <!-- Form -->
+        <form method="post" class="space-y-6">
+
+            {% csrf_token %}
+
+
+            <!-- Member Information -->
+            <div class="card border border-base-300 bg-base-100 shadow-sm">
+
+                <div class="card-body">
+
+                    <div class="mb-5 flex items-center gap-3">
+
+                        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-blue-mint">
+                            <i class="fa-solid fa-user text-blue-700"></i>
+                        </div>
+
+                        <div>
+                            <h2 class="text-lg font-semibold">
+                                Church Member
+                            </h2>
+
+                            <p class="text-sm text-base-content/60">
+                                Member associated with this transfer request.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="grid grid-cols-1 gap-4 md:grid-cols-2">
+
+                        <!-- Member Name -->
+                        <div>
+                            <label class="mb-1 block text-sm font-medium">
+                                Member Name
+                            </label>
+
+                            <div class="rounded-lg border border-base-300 bg-base-200 px-4 py-3">
+                                <span class="font-medium">
+                                    {{ member.first_name }}
+                                    {{ member.middle_name }}
+                                    {{ member.last_name }}
+                                </span>
+                            </div>
+                        </div>
+
+
+                        <!-- Digital Offering Number -->
+                        <div>
+                            <label class="mb-1 block text-sm font-medium">
+                                Digital Offering Number
+                            </label>
+
+                            <div class="rounded-lg border border-base-300 bg-base-200 px-4 py-3">
+                                {{ member.digital_offering_number|default:"—" }}
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Current SCC -->
+            <div class="card border border-base-300 bg-base-100 shadow-sm">
+
+                <div class="card-body">
+
+                    <div class="mb-5 flex items-center gap-3">
+
+                        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-purple-mint">
+                            <i class="fa-solid fa-location-dot text-purple-700"></i>
+                        </div>
+
+                        <div>
+                            <h2 class="text-lg font-semibold">
+                                Current Organization
+                            </h2>
+
+                            <p class="text-sm text-base-content/60">
+                                The member's current Small Christian Community.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <div class="rounded-xl border border-base-300 bg-base-200 p-4">
+
+                        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+
+                            <div>
+                                <p class="text-xs font-medium uppercase tracking-wide text-base-content/50">
+                                    Diocese
+                                </p>
+
+                                <p class="mt-1 font-medium">
+                                    {{ current_scc.zone.parish.deanery.diocese.name|default:"—" }}
+                                </p>
+                            </div>
+
+
+                            <div>
+                                <p class="text-xs font-medium uppercase tracking-wide text-base-content/50">
+                                    Deanery
+                                </p>
+
+                                <p class="mt-1 font-medium">
+                                    {{ current_scc.zone.parish.deanery.name|default:"—" }}
+                                </p>
+                            </div>
+
+
+                            <div>
+                                <p class="text-xs font-medium uppercase tracking-wide text-base-content/50">
+                                    Parish
+                                </p>
+
+                                <p class="mt-1 font-medium">
+                                    {{ current_scc.zone.parish.name|default:"—" }}
+                                </p>
+                            </div>
+
+
+                            <div>
+                                <p class="text-xs font-medium uppercase tracking-wide text-base-content/50">
+                                    Zone
+                                </p>
+
+                                <p class="mt-1 font-medium">
+                                    {{ current_scc.zone.name|default:"—" }}
+                                </p>
+                            </div>
+
+
+                            <div class="sm:col-span-2 lg:col-span-2">
+
+                                <p class="text-xs font-medium uppercase tracking-wide text-base-content/50">
+                                    Small Christian Community
+                                </p>
+
+                                <p class="mt-1 font-semibold text-primary">
+                                    {{ current_scc.name }}
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- Transfer Details -->
+            <div class="card border border-base-300 bg-base-100 shadow-sm">
+
+                <div class="card-body">
+
+                    <div class="mb-5 flex items-center gap-3">
+
+                        <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-green-mint">
+                            <i class="fa-solid fa-right-left text-green-700"></i>
+                        </div>
+
+                        <div>
+                            <h2 class="text-lg font-semibold">
+                                Transfer Details
+                            </h2>
+
+                            <p class="text-sm text-base-content/60">
+                                Select the destination SCC and provide the reason
+                                for the transfer.
+                            </p>
+                        </div>
+
+                    </div>
+
+
+                    <!-- Destination SCC -->
+                    <div class="form-control">
+
+                        <label
+                            for="{{ form.destination_scc.id_for_label }}"
+                            class="mb-2 block text-sm font-medium"
+                        >
+                            {{ form.destination_scc.label }}
+
+                            <span class="text-error">*</span>
+                        </label>
+
+                        <div class="relative">
+
+                            <input
+                                type="text"
+                                id="scc-search-input"
+                                class="input input-bordered w-full"
+                                placeholder="Search destination SCC..."
+                                autocomplete="off"
+                            >
+
+                            <input
+                                type="hidden"
+                                name="destination_scc"
+                                id="id_destination_scc"
+                                value=""
+                            >
+
+                            <div
+                                id="scc-search-results"
+                                class="absolute z-50 mt-1 hidden max-h-80 w-full overflow-y-auto rounded-lg border border-base-300 bg-base-100 shadow-xl"
+                            ></div>
+
+                        </div>
+
+                        <div
+                            id="selected-scc"
+                            class="mt-3 hidden rounded-lg border border-primary/30 bg-primary/10 p-4"
+                        >
+                            <div class="flex items-start justify-between gap-4">
+
+                                <div>
+
+                                    <p class="text-xs font-semibold uppercase tracking-wide text-primary">
+                                        Selected Destination
+                                    </p>
+
+                                    <p
+                                        id="selected-scc-name"
+                                        class="mt-1 font-semibold"
+                                    ></p>
+
+                                    <p
+                                        id="selected-scc-location"
+                                        class="mt-1 text-sm text-base-content/60"
+                                    ></p>
+
+                                </div>
+
+                                <button
+                                    type="button"
+                                    id="clear-scc"
+                                    class="btn btn-sm btn-ghost"
+                                >
+                                    <i class="fa-solid fa-xmark"></i>
+                                </button>
+
+                            </div>
+                        </div>
+
+                        {% if form.destination_scc.errors %}
+                            <div class="mt-2 space-y-1">
+
+                                {% for error in form.destination_scc.errors %}
+                                    <p class="text-sm text-error">
+                                        <i class="fa-solid fa-circle-exclamation mr-1"></i>
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+
+                            </div>
+                        {% endif %}
+
+                    </div>
+
+
+                    <!-- Reason -->
+                    <div class="form-control mt-5">
+
+                        <label
+                            for="{{ form.reason.id_for_label }}"
+                            class="mb-2 block text-sm font-medium"
+                        >
+                            {{ form.reason.label }}
+
+                            <span class="text-error">*</span>
+                        </label>
+
+                        {{ form.reason }}
+
+                        {% if form.reason.errors %}
+                            <div class="mt-2 space-y-1">
+
+                                {% for error in form.reason.errors %}
+                                    <p class="text-sm text-error">
+                                        <i class="fa-solid fa-circle-exclamation mr-1"></i>
+                                        {{ error }}
+                                    </p>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+
+                        <p class="mt-2 text-xs text-base-content/50">
+                            Explain clearly why the member is requesting to move
+                            to another Small Christian Community.
+                        </p>
+
+                    </div>
+
+
+                    <!-- Non-field errors -->
+                    {% if form.non_field_errors %}
+
+                        <div class="alert alert-error mt-5">
+
+                            <i class="fa-solid fa-circle-exclamation"></i>
+
+                            <div>
+                                {% for error in form.non_field_errors %}
+                                    <p>{{ error }}</p>
+                                {% endfor %}
+                            </div>
+
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+            </div>
+
+
+            <!-- Information Notice -->
+            <div class="alert border border-info/20 bg-info/10">
+
+                <i class="fa-solid fa-circle-info text-info"></i>
+
+                <div>
+                    <h3 class="font-semibold">
+                        Important
+                    </h3>
+
+                    <p class="text-sm">
+                        The transfer will not take effect immediately after
+                        submission. It must first be reviewed and approved by
+                        an authorized administrator.
+                    </p>
+                </div>
+
+            </div>
+
+
+            <!-- Actions -->
+            <div class="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+
+                <a
+                    href="{% url 'member_requests:transfer_list' %}"
+                    class="btn btn-ghost"
+                >
+                    Cancel
+                </a>
+
+
+                {% if request.user|has_rbac_permission:"submit_transfer_request" %}
+
+                    <button
+                        type="submit"
+                        class="btn btn-primary"
+                    >
+                        <i class="fa-solid fa-paper-plane"></i>
+                        Submit Transfer Request
+                    </button>
+
+                {% endif %}
+
+            </div>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+
+    const searchInput = document.getElementById("scc-search-input");
+    const hiddenInput = document.getElementById("id_destination_scc");
+    const resultsContainer = document.getElementById("scc-search-results");
+
+    const selectedContainer = document.getElementById("selected-scc");
+    const selectedName = document.getElementById("selected-scc-name");
+    const selectedLocation = document.getElementById("selected-scc-location");
+    const clearButton = document.getElementById("clear-scc");
+
+    let searchTimeout = null;
+
+
+    searchInput.addEventListener("input", function () {
+
+        const query = this.value.trim();
+
+        clearTimeout(searchTimeout);
+
+        if (query.length < 2) {
+
+            resultsContainer.innerHTML = "";
+            resultsContainer.classList.add("hidden");
+
+            return;
+        }
+
+
+        searchTimeout = setTimeout(function () {
+
+            fetch(
+                "{% url 'member_requests:transfer_scc_search' %}?q="
+                + encodeURIComponent(query),
+                {
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest"
+                    }
+                }
+            )
+            .then(response => {
+
+                if (!response.ok) {
+                    throw new Error("Search request failed.");
+                }
+
+                return response.json();
+
+            })
+            .then(data => {
+
+                resultsContainer.innerHTML = "";
+
+
+                if (!data.results || data.results.length === 0) {
+
+                    resultsContainer.innerHTML = `
+                        <div class="px-4 py-4 text-sm text-base-content/60">
+                            <i class="fa-solid fa-circle-info mr-2"></i>
+                            No active SCC found.
+                        </div>
+                    `;
+
+                    resultsContainer.classList.remove("hidden");
+
+                    return;
+                }
+
+
+                data.results.forEach(function (scc) {
+
+                    const button = document.createElement("button");
+
+                    button.type = "button";
+
+                    button.className =
+                        "block w-full border-b border-base-300 px-4 py-3 text-left " +
+                        "transition-colors hover:bg-base-200 last:border-b-0";
+
+
+                    button.innerHTML = `
+                        <div class="font-semibold">
+                            ${escapeHtml(scc.name)}
+                        </div>
+
+                        <div class="mt-1 text-xs text-base-content/60">
+                            ${escapeHtml(scc.parish)}
+                            ·
+                            ${escapeHtml(scc.zone)}
+                            ·
+                            ${escapeHtml(scc.diocese)}
+                        </div>
+                    `;
+
+
+                    button.addEventListener("click", function () {
+
+                        hiddenInput.value = scc.id;
+
+                        searchInput.value = scc.name;
+
+                        selectedName.textContent = scc.name;
+
+                        selectedLocation.textContent =
+                            `${scc.diocese} → ${scc.deanery} → ` +
+                            `${scc.parish} → ${scc.zone}`;
+
+                        selectedContainer.classList.remove("hidden");
+
+                        resultsContainer.classList.add("hidden");
+
+                    });
+
+
+                    resultsContainer.appendChild(button);
+
+                });
+
+
+                resultsContainer.classList.remove("hidden");
+
+            })
+            .catch(error => {
+
+                console.error(error);
+
+                resultsContainer.innerHTML = `
+                    <div class="px-4 py-4 text-sm text-error">
+                        <i class="fa-solid fa-circle-exclamation mr-2"></i>
+                        Unable to search SCCs.
+                    </div>
+                `;
+
+                resultsContainer.classList.remove("hidden");
+
+            });
+
+        }, 300);
+
+    });
+
+
+    clearButton.addEventListener("click", function () {
+
+        hiddenInput.value = "";
+
+        searchInput.value = "";
+
+        selectedName.textContent = "";
+
+        selectedLocation.textContent = "";
+
+        selectedContainer.classList.add("hidden");
+
+        resultsContainer.innerHTML = "";
+
+        resultsContainer.classList.add("hidden");
+
+        searchInput.focus();
+
+    });
+
+
+    document.addEventListener("click", function (event) {
+
+        if (
+            !searchInput.contains(event.target) &&
+            !resultsContainer.contains(event.target)
+        ) {
+            resultsContainer.classList.add("hidden");
+        }
+
+    });
+
+
+    function escapeHtml(value) {
+
+        const div = document.createElement("div");
+
+        div.textContent = value ?? "";
+
+        return div.innerHTML;
+
+    }
+
+});
+</script>
+
+{% endblock %}
+
+

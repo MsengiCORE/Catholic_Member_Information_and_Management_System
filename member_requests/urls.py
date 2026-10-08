@@ -64,6 +64,12 @@ urlpatterns = [
     ),
 
     path(
+        "transfer/scc-search/",
+        views.transfer_scc_search,
+        name="transfer_scc_search",
+    ),
+
+    path(
         "transfer/<uuid:pk>/",
         views.transfer_request_detail,
         name="transfer_detail",
