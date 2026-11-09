@@ -11,7 +11,9 @@ https://docs.djangoproject.com/en/6.1/ref/settings/
 """
 
 import os
+import dj_database_url
 from pathlib import Path
+from datetime import timedelta
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -21,12 +23,22 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-k%m14q2938#7dxxwgktu)inv)%7h8b3ob2_r^6cer8cs%phxs&'
+SECRET_KEY = os.environ.get("SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG")
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    host.strip()
+    for host in os.environ.get("ALLOWED_HOSTS", "").split(",")
+    if host.strip()
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in os.environ.get("CSRF_TRUSTED_ORIGINS", "").split(",")
+    if origin.strip()
+]
 
 
 # Application definition
@@ -42,6 +54,9 @@ INSTALLED_APPS = [
     # Third-Party apps
     'tailwind',
     'theme',
+
+    # axes
+    'axes',
 
     # Local apps
     "base.apps.BaseConfig",
@@ -62,6 +77,12 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+AUTHENTICATION_BACKENDS = [
+    'axes.backends.AxesBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
+
 
 ROOT_URLCONF = 'catholicmims.urls'
 
@@ -87,15 +108,11 @@ WSGI_APPLICATION = 'catholicmims.wsgi.application'
 # https://docs.djangoproject.com/en/6.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'HOST': '127.0.0.1',
-        'PORT': '5432',
-        'USER': 'postgres',
-        'PASSWORD': '0000',
-        'NAME': 'catholic_mims_db',
-        'DISABLE_SERVER_SIDE_CURSORS': True,
-    }
+    "default": dj_database_url.parse(
+        os.environ.get("DATABASE_URL"),
+        conn_max_age=600,
+        ssl_require=True,
+    )
 }
 
 
@@ -152,3 +169,26 @@ MAILERS = {
 # Media files (user-uploaded files)
 MEDIA_URL = "media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+AXES_ENABLED = True
+
+AXES_FAILURE_LIMIT = 3
+
+AXES_COOLOFF_TIME = timedelta(minutes=15)
+
+AXES_RESET_ON_SUCCESS = True
+
+AXES_LOCKOUT_PARAMETERS = [
+    "ip_address",
+    "username"
+]
+
+AXES_USERNAME_FORM_FIELD = "username"
+
+AXES_LOCKOUT_TEMPLATE = "accounts/lockout.html"
+
+AXES_VERBOSE = True
+
+SESSION_COOKIE_AGE = 300  # 5 minutes in seconds
+SESSION_SAVE_EVERY_REQUEST = True
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
